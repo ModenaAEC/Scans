@@ -1,0 +1,1 @@
+self.postMessage=self.webkitPostMessage||self.postMessage,importScripts("panoramashader.js"),self.onmessage=function(s){var e=s.data;self.postMessage(PanoramaShader.perform(e))};

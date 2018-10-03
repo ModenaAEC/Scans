@@ -1,0 +1,165 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<div promise="getPromise()"
+		 fail="error"
+		 class="f_text f_centeredContainer projectsGlobalWrapper propPage" 
+         style="padding-top:5px; padding-bottom:10px;" 
+         onselectstart="return false;">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+		<div promisethen>
+			<div class="f_centeredContainer featuredProjectContainer" style="margin-bottom:15px;margin-top:15px;">
+				
+				<!-- Account details settings -->
+				
+				<collapsibleblock ng-if="!is2go" caption="{{'FE_ACCOUNT_DETAILS' | i18n}} {{user._username}}" collapsed="false" >
+					<div class="f_settingWrapper container-fluid f_textM">
+						
+						<!-- First name -->
+						
+						<div class="row" style="margin-bottom: 8px;">
+							<div class="col-md-12">
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{"FE_FIRSTNAME" | i18n}}</div>
+									<input type="text" class="form-control" ng-model="user._changes._firstname" ng-change="onChange(user)">
+								</div>
+							</div>
+						</div>
+						
+						<!-- Middle name -->
+						
+						<div class="row" style="margin-bottom: 8px;">
+							<div class="col-md-12">
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{"FE_MIDDLENAME" | i18n}}</div>
+									<input type="text" class="form-control" ng-model="user._changes._middlename" ng-change="onChange(user)">
+								</div>
+							</div>
+						</div>
+						
+						<!-- Last name -->
+						
+						<div class="row" style="margin-bottom: 20px;">
+							<div class="col-md-12">
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{"FE_LASTNAME" | i18n}}</div>
+									<input type="text" class="form-control" ng-model="user._changes._lastname" ng-change="onChange(user)">
+								</div>
+							</div>
+						</div>
+						
+						<!-- Request password reset -->
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="options.requestPassword" ng-change="onChangeOptions()">
+								{{'FE_REQUEST_PWD_RESET'|i18n}}
+							</label>
+						</div>
+						
+					</div>	
+				</collapsibleblock>
+					
+				<!-- Language settings -->
+				
+				<collapsibleblock caption="{{'FE_LANGUAGE' | i18n}}" collapsed="false" style="margin-bottom:15px;margin-top:15px;">
+					<div class="f_settingWrapper container-fluid f_textM">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{'FE_LANGUAGE' | i18n}}</div>
+									<select class="form-control" ng-model="usersettings._changes._language"  ng-change="onChange(usersettings)" style="min-width:200px; border-bottom-left-radius: 0px; border-top-left-radius: 0px;">
+										<option ng-repeat="language in languages"  value="{{language.id}}" ng-selected="language.id === usersettings._changes._language">
+											{{language.caption}}
+										</option>
+									</select>
+								</div>
+							</div>
+						</div>	
+					</div>	
+				</collapsibleblock>
+				
+				<!-- Unit settings -->
+				<collapsibleblock caption="{{'FE_UNIT' | i18n}}" collapsed="false" style="margin-bottom:15px;margin-top:15px;">
+					<div class="f_settingWrapper container-fluid f_textM">
+						
+						<!-- Length unit -->
+						
+					 	<div class="row" ng-class="{ws_disabled: overrideLengthUnit}" style="margin-bottom: 8px;" title="{{overrideLengthUnit ? 'FE_SETTING_OVERRIDDEN' : '' | i18n}}">
+							<div class="col-md-12">
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{'FE_UNITS' | i18n}}</div>
+									<select ng-disabled="overrideLengthUnit"  class="form-control" ng-model="usersettings._changes._units" ng-change="onChange(usersettings)" style="min-width:200px; border-bottom-left-radius: 0px; border-top-left-radius: 0px;">
+										<optgroup label="{{'FE_METRIC' | i18n}}">
+											 <option ng-repeat="idTrans in lengthUnitsMetric" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._units">{{idTrans[1]}}</option>
+										<optgroup>
+										<optgroup label="{{'FE_IMPERIAL' | i18n}}">
+											 <option ng-repeat="idTrans in lengthUnitsImperial" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._units">{{idTrans[1]}}</option>
+										<optgroup>
+										<optgroup label="{{'FE_USSURVEY' | i18n}}">
+											<option ng-repeat="idTrans in lengthUnitsSurvey" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._units">{{idTrans[1]}}</option>
+										<optgroup>
+									</select>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Area unit -->
+						
+					 	<div class="row" ng-class="{ws_disabled: overrideAreaUnit}" style="margin-bottom: 8px;" title="{{overrideAreaUnit ? 'FE_SETTING_OVERRIDDEN' : '' | i18n}}">
+							<div class="col-md-12">
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{'FE_AREA_UNIT' | i18n}}</div>
+									<select ng-disabled="overrideAreaUnit" class="form-control" ng-model="usersettings._changes._areaunit" ng-change="onChange(usersettings)" style="min-width:200px; border-bottom-left-radius: 0px; border-top-left-radius: 0px;">
+										<optgroup label="{{'FE_METRIC' | i18n}}">
+											 <option ng-repeat="idTrans in areaUnitsMetric" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._areaunit">{{idTrans[1]}}</option>
+										<optgroup>
+										<optgroup label="{{'FE_IMPERIAL' | i18n}}">
+											 <option ng-repeat="idTrans in areaUnitsImperial" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._areaunit">{{idTrans[1]}}</option>
+										<optgroup>
+										<optgroup label="{{'FE_USSURVEY' | i18n}}">
+											<option ng-repeat="idTrans in areaUnitsSurvey" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._areaunit">{{idTrans[1]}}</option>
+										<optgroup>
+									</select>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Angle unit -->
+						
+					 	<div class="row" ng-class="{ws_disabled: overrideAngleUnit}" title="{{overrideAngleUnit ? 'FE_SETTING_OVERRIDDEN' : '' | i18n}}">
+							<div class="col-md-12">
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{'FE_ANGLE_UNIT' | i18n}}</div>
+									<select ng-disabled="overrideAngleUnit" class="form-control" ng-model="usersettings._changes._angleUnit" ng-change="onChange(usersettings)" style="min-width:200px; border-bottom-left-radius: 0px; border-top-left-radius: 0px;">
+										<option ng-repeat="idTrans in angleUnits" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._angleUnit">{{idTrans[1] | i18n}}</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						
+					</div>
+				</collapsibleblock>
+						
+				<!-- Coordinate system settings -->
+				
+				<collapsibleblock ng-if="!is2go" caption="{{'FE_CS' | i18n}}" collapsed="false" style="margin-bottom:15px;margin-top:15px;">
+					<div class="f_settingWrapper container-fluid f_textM">
+						<div class="row">
+							<div class="col-md-12">
+								<div style="margin-bottom: 10px; color: gray;">
+									{{'FE_PROJ_COORDS_INFO' | i18n}}
+								</div>
+								<div class="input-group col-md-12">
+									<div class="input-group-addon" style="min-width: 150px;">{{'FE_CS' | i18n}}</div>
+									<select class="form-control" ng-model="usersettings._changes._coordSystem" ng-change="onChange(usersettings)" style="min-width:200px; border-bottom-left-radius: 0px; border-top-left-radius: 0px;">
+										<option ng-repeat="idTrans in coordinateSystems" value="{{idTrans[0]}}" ng-selected="idTrans[0] === usersettings._changes._coordSystem">{{idTrans[1] | i18n}}</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>	
+				</collapsibleblock>
+			</div>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+    </div>
+</div>
+

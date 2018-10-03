@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ng-app="ws">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+		<title ng-bind-template="{{ (htmltitle ? htmltitle + ' - ' : '') + 'SCENE WebShare 2Go' }}">SCENE WebShare 2Go</title>
+
+		<!-- BEGIN HEAD_METATAGS -->
+		<meta name="description" content="Share your laser scanning projects online.">
+		<meta name="keywords" content="FARO SCENE Focus3D 330x 3D WebShare Cloud Laser Scanner scan points Laserscanner websharecloud websharecloud.com measure annotate share BIM">
+		<meta name="author" content="FARO">
+		<meta name="copyright" content="FARO">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+		<meta name="format-detection" content="telephone=no">
+		<meta name="format-detection" content="address=no">
+		
+		
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<link rel="shortcut icon" href="favicon.ico">
+		
+		
+		
+		<link rel="apple-touch-icon" sizes="128x128" href="2.3.6.3/img/assets/app-logo.png">
+		<link rel="apple-touch-icon-precomposed" href="2.3.6.3/img/assets/app-logo.png">
+		
+		<meta name="apple-touch-fullscreen" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		
+		
+		
+		<link rel="shortcut icon" sizes="128x128" href="2.3.6.3/img/assets/app-logo.png">
+		
+		<meta name="mobile-web-app-capable" content="yes">
+		
+		
+		
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		
+		<meta http-equiv="cleartype" content="on">
+		
+		<meta name="msapplication-TileImage" content="2.3.6.3/img/assets/app-logo-ms.png">
+		<meta name="msapplication-TileColor" content="#00AAEE">
+		<meta name="application-name" content="WebShare Cloud">
+		<!-- END HEAD_METATAGS -->
+
+
+		<script type="text/javascript">
+			window.F_WEB_ROOT = '2.3.6.3/';
+			window.F_WEB_ROOT_LOCAL = '2.3.6.3/';
+			window.F_WEB_PREFIX = '2.3.6.3/';
+			window.F_WEB_PREFIX_LOCAL = '2.3.6.3/';
+			window.F_CDN = null;
+			window.WS2GO = true;
+			window.workerPath = '2.3.6.3/js/worker';
+		</script>
+
+
+
+		<link rel="stylesheet" type="text/css" href="2.3.6.3/css/extern.min.css">
+		<link rel="stylesheet" type="text/css" href="2.3.6.3/css/webshare.min.css">
+
+		<script type="text/javascript" src="2.3.6.3/js/worker/panoramashader.js"></script>
+		<script type="text/javascript" src="2.3.6.3/js/extern-2go.min.js"></script>
+		<script type="text/javascript" src="2.3.6.3/js/webshare-2go.min.js"></script>
+
+
+	</head>
+	<body>
+		<!-- TODO: cookie warning useful if someone hosts WS2Go on a server?
+		<cookiewarning id="cw"></cookiewarning>
+		-->
+		<headerbar id="hb" auto="t" link-to-main-page="true" show-datafilter="true" show-login-menu="false" show-taskpanel-btn="true"></headerbar>
+		<taskpanel id="t" pagebox="v" auto="v,fb,hb,sl1,om1,pv1"></taskpanel>
+		<pagebox id="v" auto="t,hb,fb,gd,ud,rd,pd1,ca,lp,op1,le" have-taskpanel="true">
+			<!-- BEGIN UI_PAGES -->
+			<!-- standard pages -->
+			<page id="ps" class="f_scrollPage projectselector">
+				<projectselector id="ps1"></projectselector>
+			</page>
+			<page id="pd" class="f_scrollPage projectdetails">
+				<projectdetails id="pd1" auto="ps1,pl,pv1,pd1"></projectdetails>
+			</page>
+			<page id="om" class="f_fixPage overviewmap">
+				<overviewmap id="om1" auto="ps1,pd1,pv1,sl1,al1,ml1,ol1,op1,jq1"></overviewmap>
+			</page>
+			<page id="pv" class="f_fixPage panoramaview">
+				<panoramaview id="pv1" auto="ps1,pd1,om1,pv1,sl1,al1,ml1,ol1,op1,jq1"></panoramaview>
+			</page>
+			<projectcontentpage id="ob" auto="ps1,pd1" class="f_scrollPage object"></projectcontentpage>
+			<page id="op" class="f_scrollPage">
+				<objectpropertiespage id="op1" auto="pv1,om1,sl1,ml1,al1,ol1" class="objectproperties"></objectpropertiespage>
+			</page>
+			<!-- settings pages -->
+			<useraccountpage id="ac" class="useraccount"></useraccountpage>
+			<panosettingspage id="pvs" class="panosettings"></panosettingspage>
+			<overviewmapsettingspage id="oms" class="overviewmapsettings"></overviewmapsettingspage>
+			<!-- other -->
+			<legalpage id="le" class="legal"></legalpage>
+			<!-- END UI_PAGES -->
+		</pagebox>
+		<footerbar id="fb" auto="hb"></footerbar>
+
+		<noscript>
+			<h2>Please enable JavaScript to view this page.</h2>
+		</noscript>
+		<script type="text/javascript" src="2.3.6.3/js/util/browsercheck.js"></script>
+	</body>
+</html>

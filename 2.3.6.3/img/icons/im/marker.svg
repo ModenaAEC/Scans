@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="drawing.svg"
+   inkscape:export-filename="C:\Users\FlohrD\Desktop\newmarkers\drawing2.png"
+   inkscape:export-xdpi="21.808081"
+   inkscape:export-ydpi="21.808081">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient5273"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5275" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="164.70639"
+     inkscape:cy="567.33101"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     showguides="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="988"
+     inkscape:window-x="1672"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3016"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path2993-1"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.55605006000000000px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 613.1978,345.10409 c 0,133.10009 -107.89892,240.99901 -240.99902,240.99901 -133.10007,0 -240.99899,-107.89892 -240.99899,-240.99901 0,-133.10005 107.89892,-240.99898 240.99899,-240.99898 133.1001,0 240.99902,107.89893 240.99902,240.99898 z m 80.33298,-3e-5 c 0,88.73338 -35.96632,169.06641 -94.11596,227.21605 -29.07483,29.07482 -70.64525,73.41088 -114.15341,160.42722 -48.45541,96.91079 -68.69594,290.73247 -113.06263,290.73247 -44.36669,0 -64.6072,-193.82168 -113.06261,-290.73247 C 215.62802,645.73098 174.05755,601.39493 144.98273,572.32011 86.833077,514.17047 50.866769,433.83744 50.866769,345.10406 50.866769,167.6373 194.732,23.772074 372.19875,23.772074 c 177.46679,0 321.33203,143.865226 321.33203,321.331986 z"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssssssssssssss"
+       inkscape:export-filename="C:\Users\FlohrD\Desktop\newmarkers\path2993-4.png"
+       inkscape:export-xdpi="21"
+       inkscape:export-ydpi="21" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="path2993-1-4"
+       sodipodi:cx="325.71429"
+       sodipodi:cy="780.93359"
+       sodipodi:rx="94.285713"
+       sodipodi:ry="94.285713"
+       d="m 420.00001,780.93359 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       transform="matrix(1.7040333,0,0,1.7040333,-182.82921,-985.63279)"
+       inkscape:export-filename="C:\Users\FlohrD\Desktop\newmarkers\path2993-4.png"
+       inkscape:export-xdpi="21"
+       inkscape:export-ydpi="21" />
+  </g>
+</svg>

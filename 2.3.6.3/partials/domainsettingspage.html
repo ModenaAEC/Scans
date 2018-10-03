@@ -1,0 +1,239 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+    <div promise="getSettings()" fail="error" class="f_centeredContainer projectsGlobalWrapper propPage"
+         style="padding-top:5px; padding-bottom:10px;" onselectstart="return false;">
+
+        <div promiseprogress class="f_textML f_textAlignC" style="margin-top: 30px;">
+            {{"FE_LOADING" | i18n}}
+        </div>
+
+        <!-- Body content -->
+        <div promisethen class="f_textM" class="f_centeredContainer featuredProjectContainer" style="margin-bottom: 15px; margin-top: 15px;">
+
+            <!-- Customer logo -->
+			
+            <collapsibleblock caption="{{'FE_LOGO' | i18n}}" collapsed="false">
+                <div class="f_textM  f_centeredContainer f_borderBox f_responsiveBox">
+
+                    <div class="header f_text">
+                        <p style="padding-top: 14px; margin-left: 40px;">{{'FE_IMAGE'|i18n}}</p>
+                    </div>
+                    <div class="f_settingWrapper">
+                    <div ng-if="browserCompatible">
+                        <!-- File selector if current logo doesn't exit -->
+                        <div ng-if="!logoHasCurrent">
+                            <input type="file" accept="image/gif,image/jpeg,image/png" id="inputInitLogo" onchange="$(this).scope().readInitLogo()" style="margin-top: 10px;" />
+                            <div style="color: gray; margin-top: 2px;">{{'FE_ALLOWED_FILE_TYPES'|i18n}}: PNG, JPG, GIF. {{'FE_MAX_FILE_SIZE'|i18n}}: 200 kB.</div>
+                            <img ng-if="logoDisplayable" id="outputInitLogo" style="border: 1px solid black; max-width: 300px; max-height: 300px; margin-top: 10px;" ng-src="{{logoUrl}}" ng-style="{opacity: settings._changes._customerLogoOpacity / 100}" />
+                        </div>
+
+                        <!-- File selector if current logo exists -->
+                        <div ng-if="logoHasCurrent">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" class="large f_textInline" ng-model="page.logoSelected" value="logoDontShow" ng-change="updateLogoRadio()" /> {{'FE_DONT_SHOW_LOGO'|i18n}}
+                                </label>
+                            </div>
+
+                            <div class="radio" style="margin-top: 10px;">
+                                <label>
+                                    <input type="radio" class="large f_textInline" ng-model="page.logoSelected" value="logoShow" ng-change="updateLogoRadio()" /> {{'FE_SHOW_LOGO'|i18n}}
+                                </label>
+                                <table border="0">
+                                    <tr>
+                                        <td>
+                                            <input type="file" accept="image/gif,image/jpeg,image/png" id="inputUpdateLogo" onchange="$(this).scope().readUpdateLogo()" style="margin-top: 10px;" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="color: gray; margin-top: 2px;">{{'FE_ALLOWED_FILE_TYPES'|i18n}}: PNG, JPG, GIF. {{'FE_MAX_FILE_SIZE'|i18n}}: 200 {{'FE_KILOBYTES'|i18n}}.</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <img ng-if="logoDisplayable" id="outputUpdateLogo" style="border: 1px solid black; max-width: 300px; max-height: 300px; margin-top: 10px;" ng-src="{{logoUrl}}" ng-style="{opacity: settings._changes._customerLogoOpacity / 100}" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-if="!browserCompatible">
+                        <alert type="warning">
+                            <div>{{'EM_BROWSER'|i18n}} Firefox: 3.6, Chrome: 7, Internet Explorer: 10, Opera: 12.02, Safari: 6.0.2</div>
+                        </alert>
+                    </div>
+
+
+                    <!-- Setting for customer logo opacity -->
+                    <div ng-if="logoDisplayable">
+                        <legend class ="f_textML" style="line-height: 20px; margin-bottom: 10px; margin-top: 20px;">
+                            {{'FE_OPACITY'|i18n}}
+                        </legend>
+
+                        <table border="0" style="white-space: nowrap; margin-bottom: 10px; width: 100%;">
+                            <tr>
+                                <td style="padding-right: 10px; width: 30px;">
+                                    <button class="btn btn-default f_btnH30 f_btnW30 f_alignRightNoMargin" style="padding: 0px 0px 0px;" ng-click="changeOpacity(-5)">
+                                        <img class="f_icon16" static-src="icons/im/panoramaviewproperties/minus.png">
+                                    </button>
+                                </td>
+
+                                <td>
+                                    <div class="progress" style="margin-bottom: 0px;">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{settings._changes._customerLogoOpacity}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: settings._changes._customerLogoOpacity +'%'}">
+                                            {{settings._changes._customerLogoOpacity}}%
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td style="padding-left: 10px; width: 30px;">
+                                    <button class="btn btn-default f_btnH30 f_btnW30 f_alignLeftNoMargin" style="padding: 0px 0px 0px;" ng-click="changeOpacity(5)">
+                                        <img class="f_icon16" static-src="icons/im/panoramaviewproperties/plus.png">
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    </div>
+                </div>
+            </collapsibleblock>
+			
+			<!-- Default user settings -->
+			
+            <collapsibleblock caption="{{'FE_DEFAULT_USER_SETTINGS' | i18n}}" collapsed="false" class="ws_ds_collaps">
+               <div class="f_settingWrapper container-fluid f_textM">
+				   
+				   <!-- Language -->
+				   
+					<div class="row ws_ds_entryRow">
+						<div class="input-group col-md-12 ws_ds_entryCol">
+							<div class="input-group-addon ws_ds_label">
+								{{'FE_LANGUAGE' | i18n}}
+							</div>
+							<select class="form-control ws_ds_last" ng-model="settings._changes._language"  ng-change="onChange()">
+								<option ng-repeat="language in languages" value="{{language.id}}" ng-selected="language.id === settings._changes._language">
+									{{language.caption}}
+								</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- Length unit -->
+
+					<div class="row ws_ds_entryRow">
+						<div class="input-group col-md-12 ws_ds_entryCol">
+							<div class="input-group-addon ws_ds_label">
+								{{'FE_UNITS' | i18n}}
+							</div>
+							<select class="form-control ws_ds_middle" ng-model="settings._changes._lengthUnit" ng-change="onChange()">
+								<optgroup label="{{'FE_METRIC' | i18n}}">
+									 <option ng-repeat="idTrans in lengthUnitsMetric" value="{{idTrans[0]}}" ng-selected="idTrans[0] === settings._changes._lengthUnit">{{idTrans[1]}}</option>
+								<optgroup>
+								<optgroup label="{{'FE_IMPERIAL' | i18n}}">
+									 <option ng-repeat="idTrans in lengthUnitsImperial" value="{{idTrans[0]}}" ng-selected="idTrans[0] === settings._changes._lengthUnit">{{idTrans[1]}}</option>
+								<optgroup>
+								<optgroup label="{{'FE_USSURVEY' | i18n}}">
+									<option ng-repeat="idTrans in lengthUnitsSurvey" value="{{idTrans[0]}}" ng-selected="idTrans[0] === settings._changes._lengthUnit">{{idTrans[1]}}</option>
+								<optgroup>
+							</select>
+							<div class="form-control checkbox ws_ds_check ws_ds_last">
+								<label>
+									<input type="checkbox" ng-model="settings._changes._overrideLengthUnit" ng-change="onChange()" /> {{'FE_OVERRIDE_USER_SETTING' | i18n}}
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Area unit -->
+
+					<div class="row ws_ds_entryRow">
+						<div class="input-group col-md-12 ws_ds_entryCol">
+							<div class="input-group-addon ws_ds_label">
+								{{'FE_AREA_UNIT' | i18n}}
+							</div>
+							<select class="form-control ws_ds_middle" ng-model="settings._changes._areaUnit" ng-change="onChange()">
+								<optgroup label="{{'FE_METRIC' | i18n}}">
+									 <option ng-repeat="idTrans in areaUnitsMetric" value="{{idTrans[0]}}" ng-selected="idTrans[0] === settings._changes._areaUnit">{{idTrans[1]}}</option>
+								<optgroup>
+								<optgroup label="{{'FE_IMPERIAL' | i18n}}">
+									 <option ng-repeat="idTrans in areaUnitsImperial" value="{{idTrans[0]}}" ng-selected="idTrans[0] === settings._changes._areaUnit">{{idTrans[1]}}</option>
+								<optgroup>
+								<optgroup label="{{'FE_USSURVEY' | i18n}}">
+									<option ng-repeat="idTrans in areaUnitsSurvey" value="{{idTrans[0]}}" ng-selected="idTrans[0] === settings._changes._areaUnit">{{idTrans[1]}}</option>
+								<optgroup>
+							</select>
+							<div class="form-control checkbox ws_ds_check ws_ds_last">
+								<label>
+									<input type="checkbox" ng-model="settings._changes._overrideAreaUnit" ng-change="onChange()" /> {{'FE_OVERRIDE_USER_SETTING' | i18n}}
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Angle unit -->
+
+					<div class="row ws_ds_entryRow">
+						<div class="input-group col-md-12 ws_ds_entryCol">
+							<div class="input-group-addon ws_ds_label">
+								{{'FE_ANGLE_UNIT' | i18n}}
+							</div>
+							<select class="form-control ws_ds_middle" ng-model="settings._changes._angleUnit" ng-change="onChange()">
+								<option ng-repeat="idTrans in angleUnits" value="{{idTrans[0]}}" ng-selected="idTrans[0] === settings._changes._angleUnit">{{idTrans[1] | i18n}}</option>
+							</select>
+							<div class="form-control checkbox ws_ds_check ws_ds_last">
+								<label>
+									<input type="checkbox" ng-model="settings._changes._overrideAngleUnit" ng-change="onChange()" /> {{'FE_OVERRIDE_USER_SETTING' | i18n}}
+								</label>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Distance Measurements Appearance -->
+
+					<div class="row ws_ds_entryRow">
+						<div class="input-group col-md-12 ws_ds_entryCol">
+							<div class="input-group-addon ws_ds_label">
+								{{'FE_DIST_APPEARANCE' | i18n}}
+							</div>
+							<select class="form-control ws_ds_last" ng-model="settings._changes._distState" ng-change="onChange()">
+								<option ng-repeat="(id, trans) in distStates" value="{{id}}" ng-selected="id === settings._changes._distState">{{trans | i18n}}</option>
+							</select>
+						</div>
+					</div>
+					
+					<!-- Area Measurements Appearance -->
+
+					<div class="row ws_ds_entryRow">
+						<div class="input-group col-md-12 ws_ds_entryCol">
+							<div class="input-group-addon ws_ds_label">
+								{{'FE_AREA_APPEARANCE' | i18n}}
+							</div>
+							<select class="form-control ws_ds_last" ng-model="settings._changes._areaState" ng-change="onChange()">
+								<option ng-repeat="(id, trans) in areaStates" value="{{id}}" ng-selected="id === settings._changes._areaState">{{trans | i18n}}</option>
+							</select>
+						</div>
+					</div>
+					
+					<!-- Persist Measurements -->
+
+					<div class="row ws_ds_entryRow">
+						<div class="input-group col-md-12 ws_ds_entryCol">
+							<div class="input-group-addon ws_ds_label">
+								{{'FE_PERSIST_MMS' | i18n}}
+							</div>
+							<div class="form-control checkbox ws_ds_checkMiddle ws_ds_last">
+								<label>
+									<input type="checkbox" ng-model="settings._changes._persistMeasurements" ng-change="onChange()" /> {{'FE_PRESELECT_PERSIST' | i18n}}
+								</label>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</collapsibleblock>
+        </div>
+        <errorbox promisefail error="error"></errorbox>
+    </div>
+</div>

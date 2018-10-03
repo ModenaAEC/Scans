@@ -1,0 +1,20 @@
+<div class="f_page f_scrollPage" ng-show="visible">
+	<!-- Show workbench for a project. -->
+	<div promise="getProject()" then="project" fail="error" class="f_centeredContainer projectsGlobalWrapper">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top: 30px;">
+            {{'FE_LOADING' | i18n}}
+        </div>
+		<div ng-show="project !== undefined" class="f_textM f_centeredContainer">
+			<workbenchtitle promisethen project="project"></workbenchtitle>
+			<div class="f_textM f_borderBox" style="margin-bottom: 40px;">
+				<div class="header ws_ac_header">
+					{{'FE_FILE_UPLOAD' | i18n}}
+				</div>
+				<div style="padding-bottom: 20px;">
+					<upload id="wbUpload" project="project._name"></upload>
+				</div>
+			</div>
+		</div>
+        <errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

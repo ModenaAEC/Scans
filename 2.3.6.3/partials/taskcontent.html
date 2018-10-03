@@ -1,0 +1,73 @@
+<div id="taskstepcontainerwrapper" class="f_taskStepContainerWrapper">
+	<div class="f_taskhistory-category f_taskbarCategoryText f_unselectable" style="display: flex; align-items: center;" ng-class="{validated:task.canBeExecuted()}" unselectable="on">
+		<img ng-class="task._categoryIconMargin ? 'f_icon48Margin' : 'f_icon48'" static-src="{{task._categoryIcon}}" unselectable="on" />
+		<img ng-class="task._iconMargin ? 'f_icon48Margin' : 'f_icon48'" static-src="{{task._icon}}" unselectable="on" />
+		{{task._caption | i18n}}
+	</div>
+	<div id="taskstepcontainer" class="f_taskStepContainer">
+		<div class="accordion-group f_taskGroup" ng-class="{active:section._active}" ng-repeat="section in task._sections" ng-click="openTaskPanel()">
+			<div id="taskstep_{{$index+1}}" class="f_accordion-heading f_taskCategory f_taskStepLauncher f_unselectable" ng-class="{active:section._active}"
+				 ng-click="task.setActiveSection(section)" ng-show="section._start">
+				<table>
+					<td style="width: 25px; padding-top:2px; padding-left:6px;" class="f_tableValignT" >
+						<div class="f_taskStepValidator"
+							 ng-class="{f_circularTagIgnore: section._complete && section._optional && section._activation == 0,   f_circularTagOK: section._complete && (!section._optional || section._activation > 0),   f_circularTagWarn: !section._complete}">
+							<!--<p class="f_taskbarCategoryText" ng-class="{f_textBright:section._complete}">{{section._index}}</p>-->
+							<img class="f_icon f_icon32" static-src="{{section._icon}}" unselectable="on" />
+						</div>
+					<td style="width: 210px;padding-left:5px;padding-top:0px;">
+						<div ng-show="!compactPanel">
+							<p class="f_taskbarCategoryText f_textInline" unselectable="on">{{section._caption | i18n}}</p>
+						</div>
+					</td>
+				</table>
+			</div>
+			<div class="f_taskStepInner f_textM f_textNormal" ng-show="(section._active || (section._start && section._alwaysVisible)) && !compactPanel" ng-class="{active:section._active}">
+				<div ng-show="section._start">
+					<p ng-show="section._description">{{section._description | i18n}}</p>
+					<widget></widget>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="position: absolute; bottom:0px; width: 100%;" ng-if="!compactPanel">
+		<div class="f_taskBtnDesc" ng-show="task._buttonDescription">
+			<p>{{task._buttonDescription | i18n}}</p>
+		</div>
+		<div ng-show="hint">
+			<alert type="error">
+				<p>{{hint | i18n}}</p>
+			</alert>
+		</div>
+		<div>
+			<div style="position:relative; height:40px; padding-top:5px; width: 100%;">
+			<div class="btn-group" style="width:100%; padding-left: 5px;padding-right: 5px;">
+				<button class="btn btn-default f_taskBtn" 
+						title="{{'FE_TASKCANCEL'|i18n}}"
+						style="width: 50%; padding-top:0;line-height:32px;" ng-click="task.abort()">
+					<img class="f_icon32" style="margin-top:-2px;"
+						 static-src="icons/cancel.png"/>{{"FE_CANCEL" | i18n}}&nbsp;&nbsp;</button>
+				<button class="btn f_btnFontDark f_taskBtn"
+						title="{{'FE_TASKOK'|i18n}}" 
+						style="width: 50%; padding-top:0;line-height:32px;" 
+						ng-click="task.executeInternal()" 
+						ng-switch="task._followupTask"
+						ng-class="{'btn-warning':!task.canBeExecuted(), 'btn-success':task.canBeExecuted(), disabled:task._executed}">
+					<div ng-switch="task._executed"
+						 style="display:inline;">
+						<img ng-switch-when="true" class="f_icon24" static-src="icons/im/spinner.gif"/>
+						<div ng-switch-default class="f_textInline">
+							<div ng-switch="task.canBeExecuted()" class="f_textInline">
+								<img ng-switch-when="true" class="f_icon32" style="margin-top:-2px;" static-src="icons/im/execute.png"/>
+								<img ng-switch-default class="f_icon24" static-src="icons/im/alerts/warning.png"/>
+							</div>
+						</div>
+					</div>
+					<span ng-switch-when="undefined">{{"FE_OK" | i18n}}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+					<span ng-switch-default>{{"BUTTON_PROCEED" | i18n}}</span>
+				</button>
+			</div>
+			</div>
+		</div>	
+	</div>
+</div>

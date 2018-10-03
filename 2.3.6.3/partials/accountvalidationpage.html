@@ -1,0 +1,32 @@
+<div class="f_accountPage">
+	<div class="f_centeredContainer f_narrowPage">
+		<div class="f_centeredContainer f_borderBox f_responsiveBox">
+			<!-- Header with image -->
+			<div class="header">
+				<p class="f_textBold f_textML"><img class="f_icon48" static-src="icons/im/taskbar/users/edit.png"/>{{'FE_ACCOUNT_VALIDATION'|i18n}}</p>
+			</div>
+
+			<div style="padding-left:30px; padding-right:30px; padding-top:20px; padding-bottom:20px;">
+				<div promise="getPromise()">
+					<div promiseprogress>
+						<div class="f_textBold f_textML" style="margin-bottom:10px;">{{'FE_ACCOUNT_VALIDATION_PATIENT'|i18n}}.</div>
+						<alert type="info">
+							<img class="f_icon32" static-src="icons/im/spinner.gif"/> {{'FE_VALIDATING_ACCOUNT'|i18n}}...
+						</alert>
+					</div>
+					<div promisethen>
+						<alert type="info">
+							{{'FE_VALIDATE_ACCOUNT_SUCCESS'|i18n}}.
+						</alert>
+					</div>
+
+					<div promisefail>
+						<alert type="error"><img class="f_icon32" static-src="icons/im/alerts/warning.png"/>{{errormessage | i18n}}.</alert>
+						<p class="f_textM" style="padding-top:30px;">{{'FE_VALIDATE_ACCOUNT_NEW_LINK'|i18n}}:</p>
+						<lostpasswordform></lostpasswordform>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

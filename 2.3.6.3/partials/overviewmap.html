@@ -1,0 +1,146 @@
+<div ng-show="!error" style="position: relative; height:100%; width: 100%; background-color: black; overflow: hidden;">
+	<!-- Map -->
+	<div class="f_centeredContainer overviewmapdiv" style="z-index: 0;"></div>
+	<!-- z-index 33: fix wrong Z-order handling in IE9 (must be bigger than all child z-indices) -->
+	<radialmenu id="omradialmenu" impl="ommenu" x="menu.x" y="menu.y" visible="menu.visible" object="menu.object" style="position: absolute; z-index: 33;" auto="om1">
+		<radialmenubackground object="menu.object"></radialmenubackground>
+		<div ng-class="{f_rmWrapper:menu.object._class === 'Scan'}">
+			<radialmenuitem icon="icons/im/taskbar/panoramaview/main.png" type="panorama" title="{{'FE_SHOW_IN_PANO'|i18n}}"></radialmenuitem>
+			<radialmenuitem icon="icons/3d-small.png" type="view3d" title="{{'FE_SHOW_IN_3D'|i18n}}"></radialmenuitem>
+			<radialmenuitem icon="icons/im/taskbar/overviewmap/showproperties.png" type="showproperties" title="{{'T_SHOW_PROPERTIES'|i18n}}"></radialmenuitem>
+			<radialmenuitem icon="icons/im/taskbar/overviewmap/edit.png" type="edit" title="{{'T_EDIT'|i18n}}"></radialmenuitem>
+			<radialmenuitem icon="icons/im/taskbar/overviewmap/share.png" type="share" title="{{'T_SHARE'|i18n}}"></radialmenuitem>
+			<radialmenuitem icon="icons/im/taskbar/overviewmap/remove.png" type="remove" title="{{'T_DELETE'|i18n}}"></radialmenuitem>
+			<radialmenuitem icon="icons/im/radialmenu/switchsegments.png" type="switchsegments" title="{{'FE_SWITCH_SEGMENTS'|i18n}}"></radialmenuitem>
+			<radialmenuitem icon="icons/im/taskbar/overviewmap/showscanpoints.png" type="showscanpoints"></radialmenuitem>
+			<radialmenuitem icon="icons/im/radialmenu/showdistancelabels.png" type="showdistancelabels"></radialmenuitem>
+		</div>
+	</radialmenu>
+</div><!--Template -->
+
+<viewmodectrl ng-show="!_2GO && !error && !miniView && !pvMiniView" change-view-mode="changeViewMode(newMode)"></viewmodectrl>
+
+<actionbar ng-show="!miniView">
+	<!-- Action bar: Visibility sub menu -->
+	<visibilityactionbar viewtype="OVERVIEW_MAP" ng-if="page.visibilityCtrlActive === true"></visibilityactionbar>
+	
+	<!-- Action bar: Visibility button -->
+	<div class="btn-group-vertical f_actionBarVertical">
+		<button class="btn btn-default f_actionBarBtn" ng-class="{'ws_abPressed': page.visibilityCtrlActive === true}" ng-click="page.visibilityCtrlActive = !page.visibilityCtrlActive" title="{{ 'FE_VISIBILITY' | i18n }}">
+			<img class="f_actionBarIcon f_icon48" style="margin-top: -8px;" static-src="icons/visible_true.png" />
+		</button>
+	</div>
+	
+	<!-- Action bar: Zoom in, Zoom out, View all buttons -->
+	<div class="btn-group-vertical f_actionBarVertical">
+		<button class="btn btn-default f_actionBarBtn" ng-click="zoomIn()" title="{{ 'FE_ZOOM_IN' | i18n }}">
+			<img class="f_actionBarIcon" static-src="icons/im/panoramaviewproperties/plus.png"/>
+		</button>
+		<button class="btn btn-default f_actionBarBtn" ng-click="zoomOut()" title="{{ 'FE_ZOOM_OUT' | i18n }}">
+			<img class="f_actionBarIcon" static-src="icons/im/panoramaviewproperties/minus.png" />
+		</button>
+		<button class="btn btn-default f_actionBarBtn" ng-click="zoomFit()" title="{{ 'FE_VIEW_ALL' | i18n }}">
+			<img class="f_actionBarIcon" static-src="icons/im/map_view_all.png" />
+		</button>
+	</div>
+
+	<!-- Action bar: Show in scan view -->
+	<div class="btn-group-vertical f_actionBarVertical">
+		<button ng-disabled="viewModeTransition" class="btn btn-default f_actionBarBtn" style="pointer-events: auto;" ng-click="showPanoView()" title="{{ 'FE_SHOW_IN_PANO' | i18n }}">
+			<img class="f_actionBarIconLarge" static-src="icons/im/taskbar/panoramaview/main.png">
+		</button>
+	</div>
+	
+	<!-- Action bar: Layer button-->
+	<div class="btn-group-vertical f_actionBarVertical">
+		<button class="btn btn-default f_actionBarBtn" ng-class="{'ws_abPressed': page.layerCtrlActive === true}" ng-click="page.layerCtrlActive = !page.layerCtrlActive" title="{{ 'FE_LAYER_SETTINGS' | i18n }}">
+			<img class="f_actionBarIcon" static-src="icons/im/map_layers.png" />
+		</button>
+	</div>
+	
+	<!-- Action bar: Layer sub menu -->
+	<actionbarextension ng-if="page.layerCtrlActive === true">
+		<div class="f_actionBarExtensionCtrlContainer">
+			<div ng-repeat="layer in leafletLayers">
+				<p class="f_text f_textBright f_textM" style="margin-bottom: 2px;">
+					<img ng-show="layer.options.type === 'LayoutPlan'" class="f_icon24" style="float: left; margin-top:-2px;" 
+						static-src="icons/groundview.png" title="{{'FE_LAYOUT_PLAN' | i18n}}" />
+					<img ng-show="layer.options.type !== 'LayoutPlan'" class="f_icon24" style="float: left; margin-top:-2px;" 
+						static-src="icons/im/taskbar/objectproperties/scan.png" title="{{'FE_SCAN_DATA' | i18n}}" />
+					<span style="margin-left: 2px;">
+						{{layer.options.displayName}}
+					</span>
+				</p>
+				<div class="btn-group" style="margin-bottom: 12px;">
+					<div class="btn-group">
+						<button class="btn btn-default f_actionBarLowBtn"
+								ng-class="{'btn-info': layer.options.visible}"
+								ng-click="toggleTileLayer(layer)"
+								title="{{ 'FE_TOGGLE_LAYER_VIS' | i18n }}">
+							<img class="f_icon32" static-src="icons/visible_{{layer.options.visible}}.png" style="margin-top: -6px;" />
+						</button>
+						<button class="btn btn-default f_actionBarLowBtn"
+								ng-click="changeLayerOpacity(layer, -0.1)"
+								ng-disabled='layer.options.visible !== true'
+								title="{{ 'FE_RED_OPACITY' | i18n }}">
+							<img class="f_icon24" static-src="icons/im/panoramaviewproperties/minus.png" style="margin-top: -5px;" />
+						</button>
+					</div>
+					<div class="btn-group" style="height: 32px; background-color: rgba(255,255,255,0.3);">
+						<div class="progress" style="width: 46px; height: 16px; margin-top: 8px; margin-bottom: 0px; margin-left: 1px; margin-right: 1px;">
+							<div class="progress-bar progress-bar-warning" style="color: black;" role="progressbar" 
+								 aria-valuenow="{{layer.options.opacity}}" aria-valuemin="0" aria-valuemax="1" 
+								 ng-style="{width: layer.options.opacity * 100 + '%', opacity: layer.options.visible !== true ? 0.3 : 0.8}"></div>
+						</div>
+					</div>
+					<div class="btn-group">
+						<button class="btn btn-default f_actionBarLowBtn"
+								ng-click="changeLayerOpacity(layer, +0.1)"
+								ng-disabled='layer.options.visible !== true'
+								title="{{ 'FE_INC_OPACITY' | i18n }}">
+							<img class="f_icon24" static-src="icons/im/panoramaviewproperties/plus.png" style="margin-top: -5px;" />
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</actionbarextension>
+</actionbar>
+
+<!-- Status Bar -->
+<div ng-show="!miniView" class="f_textS f_statusBar" unselectable='off' style="z-index:50;">
+	<mapscale width="scale.width"></mapscale>
+	<!-- Coordinate picker -->
+	<span ng-class="{ws_flashPick: flashPicker}"
+		  style='margin-left:5px; float:left; height:24px;' title="{{'FE_COORDINATE_PICKER'|i18n}}" ng-switch="pickedPoint._pointState">
+		<img class='f_icon24' static-src="icons/im/panoramaviewproperties/picker.pin.png"/>
+		<span title="{{'FE_PICKED_POS'|i18n}}">
+			<p ng-switch-when="0" class='f_textInline' style="cursor:text; margin:0px;">
+				{{'FE_XYZ' | i18n}} {{getPosInCS(pickedPoint._positionGlobal) | pos}}
+				<copybtnsmall copy="{{getPosInCS(pickedPoint._positionGlobal) | pos_short}}"></copybtnsmall>
+			</p>
+			<p ng-switch-when="1" class='f_textInline' style="cursor:text; margin:0px;">
+				{{'FE_INVALID_POINT' | i18n}}
+			</p>
+			<p ng-switch-when="2" class='f_textInline' style="cursor:text; margin:0px;">
+				{{'FE_LOADING' | i18n}}
+			</p>
+			<p ng-switch-when="3" class='f_textInline' style="cursor:text; margin:0px;">
+				{{'FE_XYZ' | i18n}} {{getPosInCS(pickedPoint._positionGlobal) | pos}}
+				<copybtnsmall copy="{{getPosInCS(pickedPoint._positionGlobal) | pos_short}}"></copybtnsmall>
+			</p>
+			<p ng-switch-when="4" class='f_textInline' style="cursor:text; margin:0px;">
+				{{'FE_XYZ' | i18n}} {{getPosInCS(pickedPoint._positionGlobal) | pos}}
+				<copybtnsmall copy="{{getPosInCS(pickedPoint._positionGlobal) | pos_short}}"></copybtnsmall>
+			</p>
+			<p ng-switch-default  class='f_textInline' style="cursor:text; margin:0px;">
+				&ndash;
+			</p>
+		</span>
+		&nbsp;
+	</span>
+</div>
+
+<div ng-if="error" class="f_text f_centeredContainer projectsGlobalWrapper" style="-webkit-overflow-scrolling: touch;">
+	<errorbox error="error"></errorbox>
+</div>

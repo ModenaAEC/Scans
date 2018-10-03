@@ -1,0 +1,418 @@
+<div class="f_page ws_ol_page">
+	<div promise="getObjects()" then="page.objects" fail="error" defaultvalue="[]" class="f_centeredContainer f_borderBox">
+        <div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_LOADING'|i18n}}</div>
+        <div promisethen>
+			<collapsibleblock ng-show="0 < page.objects.length" class="ws_ol_cb" caption="{{caption}}" collapsed="{{collapsed}}" line="false" >
+				<div class="header">
+					<form class="form-search">
+						<div class="container-fluid">
+							<div class="row">
+								<!-- Drop down box for sorting. -->
+								<div class="col-xs-5">
+									<div class="btn-group f_textM" >
+										<button class="btn btn-default" data-toggle="dropdown">
+											{{'FE_SORTBY'|i18n}}: {{page.sortby|i18n}}
+										</button>
+										<button class="btn btn-default hidden-xs hidden-sm" ng-click="page.reverse=!page.reverse" title="{{'FE_REVERSE_ORDER'|i18n}}" style="border-bottom-right-radius:4px; border-top-right-radius: 4px;">
+											<img class='f_icon16' static-src="icons/im/projectselector/sort_inverse_{{page.reverse}}.png"/>
+										</button>
+										<ul class="dropdown-menu dropdown-menu-left f_dropdownMenu">
+											<!-- Read/Write lock -->
+											<li class="hidden-xs" ng-if="columnconfig.writeAccess" ng-click="setPredicate('_writePublic', 'FE_READWRITE')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_READWRITE'|i18n}}</a>
+											</li>
+											<!-- Name -->
+											<li ng-click="setPredicate('_displayName', 'FE_NAME')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_NAME'|i18n}}</a>
+											</li>
+											<!-- Type -->
+											<li class="hidden-xs" ng-if="columnconfig.type" ng-click="setPredicate('_type', 'FE_TYPE')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_TYPE'|i18n}}</a>
+											</li>
+											<!-- Recording time -->
+											<li class="hidden-xs" ng-if="columnconfig.recordingTime" ng-click="setPredicate('_recordingTime', 'FE_RECORDING_TIME')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_RECORDING_TIME'|i18n}}</a>
+											</li>
+											<!-- State -->
+											<li ng-if="columnconfig.state" ng-click="setPredicate('_state', 'FE_STATE')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_STATE'|i18n}}</a>
+											</li>
+											<!-- Creation date -->
+											<li class="hidden-xs" ng-if="columnconfig.creationDate" ng-click="setPredicate('_creationDate', 'FE_CREATION_TIME')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_CREATION_TIME'|i18n}}</a>
+											</li>
+											<!-- Global X -->
+											<li class="hidden-sm hidden-xs" ng-if="columnconfig.position" ng-click="setPredicate('getGlobalX()', 'FE_GLOBAL_X')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_GLOBAL_X'|i18n}}</a>
+											</li>
+											<!-- Global Y -->
+											<li class="hidden-sm hidden-xs" ng-if="columnconfig.position" ng-click="setPredicate('getGlobalY()', 'FE_GLOBAL_Y')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_GLOBAL_Y'|i18n}}</a>
+											</li>
+											<!-- Global Z -->
+											<li class="hidden-sm hidden-xs" ng-if="columnconfig.position" ng-click="setPredicate('getGlobalZ()', 'FE_GLOBAL_Z')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_GLOBAL_Z'|i18n}}</a>
+											</li>
+											<!-- Category -->
+											<li ng-if="columnconfig.category" ng-click="setPredicate('_category', 'FE_CATEGORY')">
+												<a class="f_dropdownMenuItem" href="">{{'FE_CATEGORY'|i18n}}</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+								<!-- Drop down box for selecting the displayed attributes. -->
+								<div class="col-xs-7">
+									<div class="input-group">
+										<div class="input-group-addon f_textML hidden-xs" ng-class="{ws_filterActive: filteredlength != page.objects.length}">
+											({{ filteredlength }}/{{ page.objects.length}})
+										</div>
+										<input type="text" placeholder="{{'FE_FIND'|i18n}}..." class="form-control search-query" ng-model="page.query" ng-change="page.index = 0">
+										<div class="input-group-btn">
+											<button class="btn btn-default" ng-class="{ws_filterActive: filteredlength != page.objects.length}" ng-click="page.query = ''; page.index = 0"
+													style="margin-right: 10px; margin-left: -1px; border-bottom-left-radius:0; border-top-left-radius:0;"
+													title="{{'FE_RESET_FILTER'|i18n}}">
+												<img class="f_icon16" static-src="icons/clear.png"/>
+											</button>
+										</div>
+										<div class="input-group-btn">
+											<button style="height:34px; border-bottom-left-radius:4px; border-top-left-radius:4px;" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown" title="{{'FE_CONFIGURE_TABLE'|i18n}}">
+												<img class="f_icon24" static-src="icons/im/configure.png">
+												<span class="caret"></span>
+											</button>
+											<ul class="dropdown-menu dropdown-menu-right f_dropdownMenu">
+												<!-- Read/Write lock -->
+												<li class="hidden-xs" ng-if="columnconfig.hasOwnProperty('writeAccess')" ng-click="columnconfig.writeAccess = !columnconfig.writeAccess">
+													<a class="f_dropdownMenuItem" href="">{{"FE_READWRITE" | i18n}}
+														<img ng-if="columnconfig.writeAccess" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- Type -->
+												<li class="hidden-xs" ng-if="columnconfig.hasOwnProperty('type')" ng-click="columnconfig.type = !columnconfig.type">
+													<a class="f_dropdownMenuItem" href="">{{"FE_TYPE" | i18n}}
+														<img ng-if="columnconfig.type" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- Preview -->
+												<li ng-if="columnconfig.hasOwnProperty('preview')" ng-click="columnconfig.preview = !columnconfig.preview">
+													<a class="f_dropdownMenuItem" href="">{{"FE_PREVIEW" | i18n}}
+														<img ng-if="columnconfig.preview" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- Recording time -->
+												<li class="hidden-xs" ng-if="columnconfig.hasOwnProperty('recordingTime')" ng-click="columnconfig.recordingTime = !columnconfig.recordingTime">
+													<a class="f_dropdownMenuItem" href="">{{"FE_RECORDING_TIME" | i18n}}
+														<img ng-if="columnconfig.recordingTime" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- Creation date -->
+												<li class="hidden-xs" ng-if="columnconfig.hasOwnProperty('creationDate')" ng-click="columnconfig.creationDate = !columnconfig.creationDate">
+													<a class="f_dropdownMenuItem" href="">{{"FE_CREATION_TIME" | i18n}}
+														<img ng-if="columnconfig.creationDate" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- Position: Global X, Global Y, Global Z -->
+												<li class="hidden-sm hidden-xs" ng-if="columnconfig.hasOwnProperty('position')" ng-click="columnconfig.position = !columnconfig.position">
+													<a class="f_dropdownMenuItem" href="">{{"FE_GLOBAL_POSITION" | i18n}}
+														<img ng-if="columnconfig.position" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- Category -->
+												<li ng-if="columnconfig.hasOwnProperty('category')" ng-click="columnconfig.category = !columnconfig.category">
+													<a class="f_dropdownMenuItem" href="">{{"FE_CATEGORY" | i18n}}
+														<img ng-if="columnconfig.category" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- Tags -->
+												<li ng-if="columnconfig.hasOwnProperty('tags')" class="hidden-xs" ng-click="columnconfig.tags = !columnconfig.tags">
+													<a href="">{{"FE_TAG" | i18n}}
+														<img ng-if="columnconfig.tags" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+													</a>
+												</li>
+												<!-- View -->
+												<li ng-if="columnconfig.hasOwnProperty('view') && !task" ng-click="columnconfig.view = !columnconfig.view">
+													<a class="f_dropdownMenuItem" href="">{{"FE_VIEW" | i18n}}
+														<img ng-if="columnconfig.view" class="f_icon24" style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/></a>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div>
+					<div class="table-responsive">
+						<table class="f_centeredContainer table table-hover table-striped f_textM f_tableSlim">
+
+							<!-- Table header -->
+							<thead class="hidden-xs">
+								<th ng-if="task" style="min-width:150px;">
+									<div class="btn-group">
+										<button ng-disabled="!selection" class="btn btn-default btn-small">{{'FE_SELECT' | i18n}}</button>
+										<button ng-disabled="!selection" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown">
+											<span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu f_dropdownMenu">
+											<li ng-click="changeSelectionAll('all')">
+												<a class="f_dropdownMenuItem" href="">
+													{{'FE_ALL' | i18n}} ({{ filteredlength }})
+												</a>
+											</li>
+											<li ng-click="changeSelectionAll('visible')">
+												<a class="f_dropdownMenuItem" href="">
+													{{'FE_ALLONPAGE' | i18n}} ({{ Math.min(filteredlength, page.limit)}})
+												</a>
+											</li>
+											<li ng-click="changeSelectionAll('none')">
+												<a class="f_dropdownMenuItem" href="">
+													{{'FE_NONE' | i18n}}
+												</a>
+											</li>
+										</ul>
+									</div>
+								</th>
+								<!-- Read/Write lock -->
+								<th ng-if="columnconfig.writeAccess">
+									<a class="f_link link" href="" ng-click="setPredicate('_writePublic', 'FE_READWRITE')"
+									   title="{{'FE_READWRITE'|i18n}}">{{'FE_READWRITE'|i18n}}</a>
+								</th>
+								<!-- Name -->
+								<th><a class="f_link link" href="" ng-click="setPredicate('_displayName', 'FE_NAME')"
+									   title="{{'FE_SORT_BY_NAME'|i18n}}">{{'FE_NAME'|i18n}}</a>
+								</th>
+								<!-- Type -->
+								<th ng-if="columnconfig.type">
+									<a class="f_link link" href="" ng-click="setPredicate('_type', 'FE_TYPE')"
+									   title="{{'FE_TYPE'|i18n}}">{{'FE_TYPE'|i18n}}</a>
+								</th>
+								<!-- Preview -->
+								<th ng-if="columnconfig.preview">{{'FE_PREVIEW'|i18n}}</th>
+								<!-- Recording time -->
+								<th ng-if="columnconfig.recordingTime">
+									<a class="f_link link" href="" ng-click="setPredicate('_recordingTime', 'FE_RECORDING_TIME')"
+									   title="{{'FE_SORT_BY_TIME'|i18n}}">{{'FE_RECORDING_TIME'|i18n}}</a>
+								</th>
+								<!-- State -->
+								<th ng-if="columnconfig.state">
+									<a class="f_link link" href="" ng-click="setPredicate('_state', 'FE_STATE')"
+									   title="{{'FE_SORT_BY_STATE'|i18n}}">{{'FE_STATE'|i18n}}</a>
+								</th>
+								<!-- Creation date -->
+								<th ng-if="columnconfig.creationDate">
+									<a class="f_link link" href="" ng-click="setPredicate('_creationDate', 'FE_CREATION_TIME')"
+									   title="{{'FE_SORT_BY_CREATION_TIME'|i18n}}">{{'FE_CREATION_TIME'|i18n}}</a>
+								</th>
+								<!-- Global X -->
+								<th ng-if="columnconfig.position">
+									<a class="f_link link" href="" ng-click="setPredicate('getGlobalX()', 'FE_GLOBAL_X')"
+									   title="{{'FE_SORT_BY_X'|i18n}}">{{'FE_GLOBAL_X'|i18n}}</a>
+								</th>
+								<!-- Global Y -->
+								<th ng-if="columnconfig.position">
+									<a class="f_link link" href="" ng-click="setPredicate('getGlobalY()', 'FE_GLOBAL_Y')"
+									   title="{{'FE_SORT_BY_Y'|i18n}}">{{'FE_GLOBAL_Y'|i18n}}</a>
+								</th>
+								<!-- Global Z -->
+								<th ng-if="columnconfig.position">
+									<a class="f_link link" href="" ng-click="setPredicate('getGlobalZ()', 'FE_GLOBAL_Z')"
+									   title="{{'FE_SORT_BY_Z'|i18n}}">{{'FE_GLOBAL_Z'|i18n}}</a>
+								</th>
+								<!-- Category -->
+								<th ng-if="columnconfig.category">
+									<a class="f_link link" href="" ng-click="setPredicate('_category', 'FE_CATEGORY')"
+									   title="{{'FE_CATEGORY'|i18n}}">{{'FE_CATEGORY'|i18n}}</a>
+								</th>
+								<!-- Tags -->
+								<th ng-if="columnconfig.tags">{{'FE_TAG'|i18n}}</th>
+								<!-- View -->
+								<th ng-if="columnconfig.view && (!task)">{{'FE_VIEW'|i18n}}</th>
+							</thead>
+							<!-- Table body -->
+							<tr ng-repeat="object in page.objects | objectfilter:page.query:columnconfig | orderBy:page.predicate:page.reverse | paginate:page.index:page.limit" style="height: 40px">
+								<td ng-if="task" ng-click="changeSelection(object)" style="width: 100px; padding-top: 0px !important">
+									<img ng-if="selection && (object._class !== 'Scan' || taskName !== 'RemoveTask')" static-src="icons/im/selected_{{object._selected}}.png"/>
+									<img ng-if="!selection && (object._class !== 'Scan' || taskName !== 'RemoveTask')" static-src="icons/im/selected_grey_{{object._selected}}.png"/>
+								</td>
+								<!-- Read/Write lock -->
+								<td class="hidden-xs" ng-if="columnconfig.writeAccess" ng-click="changeSelection(object)" style="width: 75px; padding-top: 8px !important;">
+									<img class="f_icon32" ng-if="object._writeLock" static-src="icons/lock.png"/>
+								</td>
+								<!-- Name -->
+								<td ng-click="changeSelection(object)">
+									{{object._displayName}}&nbsp;
+								<div ng-if="object._hot" title ="{{'FE_HOT_ITEM' | i18n}}" class="f_iconHot"></div>
+								</td>
+								<!-- Type -->
+								<td class="hidden-xs" ng-if="columnconfig.type" ng-click="changeSelection(object)">
+									<!-- Type: Measurement -->
+									<div ng-if="object._class === 'Measurement'" style="position:relative; top:-6px;">
+										<!-- Type: (Multi-)scan point measurement -->
+										<div ng-if="object._type === 'ScanPointMeasurement' || object._type === 'MultiScanPointMeasurement'">
+											<img class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png" title="{{ 'FE_TYPE_SCAN_POINT_MEASUREMENT' | i18n }}" />
+											&nbsp;{{ 'FE_DISTANCE_2' | i18n }}
+										</div>
+										<!-- Type: Space point measurement -->
+										<div ng-if="object._type === 'SpacePointMeasurement'">
+											<img class="f_icon32" static-src="icons/3d-small.png" title="{{ 'FE_TYPE_SCAN_POINT_MEASUREMENT' | i18n }}" />
+											&nbsp;{{ 'FE_DISTANCE_2' | i18n }}
+										</div>
+										<!-- Type: Object measurement -->
+										<div ng-if="object._type === 'ObjectMeasurement'">
+											<img class="f_icon32" static-src="icons/im/sphere.png" title="{{ 'FE_TYPE_OBJECT_MEASUREMENT' | i18n }}" />
+											&nbsp;{{ 'FE_DISTANCE_2' | i18n }}
+										</div>
+										<!-- Type: Map measurement -->
+										<div ng-if="object._type === 'MapMeasurement'">
+											<img class="f_icon32" static-src="icons/im/taskbar/overviewmap/main.png" title="{{ 'FE_TYPE_MAP_MEASUREMENT' | i18n }}" />
+											<span ng-if="object._displayType === 'Distance'">&nbsp;{{ 'FE_DISTANCE_2' | i18n }}</span>
+											<span ng-if="object._displayType === 'Area'">&nbsp;{{ 'AN_AREA' | i18n }}</span>
+										</div>
+									</div>
+									<!-- Type: Annotation -->
+									<div ng-if="object._class === 'Annotation'" style="position:relative; top:-6px;">
+										<!-- Type: Object annotation -->
+										<div ng-if="object._type === 'Object'">
+											<img class="f_icon32" static-src="icons/im/sphere.png" title="{{ 'FE_OBJECT_ANNOTATION' | i18n }}" />
+										</div>
+										<!-- Type: Map annotation -->
+										<div ng-if="object._type === 'Map'">
+											<img class="f_icon32" static-src="icons/im/taskbar/overviewmap/main.png" title="{{ 'FE_MAP_ANNOTATION' | i18n }}" />
+										</div>
+										<!-- Type: Other annotation -->
+										<div ng-if="object._type !== 'Object' && object._type !== 'Map'">
+											<img class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png" title="{{ 'FE_SCAN_POINT_ANNOTATION' | i18n }}" />
+										</div>
+									</div>
+									<!-- Type: Scan -->
+									<div ng-if="object._class === 'Scan'" style="position:relative; top:-6px;">
+										<!-- Type: Virtual scan -->
+										<div ng-if="object._type === 'Virtual'">
+											<img class="f_icon32" static-src="icons/im/taskbar/scanlist/virtual-scan.png" title="{{ 'FE_VIRTUAL_SCAN' | i18n }}" />
+										</div>
+										<!-- Type: Photo scan -->
+										<div ng-if="object._type === 'Photo'">
+											<img class="f_icon32" static-src="icons/im/taskbar/scanlist/camera.png" title="{{ 'FE_PHOTO_SCAN' | i18n }}" />
+										</div>
+										<!-- Type: Regular scan -->
+										<div ng-if="object._type !== 'Virtual' && object._type !== 'Photo'">
+											<img class="f_icon32" static-src="icons/im/projectselector/scannertripod.png" title="{{ 'FE_LASER_SCAN' | i18n }}" />
+										</div>
+									</div>
+								</td>
+								<!-- Preview -->
+								<!-- Preview of Scan -->
+								<td ng-if="object._class === 'Scan' && columnconfig.preview">
+									<img class="scanThumbnailSmall" style="position: relative; bottom: 7px; cursor: pointer;" 
+										 ng-src="{{object.getBestFittingImage(64, 'color')}}" title="{{'FE_CLICK_ENLARGE'|i18n}}" ng-click="imagegallerySetup(object, 'color')" />
+								</td>
+								<!-- Preview of Orthophoto -->
+								<td ng-if="object._class === 'Orthophoto' && columnconfig.preview">
+									<div class="ws_orthophotoThumb">
+										<img class="ws_orthophotoThumb" ng-src="{{object.getSquareImagePathBySize(64)}}" fallback-src="default/painting_progress_64x64.gif" />
+									</div>
+								</td>
+								<!-- Recording time -->
+								<td class="hidden-xs" ng-if="columnconfig.recordingTime" ng-click="changeSelection(object)">{{object._recordingTime | date}} </td>
+								<!-- State (entities) -->
+								<td ng-if="columnconfig.state" ng-click="changeSelection(object)" style="padding-top: 0px !important;" ng-switch="object._state">
+									<div style="margin-top: 5px" ng-switch-when="processing" title="{{ 'FE_RUNNING' | i18n }}">
+										<spinner class="f_spinSmall ws_objectlist_state"></spinner>
+									</div>
+									<div ng-switch-when="complete" class="f_circle f_icon24 green ws_objectlist_state" title="{{ 'FE_COMPLETE' | i18n }}">
+										<img static-src="icons/im/checked_true.png" class="f_icon24"/>
+									</div>
+									<div ng-switch-when="incomplete" class="f_circle f_icon24 gray ws_objectlist_state" title="{{ 'FE_PENDING' | i18n }}">
+										<img static-src="icons/queued.png" class="f_icon24"/>
+									</div>
+									<div ng-switch-when="failed" class="f_circle f_icon24 orange ws_objectlist_state" title="{{ 'FE_ERROR' | i18n }}">
+										<img static-src="icons/im/alerts/warning.png" class="f_icon24"/>
+									</div>
+								</td>
+								<!-- Creation date -->
+								<td class="hidden-xs" ng-if="columnconfig.creationDate" ng-click="changeSelection(object)">{{(object._creationDate || object._creationTime) | date}} </td>
+								<!-- Global X -->
+								<td class="hidden-sm hidden-xs" ng-if="columnconfig.position" ng-click="changeSelection(object)">{{object.getGlobalX() | unit}} </td>
+								<!-- Global Y -->
+								<td class="hidden-sm hidden-xs" ng-if="columnconfig.position" ng-click="changeSelection(object)">{{object.getGlobalY() | unit}} </td>
+								<!-- Global Z -->
+								<td class="hidden-sm hidden-xs" ng-if="columnconfig.position" ng-click="changeSelection(object)">{{object.getGlobalZ() | unit}} </td>
+								<!-- Category -->
+								<td ng-if="columnconfig.category" ng-click="changeSelection(object)"><category text="object._category"/></td>
+								<!-- Tags -->
+								<td class="hidden-xs" ng-if="columnconfig.tags" style="max-width:400px" ng-click="changeSelection(object)">
+									<span ng-repeat="tag in object._tags" style="margin-right:5px;" class="f_label">{{tag}}</span>
+								</td>
+								<!-- View -->
+								<td ng-if="columnconfig.view && (!task)" style="width:90px; min-width: 90px; padding-top: 8px !important;">
+									<div class="btn-group">
+										<button ng-if="canShowInPano[object._UUID] && (object._class === 'Annotation' || object._class === 'Measurement')" style="z-index:1;" class="btn btn-default btn-small f_btnDropdown" ng-click="focusObject(object, 'panorama')" title="{{ 'C_PANORAMAVIEW' | i18n }}">
+											<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+										</button>
+										<button ng-if="canShowInPano[object._UUID] && object._class === 'Scan'" style="z-index:1;" class="btn btn-default btn-small f_btnDropdown" ng-click="showObjects([object], 'panorama')" title="{{ 'C_PANORAMAVIEW' | i18n }}">
+											<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+										</button>
+										<button ng-if="!canShowInPano[object._UUID] && canShowIn3d[object._UUID]" style="z-index:1;" class="btn btn-default btn-small f_btnDropdown" ng-click="focusObject(object, '3d')" title="{{ 'FE_3D_VIEW' | i18n }}">
+											<img style="min-width: 32px" class="f_icon32" static-src="icons/3d-small.png">
+										</button>
+										<button ng-if="!canShowInPano[object._UUID] && !canShowIn3d[object._UUID] && canShowInMap[object._UUID]" style="z-index:1;" class="btn btn-default btn-small f_btnDropdown" ng-click="focusObject(object, 'map')" title="{{ 'C_OVERVIEWMAP' | i18n }}">
+											<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/overviewmap/main.png">
+										</button>
+										<button ng-if="object._class == 'Orthophoto' || (!canShowInPano[object._UUID] && !canShowIn3d[object._UUID] && !canShowInMap[object._UUID])" style="z-index:1;" class="btn btn-default btn-small f_btnDropdown" ng-click="showObjects([object], 'properties')" title="{{ 'TC_SHOW_PROPERTIES' | i18n }}">
+											<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/showproperties.png">
+										</button>
+										<button style="z-index:1;" class="btn btn-default btn-small f_btnDropdown dropdown-toggle" data-toggle="dropdown">
+											<span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu dropdown-menu-right f_dropdownMenu">
+											<li ng-if="(object._class === 'Annotation' || object._class === 'Measurement' || object._class === 'Orthophoto') && canShowInPano[object._UUID]" ng-click="focusObject(object, 'panorama')">
+												<a href="" class="f_cursorPointer">
+													<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+													{{ 'C_PANORAMAVIEW' | i18n }}
+												</a>
+											</li>
+											<li ng-if="object._class === 'Scan'" ng-click="showObjects([object], 'panorama')">
+												<a href="" class="f_cursorPointer">
+													<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+													{{ 'C_PANORAMAVIEW' | i18n }}
+												</a>
+											</li>
+											<li ng-if="(object._class === 'Annotation' || object._class === 'Measurement' || object._class === 'Orthophoto') && canShowIn3d[object._UUID]" ng-click="focusObject(object, '3d')">
+												<a href="" class="f_cursorPointer">
+													<img style="min-width: 32px" class="f_icon32" static-src="icons/3d-small.png">
+													{{ 'FE_3D_VIEW' | i18n }}
+												</a>
+											</li>
+											<li ng-if="object._class === 'Scan' && canShowIn3d[object._UUID]" ng-click="showObjects([object], '3d')">
+												<a href="" class="f_cursorPointer">
+													<img style="min-width: 32px" class="f_icon32" static-src="icons/3d-small.png">
+													{{ 'FE_3D_VIEW' | i18n }}
+												</a>
+											</li>
+											<li ng-if="canShowInMap[object._UUID]" ng-click="focusObject(object, 'map')">
+												<a href="" class="f_cursorPointer">
+													<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/overviewmap/main.png">
+													{{ 'C_OVERVIEWMAP' | i18n }}
+												</a>
+											</li>
+											<li ng-click="showObjects([object], 'properties')">
+												<a href="" class="f_cursorPointer">
+													<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/showproperties.png">
+													{{ 'TC_SHOW_PROPERTIES' | i18n }}
+												</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div ng-show="page.limit < filteredlength" class="text-center" style="height:30px;">
+					<pagination length="filteredlength" index="page.index" limit="page.limit"/>
+				</div>
+			</collapsibleblock>
+        <errorbox promisefail error="error"></errorbox>
+    </div>
+	<imagegallery id="{{ galleryid }}"></imagegallery>
+</div>

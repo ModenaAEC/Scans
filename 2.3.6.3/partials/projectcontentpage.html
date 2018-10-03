@@ -1,0 +1,19 @@
+<div class="f_page object f_scrollPage" ng-show="visible">
+	<div promise="getProject()" then="project" fail="error" class="f_text f_centeredContainer projectsGlobalWrapper projectSelector">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top: 20px;">
+			{{"FE_LOADING" | i18n}}
+		</div>
+		<div ng-show="!error" class="f_centeredContainer f_fullWidth" style="margin-bottom:15px;margin-top:15px;">
+			<div ng-show="page.hasObjects === true">
+				<scanlist        id="sl1" auto="ps1,pd1" caption="{{'C_SCANS' | i18n}}"         collapsed="false"></scanlist>
+				<annotationlist  id="al1" auto="ps1,pd1" caption="{{'FE_ANNOTATIONS' | i18n}}"  collapsed="false"></annotationlist>
+				<measurementlist id="ml1" auto="ps1,pd1" caption="{{'FE_MEASUREMENTS' | i18n}}" collapsed="false"></measurementlist>
+				<orthophotolist  id="ol1" auto="ps1,pd1" caption="{{'FE_ORTHOPHOTOS' | i18n}}"  collapsed="false"></orthophotolist>
+			</div>
+			<alert type="info" ng-show="page.hasObjects === false" class="f_textAlignC">
+				<span class="f_textML">{{'FE_NO_OBJECTS' | i18n}}</span>
+			</alert>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

@@ -1,0 +1,198 @@
+<div class="ws_headerBar" style="overflow:visible; z-index:1200;">
+    <div style="overflow:visible; position: absolute; top:0px; left:0px; right:0px; bottom:0px;">
+        <img class="hidden-xs ws_webshareLogo" static-src="assets/ws_logo_h29_white_gray.png" ng-style="{cursor: linkToMainPage ? 'pointer' : 'inherit'}"
+             ng-click="linkToMainPage ? selectProjectSelector() : void(0)"
+             title="{{'FE_BACKTO_PROJECTS'|i18n}}"/>
+        <datafilter id="df" ng-show="panel === 'default' && (category === 'overviewmap' || category === 'panoramaview' || category === 'object')" style="overflow:visible;"/>
+		<span ng-show="projectName && panel === 'default'" class="hidden-xs f_textML ws_caption" style="padding-left: 15px">{{ 'FE_PROJECT' | i18n }}:</span>
+		<span ng-show="projectName && panel === 'default'" class="hidden-custom f_textML ws_caption" style="padding-left: 3px">{{ projectName }}</span>
+		<div class="btn-group ws_toolBar">
+			<a href="http://www.faro.com" target="_blank" class="hidden-custom ws_faroLogo">
+				<img static-src="assets/faro_h18.png" title="http://www.faro.com"/>
+			</a>
+			<div class="btn-group" ng-class="{open:menuState.language}">
+				<button id="languagepicker"
+						ng-click="toggleMenu('language')"
+						class="dropdown btn headerbarBtn"
+						ng-class="{'btn-info':menuState.language, f_btnDark:!menuState.language}"
+						title="{{'FE_LANGUAGE'|i18n}}">
+
+					<img class="f_icon24" static-src="icons/flags/24/{{activeLanguage().icon}}"/>
+				</button>
+				<ul ng-if="menuState.language"
+					class="dropdown-menu f_dropdownMenu f_textM ws_languageMenu"
+					ng-class="{'dropdown-menu-right': !showLoginMenu || !showTaskpanelBtn}">
+					<li>
+						<img class="f_icon32" style="margin-left:10px;" static-src="icons/flags/32/{{activeLanguage().icon}}"/>
+						<p class="f_textInline  f_textM" style="margin-right:20px;margin-top:1px;">{{activeLanguage().caption}}</p>
+					</li>
+					<li class="divider"></li>
+					<li class="f_dropdownMenuItem" ng-repeat="language in availableLanguages()">
+						<a href="" ng-click="setLanguage(language)">
+							<img class="f_icon32" style="margin-left:10px;" static-src="icons/flags/32/{{language.icon}}"/>
+							<p class="f_textInline  f_textM" style="margin-right:20px;margin-top:1px;">{{language.caption}}</p>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<button id="helppicker"
+					class="btn headerbarBtn f_btnDark"
+					ng-click="openInNewTab('http://manuals.faro.com/documentation/for-users')"
+					title="{{'C_HELP'|i18n}}">
+				<img class="f_icon20" static-src="icons/im/headerbar/help_wt.png"/>
+			</button>
+			<div class="btn-group" ng-class="{open:menuState.share}" >
+				<button type="button"
+						class="btn headerbarBtn hidden-custom"
+						ng-class="{'btn-info':menuState.share, f_btnDark: !menuState.share}"
+						ng-click="share()"
+						title="{{'FE_SHARE_VIEW'|i18n}}">
+					<img class="f_icon32" style="margin-top: -3px;" static-src="icons/sharethis.png"/>
+				</button>
+				<div class="dropdown-menu f_dropdownMenu f_text ws_wideMenu" style="background-color: white; padding:5px; width: 250px; left: -215px;">
+					<div ng-if="menuState.share" class="f_borderBox" style="padding:10px; margin:5px;">
+						<p>{{'T_SHARE'|i18n}}:</p>
+						<div class="input-group" style="width: 100%;">
+							<div class="input-group-addon" style="padding:0;" title="{{'T_SHARE'|i18n}}">
+								<img class="f_icon32" static-src="icons/share.png"/>
+							</div>
+							<input type="text" onClick="this.setSelectionRange(0, this.value.length);" ng-model="currenturl" class="form-control" style=" font-size:11px !important;">
+							<div class="input-group-addon" style="padding: 0;">
+								<a href="mailto:%20?subject=WebShare Cloud Link&body={{emailurl}}">
+									<button class="btn btn-default" style="margin: 0;height: 32px;border: 0;padding-top: 0;" title="{{'FE_SHARE_BY_MAIL' | i18n}}">
+										<img class="f_icon32" static-src="icons/email.png"/>
+									</button>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div ng-if="menuState.share" class="f_borderBox" style=" padding:10px; margin:5px;">
+						<p>{{'FE_EMBED'|i18n}}:</p>
+						<div class="input-group f_inputGroup" style='width: 100%;'>
+							<div class="input-group-addon required f_validate" ng-class="{'ng-valid':iframe.width && iframe.height}" style="padding:0;" title="{{'FE_EMBED'|i18n}}">
+								<img class="f_icon32" static-src="icons/embed.png"/>
+							</div>
+							<input type="text" onClick="this.setSelectionRange(0, this.value.length);" ng-model="iframe.code" class="form-control" style=" font-size:11px !important;">
+						</div>
+						<form class="css-form" novalidate>
+							<div class="row" style="margin-top:5px;">
+								<div class="col-xs-6" style="padding-right:2px;">
+									<div class="input-group f_inputGroup">
+										<div class="input-group-addon required f_validate" ng-class="{'ng-valid':iframe.width}" style="padding:0;" title="{{'FE_EMBED'|i18n}}">
+											<img class="f_icon32" static-src="icons/width.png"/>
+										</div>
+										<input type="number"
+											   min="400"
+											   max="3000"
+											   ng-model="iframe.width"
+											   ng-change="updateShareUrl()"
+											   class="form-control f_validate"
+											   style="font-size:11px !important;"
+											   required
+											   integer>
+									</div>
+								</div>
+								<div class="col-xs-6" style="padding-left:2px;">
+									<div class="input-group f_inputGroup">
+										<div class="input-group-addon required f_validate" ng-class="{'ng-valid':iframe.height}" style="padding:0;" title="{{'FE_EMBED'|i18n}}">
+											<img class="f_icon32" static-src="icons/height.png"/>
+										</div>
+										<input type="number" min="250" max="3000"
+											   ng-model="iframe.height"
+											   ng-change="updateShareUrl()"
+											   class="form-control f_validate"
+											   style=" font-size:11px !important;"
+											   required
+											   integer>
+									</div>
+								</div>
+							</div>
+						</form>
+						<button class="btn btn-default pull-right"
+								style="margin-top:20px;"
+								ng-click="closeMenus()" title="{{'FE_CLOSE'|i18n}}">
+							{{'FE_CLOSE'|i18n}}
+						</button>
+					</div>
+				</div>
+				<button type="button"
+						ng-if="numJobs.running + numJobs.pending > 0"
+						class="btn headerbarBtn f_btnDark"
+						style="margin-left: -1px;";
+						ng-click="openJobQueue()"
+						title="{{'FE_JOBS_EXIST_IN_QUEUE' | i18n}}">
+					<spinner ng-if="numJobs.running > 0" class="f_spinSmall" style="margin-left:3px;">
+						<img ng-if="numJobs.pending > 0" static-src="icons/queued_white.png" class="f_icon24" style="opacity:0.2;"/>
+					</spinner>
+					<img ng-if="numJobs.running === 0 && numJobs.pending > 0" static-src="icons/queued_white.png" class="f_icon24"/>
+				</button>
+				<div class="btn-group" ng-show="showLoginMenu" ng-class="{open:menuState.login}" style="margin-left: -1px;">
+					<button ng-switch on="username"
+							ng-click="toggleMenu('login')"
+							class="dropdown btn headerbarBtn"
+							ng-class="{'btn-info':menuState.login, f_btnDark:!menuState.login}"
+							title="{{'FE_SHOW_MENU'|i18n}}">
+						<img class="f_icon32" ng-switch-when="undefined" style="margin-top: -4px;" static-src="icons/im/headerbar/user_anonymous.png"/>
+						<div ng-switch-default class="f_textInline">
+							<img ng-show="!menuState.login" class="f_icon32" style="margin-top: -4px;" static-src="icons/im/headerbar/user_known_blue.png"/>
+							<img ng-show="menuState.login" class="f_icon32" style="margin-top: -4px;" static-src="icons/im/headerbar/user_known_white.png"/>
+						</div>
+					</button>
+					<ul class="dropdown-menu f_dropdownMenu f_textM ws_wideMenu">
+						<li ng-switch on="username">
+							<div ng-switch-when="undefined" href="" class="f_dropdownMenuItem">
+								<img class="f_icon32" static-src="icons/im/headerbar/user_anonymous_black.png"/>
+								<p class="f_textInline  f_textM"
+								   style="margin-top:1px;">{{'FE_LOGINSTATE_NO'|i18n}}</p>
+							</div>
+							<div ng-switch-default href="" class="f_dropdownMenuItem">
+								<img class="f_icon32"
+									 static-src="icons/im/headerbar/user_known_black.png"/>
+								<p class="f_textInline  f_textM"
+								   style="margin-top:1px;">{{username}}</p>
+							</div>
+						</li>
+						<li class="divider"></li>
+						<li ng-click="toggleLoginState()">
+							<a href="" class="f_dropdownMenuItem">
+								<img class="f_icon32" static-src="icons/im/headerbar/{{loginState.toLowerCase()}}.png"/>
+								<div ng-switch on="loginState" class="f_textInline  f_textM">
+									<p ng-switch-when="Logout" class="f_textInline  f_textM">
+										{{'FE_LOGOUT'|i18n}}
+									</p>
+									<p ng-switch-when="Login" class="f_textInline  f_textM">
+										{{'FE_LOGIN'|i18n}}
+									</p>
+								</div>
+							</a>
+						</li>
+						<li style="cursor:pointer;" ng-show="username==undefined && userDirectory === 'stormpath'" ng-click="createAccount()">
+							<a href="" class="f_dropdownMenuItem">
+								<img class="f_icon32" static-src="icons/im/taskbar/users/adduser.png"/>
+								{{'FE_CREATE_ACCOUNT'|i18n}}
+							</a>
+						</li>
+						<li style="cursor:pointer;" ng-click="toggleTaskPanel()" ng-show="hasProjectManagerorDomainAdminRights">
+							<a href="" class="f_dropdownMenuItem">
+								<img class="f_icon32" static-src="icons/im/headerbar/admin.png"/>
+								<div ng-switch on="panel" class="f_textInline">
+									<p ng-switch-when="default" class="f_textInline">{{'FE_SWITCHTO_ADMIN'|i18n}}</p>
+									<p ng-switch-when="workbench" class="f_textInline">{{'FE_SWITCHTO_ADMIN'|i18n}}</p>
+									<p ng-switch-when="admin" class="f_textInline">{{'FE_SWITCHTO_USER'|i18n}}</p>
+								</div>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<button ng-show="showTaskpanelBtn" type="button"
+						title="{{setToolTipTaskPanel(taskpanelCollapsed)}}"
+						class="btn headerbarBtn f_btnDark"
+						ng-click="toggleMaximizePage()"
+						style="border-top-right-radius: 0;border-bottom-right-radius: 0;">
+					<img ng-show="!taskpanelCollapsed" class="f_icon32" style="margin-top: -3px;" static-src="icons/menu_blue.png"/>
+					<img ng-show="taskpanelCollapsed" class="f_icon32" style="margin-top: -3px;" static-src="icons/menu_white.png"/>
+				</button>
+			</div>
+		</div>
+    </div>
+</div>

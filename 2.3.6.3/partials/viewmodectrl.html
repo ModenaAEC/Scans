@@ -1,0 +1,44 @@
+<div class="ws_viewModeCtrl">
+	<!-- button with optional drop-down caret -->
+	<div class="btn-group" ng-show="!config.menu">
+		<button ng-disabled="viewModeTransition || !hasAlternative()" 
+				class="btn btn-default f_actionBarBtn"
+				ng-class="{ 'btn-info': is3d(), 'f_actionBarSmallHeight': small }"
+				ng-click="toggle()"
+				title="{{ toggleTitle() | i18n }}">
+			<img ng-class="{ f_actionBarIcon: !small, f_icon24: small }" static-src="icons/3d.png" />
+		</button>
+		<div class="btn-group" ng-if="webGLEnabled && pointClouds.length > 1">
+			<button ng-disabled="viewModeTransition"
+				class="btn btn-default dropdown-toggle f_actionBarBtn" 
+				ng-class="{ 'f_actionBarSmallHeight': small }"
+				ng-click="config.menu = !config.menu">
+				<span class="caret"></span>
+			</button>
+		</div>
+	</div>
+	<!-- selection menu -->
+	<div class="btn-group-vertical" ng-show="config.menu">
+		<button ng-if="hasPano" 
+				ng-click="config.menu = false; pick('pano');" 
+				class="btn btn-default f_actionBarChoice"
+				ng-class="{ 'btn-info': viewMode === ViewMode.PANO }"
+				style="z-index: 0"
+				title="{{pc._displayName}} ({{'FE_CREATION_TIME' | i18n}}: {{pc._creationTime}})">
+			<img ng-class="{ f_actionBarIcon: !small, f_icon24: small }" static-src="icons/im/taskbar/panoramaview/main.png" />
+			<span class="f_textML f_alignVerticalMiddle">{{ 'C_PANORAMAVIEW' | i18n }}</span>
+		</button>
+		<button ng-repeat="pc in pointClouds" 
+				ng-click="config.menu = false; pick(pc);" 
+				class="btn btn-default f_actionBarChoice"
+				ng-class="{ 'btn-info': currentRoot && currentRoot._UUID === pc._UUID }"
+				style="z-index: 0"
+				title="{{pc._displayName}} ({{'FE_CREATION_TIME' | i18n}}: {{pc._creationTime}})">
+			<img ng-class="{ f_actionBarIcon: !small, f_icon24: small }" static-src="icons/3d.png" />
+			<span class="f_textML f_alignVerticalMiddle">{{ pc._displayName }}</span>
+		</button>
+	</div>
+	<button ng-click="config.menu = false;" ng-show="config.menu" class="btn btn-default f_btnDark ws_closeButton" title="{{ 'FE_CLOSE' | i18n }}">
+		<img class="f_icon24" static-src="icons/remove-white.png">
+	</button>
+</div>

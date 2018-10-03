@@ -1,0 +1,145 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+    <div promise="getPromise()" then="page.objects" fail="error" defaultvalue="[]" class="f_centeredContainer projectsGlobalWrapper f_borderBox" style="-webkit-overflow-scrolling: touch;">
+        <div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+        <div promisethen ng-switch="page.objects.length > 0">
+            <div ng-switch-default class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_NO_OBJECTS'|i18n}}</div>
+            <div ng-switch-when="true" style="margin-top:20px;">
+                <div class="header">
+                    <form class="form-search f_text">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-7"></div>
+                                <div class="col-md-5">
+                                    <div class="input-group" style="margin-right: -46px;">
+                                        <div class="input-group-addon f_textML"
+                                             ng-class="{ws_filterActive: filteredlength != page.objects.length}">
+                                            ({{ filteredlength }}/{{ page.objects.length}})
+                                        </div>
+                                        <input type="text" placeholder="{{'FE_FIND'|i18n}}..." class="form-control search-query" ng-model="page.query" ng-change="page.index = 0">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" ng-click="page.query = ''; page.index = 0"
+                                                    ng-class="{ws_filterActive: filteredlength != page.objects.length}"
+                                                    style="margin-right: 30px; margin-left: -1px; border-bottom-left-radius:0; border-top-left-radius:0;"
+                                                    title="{{'FE_RESET_FILTER'|i18n}}">
+                                                <img class="f_icon16" static-src="icons/clear.png"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="f_textSM" ng-show="with == 'roles'">
+                    <img class="f_icon32" static-src="icons/im/taskbar/roles/domainadministrator.png"/>: {{"FE_DOMAIN_ADMIN" | i18n}}
+                    <img class="f_icon32" static-src="icons/im/taskbar/roles/projectmanager.png"/>: {{"FE_PROJECT_MANAGER" | i18n}}
+                    <img class="f_icon32" static-src="icons/im/taskbar/roles/uploader.png"/>: {{"FE_UPLOADER" | i18n}}
+                    <img class="f_icon32" static-src="icons/im/taskbar/roles/user.png"/>: {{"FE_USER" | i18n}}
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="f_centeredContainer table table-hover table-striped f_textM">
+                    <!-- table for list of objects-->
+                    <thead>	<!--head row-->
+                        <th ng-if="task" style="min-width: 155px;">
+                            <div class="btn-group">
+                                <button ng-disabled="!selection" class="btn btn-default btn-small">{{"FE_SELECT" | i18n}}</button>
+                                <button ng-disabled="!selection" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu f_dropdownMenu">
+                                    <li ng-click="changeSelectionAll('all')">
+                                        <a class="f_dropdownMenuItem" href="">
+                                            {{'FE_ALL' | i18n}} ({{ filteredlength }})
+                                        </a>
+                                    </li>
+                                    <li ng-click="changeSelectionAll('visible')">
+                                        <a class="f_dropdownMenuItem" href="">
+                                            {{'FE_ALLONPAGE' | i18n}} ({{ Math.min(filteredlength, page.limit)}})
+                                        </a>
+                                    </li>
+                                    <li ng-click="changeSelectionAll('none')">
+                                        <a class="f_dropdownMenuItem" href="">
+                                            {{'FE_NONE' | i18n}}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>
+                        <th class="hidden-xs" >
+                            <a class="f_link link" href="" ng-click="setPredicate('_firstname', 'FE_FIRSTNAME')">{{'FE_FIRSTNAME' | i18n}}</a>
+                        </th>
+                        <th class="hidden-xs" >
+                            <a class="f_link link" href="" ng-click="setPredicate('_lastname', 'FE_LASTNAME')">{{'FE_LASTNAME' | i18n}}</a>
+                        </th>
+                        <th>
+                            <a class="f_link link" href="" ng-click="setPredicate('_username', 'FE_USERNAME')">{{'FE_USERNAME' | i18n}}</a>
+                        </th>
+                        <th ng-show="with == 'roles'" >
+                            <a href="" ng-click="setPredicate('orderByDomainAdmin', '')">
+                                <img class="f_icon40" static-src="icons/im/taskbar/roles/domainadministrator.png"/>
+                            </a>
+                        </th>
+                        <th ng-show="with == 'roles'" >
+                            <a href="" ng-click="setPredicate('orderByProjectAdmin', '')">
+                                <img class="f_icon40" static-src="icons/im/taskbar/roles/projectmanager.png"/>
+                            </a>
+                        </th>
+                        <th ng-show="with == 'roles'" >
+                            <a href="" ng-click="setPredicate('orderByUploader', '')">
+                                <img class="f_icon40" static-src="icons/im/taskbar/roles/uploader.png"/>
+                            </a>
+                        </th>
+                        <th ng-show="with == 'roles'" >
+                            <a href="" ng-click="setPredicate('orderByUser', '')">
+                                <img class="f_icon40" static-src="icons/im/taskbar/roles/user.png"/>
+                            </a>
+                        </th>
+                        <th ng-show="with == 'groups'">{{"FE_GROUPS" | i18n}}</th>
+                        <th style="max-width:80px" ng-show="!task">{{"FE_DETAILS" | i18n}}</th>
+                    </thead>
+                    <!-- repeat for each entry in array | filter entry in search field | sort names by page.predicate and page.reverse	-->
+                    <tr ng-repeat="user in page.objects | userfilter:page.query | orderBy:globalOrder:page.reverse | paginate:page.index:page.limit" ><!--row -->
+                        <td ng-if="task" style="width: 64px !important;" ng-click="changeSelection(user)">
+                            <img ng-show="selection" static-src="icons/im/selected_{{user._selected}}.png"/>
+                            <img ng-show="!selection" static-src="icons/im/selected_grey_{{user._selected}}.png"/>
+                        </td>
+                        <td class="hidden-xs f_breakAll" ng-click="changeSelection(user)">{{user._firstname || placeholdEmpty}} </td>
+                        <td class="hidden-xs f_breakAll" ng-click="changeSelection(user)">{{user._lastname || placeholdEmpty}} </td>
+                        <td class="f_breakAll" ng-click="changeSelection(user)" >{{user._username}} </td>
+                        <td ng-show="with == 'roles'" style="width:64px !important;" ng-click="changeSelection(user)" style="min-width:50px;">
+                            <img class="f_icon40" static-src="icons/im/taskbar/roles/{{roleIcon(user, 'DOMAIN_ADMIN')}}.png"/>
+                        </td>
+                        <td ng-show="with == 'roles'" style="width:64px !important;" ng-click="changeSelection(user)" style="min-width:50px;">
+                            <img class="f_icon40" static-src="icons/im/taskbar/roles/{{roleIcon(user, 'PROJECT_MANAGER')}}.png"/>
+                        </td>
+                        <td ng-show="with == 'roles'" style="width:64px !important;" ng-click="changeSelection(user)" style="min-width:50px;">
+                            <img class="f_icon40" static-src="icons/im/taskbar/roles/{{roleIcon(user, 'UPLOADER')}}.png"/>
+                        </td>
+                        <td ng-show="with == 'roles'" style="width:64px !important;" ng-click="changeSelection(user)" style="min-width:50px;">
+                            <img class="f_icon40" static-src="icons/im/taskbar/roles/{{roleIcon(user, 'USER')}}.png"/>
+                        </td>
+                        <td ng-show="with == 'groups'" ng-click="changeSelection(user)">
+                            <ul ng-repeat="group in user._groups"><li>{{group._name}}</li></ul>
+                        </td>
+                        <td style="width:64px !important" ng-show="!task">
+                            <button class="btn btn-default" ng-click="trigger('showObjects', [[user], 'userdetails'])" title="{{'FE_DETAILS' |i18n}}">
+                                <img class="f_icon24" static-src="icons/im/details.png">
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="text-center" style="height:70px; position:relative; z-index:1;">
+                <pagination length="filteredlength" index="page.index" limit="page.limit"/>
+            </div>
+            <div class="f_textSM" ng-show="with == 'roles'">
+                <img class="f_icon32" static-src="icons/im/taskbar/roles/domainadministrator.png"/>: {{"FE_DOMAIN_ADMIN" | i18n}}
+                <img class="f_icon32" static-src="icons/im/taskbar/roles/projectmanager.png"/>: {{"FE_PROJECT_MANAGER" | i18n}}
+                <img class="f_icon32" static-src="icons/im/taskbar/roles/uploader.png"/>: {{"FE_UPLOADER" | i18n}}
+                <img class="f_icon32" static-src="icons/im/taskbar/roles/user.png"/>: {{"FE_USER" | i18n}}
+            </div>
+        </div>
+        <errorbox promisefail error="error"/>
+    </div>
+</div>

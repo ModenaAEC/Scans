@@ -1,0 +1,11 @@
+<div>
+	<p>{{ 'FE_COLOR_PICKER' | i18n }}:</p>
+	<ul>
+		<li ng-repeat="c in colors" ng-class="{'selected': (c === picked)}" ng-click="pick(c)" ng-style="{'background-color': c};"></li>
+	</ul>
+	<p ng-show="showAdvanced">{{ 'FE_COLOR_ADVANCED' | i18n }}:</p>
+	<input id="ws_cpAdvanced" ng-show="showAdvanced" class="ws_cpAdvanced" type="color" ng-value="picked" ng-model="picked" />
+	<p>{{ 'FE_COLOR_INPUT' | i18n }}:</p>
+	<input class="form-control" type="text" ng-model="color" ng-change="changeHex()" ng-class="{'ws_cpInvalid': !isColorValid()}"
+		   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+</div>

@@ -1,0 +1,56 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<div promise="getRoles()" 
+		 then="page.roles" 
+		 fail="error"
+		 defaultvalue="[]"
+		 class="f_text f_centeredContainer projectsGlobalWrapper" 
+		 style="-webkit-overflow-scrolling: touch;">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+		<div promisethen class="f_textM">
+			<div class="row" style="margin-top:20px;">
+				<!-- search field -->
+				<form class="form-search f_alignRight col-md-4">
+					<input type="text" class="form-control search-query" ng-model="page.query" placeholder="{{'FE_FIND_ROLE' | i18n}}...">
+				</form>
+			</div>
+			<br/>
+			<div class="table-responsive">
+				<table class="table table-hover table-striped">
+					<!-- table for list of roles-->
+					<thead>	<!--head row-->
+					<th ng-if="task" style="min-width:150px;">
+					<div class="btn-group">
+						<button ng-disabled="!selection" class="btn btn-default btn-small">{{"FE_SELECT" | i18n}}</button>
+						<button ng-disabled="!selection" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown">
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<!-- dropdown menu links -->
+							<li ng-click="changeSelectionAllRoles(true)"><a class="f_cursorPointer">{{"FE_ALL" | i18n}}</a></li>
+							<li ng-click="changeSelectionAllRoles(false)"><a class="f_cursorPointer">{{"FE_NONE" | i18n}}</a></li>
+						</ul>
+					</div>
+					</th>
+					<th>
+						<a class="f_link link" href="" ng-click="page.predicate='_name'; reverse=!reverse">{{"FE_ROLE" | i18n}}</a>
+					</th>
+					<th>{{"FE_DESCRIPTION" | i18n}} </th>
+					<th>{{"FE_DETAILS" | i18n}}</th>
+					</thead>
+					<tr ng-repeat="role in page.roles | adminfilter:page.query | orderBy:page.predicate='_name':reverse" >
+						<td ng-if="task" ng-click="changeSelection(role)">
+							<img ng-show="selection" static-src="icons/im/selected_{{role._selected}}.png"/>
+							<img ng-show="!selection" static-src="icons/im/selected_grey_{{role._selected}}.png"/>
+						</td>
+						<td style="min-width:215px" ng-click="changeSelection(role)"><img class="f_icon40" static-src="icons/im/taskbar/roles/{{role._name.toLowerCase().replace(' ', '')}}.png"/>{{role._name}}</td>
+					<td ng-click="changeSelection(role)">{{role._description | i18n}}</td>
+						<td style="min-width:100px">
+							<button class="btn btn-default" ng-click="showRoleDetailPage(role)" title="{{'FE_DETAILS' | i18n}}"><img class="f_icon24" static-src="icons/im/details.png"></button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

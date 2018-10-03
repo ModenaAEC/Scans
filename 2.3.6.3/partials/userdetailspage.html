@@ -1,0 +1,65 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<!-- Show details of a selected user -->
+	<div promise="getPromise()"
+		 then="user"
+		 fail="error"
+		 class="f_text f_centeredContainer projectsGlobalWrapper" style="-webkit-overflow-scrolling: touch;">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+		<div promisethen>
+			<div class="f_centeredContainer">
+				<div class="f_box">
+					<div class="row-fluid">
+						<span style="min-width:340px;">
+							<table class="table table-striped">
+								<tr>
+									<th style="vertical-align: middle"><img class="f_icon76" static-src="icons/im/taskbar/users/main.png">{{"FE_DETAILS" | i18n}}</th>
+									<td>
+										<table>
+											<tr>
+												<td style="padding-right: 10px"><p class="f_textM f_textBold">{{"FE_USERNAME" |i18n}}:</p></td>
+												<td><p class="f_textM f_breakAll" title="{{user._username}}">{{user._username}}</p></td>
+											</tr>
+											<tr>
+												<td style="padding-right: 10px"><p class="f_textM f_textBold">{{"FE_FIRSTNAME" |i18n}}:</p></td>
+												<td><p class="f_textM f_breakAll" title="{{user._firstname}}">{{user._firstname || placeholdEmpty}}</p></td>
+											</tr>
+											<tr>
+												<td style="padding-right: 10px"><p class="f_textM f_textBold">{{"FE_MIDDLENAME" |i18n}}:</p></td>
+												<td><p class="f_textM f_breakAll" title="{{user._middlename}}">{{user._middlename || placeholdEmpty}}</p></td>
+											</tr>
+											<tr>
+												<td style="padding-right: 10px"><p class="f_textM f_textBold">{{"FE_LASTNAME" |i18n}}:</p></td>
+												<td><p class="f_textM f_breakAll" title="{{user._lastname}}">{{user._lastname || placeholdEmpty}}</p></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<th style="vertical-align: middle"><img style="text-align:center" class="f_icon76" static-src="icons/im/taskbar/groups/main.png">{{"FE_GROUPS" | i18n}}</th>
+									<td promise="getGroupsPromise()" then="grouplist" fail="errorgroups">
+										<span promiseprogress>{{"FE_LOADING" | i18n}}</span>
+										<ul promisethen style="padding-left: 20px">
+											<li ng-repeat="group in grouplist"><p class="f_textM">{{group._name}}</p></li>
+										</ul>
+										<errorbox promisefail error="errorgroups"></errorbox>
+									</td>
+								</tr>
+								<tr>
+									<th style="vertical-align: middle"><img class="f_icon76" static-src="icons/im/taskbar/roles/main.png">{{"FE_ROLES" | i18n}}</th>
+									<td promise="getRolesPromise()" then="rolelist" fail="errorroles">
+										<span promiseprogress>{{"FE_LOADING" | i18n}}</span>
+										<ul promisethen style="padding-left: 20px">
+											<li ng-repeat="role in rolelist"><p class="f_textM "><img class="f_icon32" static-src="icons/im/taskbar/roles/{{role._name.toLowerCase().replace(' ', '')}}.png"/>{{role._name}}</p></li>
+										</ul>
+										<errorbox promisefail error="errorroles"></errorbox>
+									</td>
+								</tr>
+							</table>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

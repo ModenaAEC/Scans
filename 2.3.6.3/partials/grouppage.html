@@ -1,0 +1,73 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+    <div promise="getGroups()"
+		 then="page.groups"
+		 fail="error"
+		 defaultvalue="[]"
+         class="f_text f_centeredContainer projectsGlobalWrapper f_borderBox"
+         style="-webkit-overflow-scrolling: touch;">
+        <div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+        <div promisethen class="f_textM">
+            <div class="header">
+                <div class="row">
+                    <!-- search field -->
+                    <form class="form-search f_alignRight col-md-5">
+                        <input type="text" class="form-control search-query" ng-model="page.query" placeholder="{{'FE_FIND_GROUP' | i18n}}...">
+                    </form>
+                </div>
+            </div>
+            <br/>
+            <div ng-show="page.groups.length == 0" style="width: 100%; height:400px;" class="f_centeredContainer projectsGlobalWrapper f_textL">
+                <div static-back-img="icons/im/taskbar/groups/main256x256.png"
+                     style="background-repeat:no-repeat;
+                            background-position:center center;
+                            background-size: 30%;
+                            height: 80%;
+                            width: 100%;
+                            margin-top:10px;">
+                </div>
+                <div>
+                    <p align="center">{{"FE_NO_GROUP" | i18n}}</p>
+                </div>
+            </div>
+            <div class="f_settingWrapper">
+                <div class="table-responsive">
+                    <table ng-show="page.groups.length" class="table table-hover table-striped">
+                        <!-- table for list of groups-->
+                        <thead>	<!--head row-->
+                            <th ng-if="task" style="min-width:150px;">
+                                <div class="btn-group">
+                                    <button ng-disabled="!selection" class="btn btn-default btn-small">{{"FE_SELECT" | i18n}}</button>
+                                    <button ng-disabled="!selection" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <!-- dropdown menu links -->
+                                        <li ng-click="changeSelectionAllGroups(true)"><a class="f_cursorPointer">{{"FE_ALL" | i18n}}</a></li>
+                                        <li ng-click="changeSelectionAllGroups(false)"><a class="f_cursorPointer">{{"FE_NONE" | i18n}}</a></li>
+                                    </ul>
+                                </div>
+                            </th>
+                            <th style="min-width:150px">
+                                <a class="f_link link" href="" ng-click="page.predicate='_name'; reverse=!reverse">{{"FE_GROUP_NAME" | i18n}}</a>
+                            </th>
+                            <th>{{"FE_DESCRIPTION" | i18n}} </th>
+                            <th>{{"FE_DETAILS" | i18n}}</th>
+                        </thead>
+                        <tr ng-repeat="group in page.groups | adminfilter:page.query | orderBy:page.predicate:reverse" >
+                            <td ng-if="task" ng-click="changeSelection(group)" >
+                                <img ng-show="selection" static-src="icons/im/selected_{{group._selected}}.png"/>
+                                <img ng-show="!selection" static-src="icons/im/selected_grey_{{group._selected}}.png"/>
+                            </td>
+                            <td ng-click="changeSelection(group)">{{group._name}}</td>
+                            <td ng-click="changeSelection(group)">{{group._description}}</td>
+                            <td style="min-width:100px">
+                                <button class="btn btn-default" ng-click="showGroupDetailPage(group)" title="{{'FE_DETAILS' |i18n}}"><img class="f_icon24" static-src="icons/im/details.png"></button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <errorbox promisefail error="error"/>
+    </div>
+</div>

@@ -1,0 +1,120 @@
+<div class="f_page f_scrollPage" ng-show="visible">
+    <div promise="getPromise()" fail="error" class="f_centeredContainer projectsGlobalWrapper propPage"
+         style="padding-top:5px; padding-bottom:10px;" onselectstart="return false;">
+
+        <div promiseprogress class="f_textML f_textAlignC" style="margin-top: 30px;">
+            {{"FE_LOADING" | i18n}}
+        </div>
+
+        <!-- Body content -->
+        <div promisethen class="f_centeredContainer featuredProjectContainer f_textM ws_amspBody">
+
+            <!-- Map layers -->
+			
+            <collapsibleblock ng-show="0 < mapLayers.length" caption="{{'FE_MAP_LAYERS' | i18n}}" collapsed="false">
+                <div class="f_textM f_centeredContainer f_borderBox ws_amspBlock">
+					<div ng-show="!isDragging" class="f_textBold">
+						<div class="ws_amspHead1">{{'FE_NAME' | i18n}}</div>
+						<div class="ws_amspHead2">{{'FE_OPACITY' | i18n}}</div>
+					</div>
+					
+					<div class="ws_amspRepeat" ng-repeat="layer in mapLayers">
+						<!-- Drop target -->
+						
+						<div id="amsp_dt_{{$index}}"
+							 ng-show="isDropTargetVisible($index)"
+							 class="ws_amspTarget"
+							 ui-on-drop="onDrop($event, $data)"
+							 drop-channel="maplayer">&nbsp;</div>
+						
+						<div ng-show="!isDropTargetVisible($index)" class="ws_amspTargetEmpty">&nbsp;</div>
+						
+						<!-- Name input field -->
+						
+						<input type="text"
+							   class="form-control ws_amspInput"
+							   ng-class="{f_textError: violatingLayers[layer._UUID], f_textBold: isNameChanged(layer) && layer._changes._displayName}"
+							   ng-model="layer._changes._displayName"
+							   ng-source="layer._displayName"
+							   ng-change="onNameChange(layer)"
+							   ondrop="return false;"
+							   ui-on-drop="return false;"
+							   placeholder="{{'FE_ENTER_NAME'|i18n}}"
+							   title="{{'FE_ENTER_NAME'|i18n}}" />
+						
+						<!-- Map layer element main body -->
+						
+						<div class="ws_amspLayer"
+							 ng-class="{ws_flashPick: $index === flashed}"
+							 ui-draggable="true" 
+							 drag="$index" 
+							 drag-channel="maplayer">
+							
+							<!-- Icon -->
+							
+							<img ng-show="layer._type === 'LayoutPlan'" 
+								 class="f_icon32 ws_amspIcon"
+								 static-src="icons/groundview.png"
+								 title="{{'FE_LAYOUT_PLAN' | i18n}}" />
+							<img ng-show="layer._type !== 'LayoutPlan'" 
+								 class="f_icon32 ws_amspIcon"
+								 static-src="icons/im/taskbar/objectproperties/scan.png"
+								 title="{{'FE_SCAN_DATA' | i18n}}" />
+							
+							<!-- Placeholder for the name input field -->
+							
+							<div class="ws_amspPlaceholder">&nbsp;</div>
+							
+							<!-- Opacity slider -->
+							
+							<div class="ws_amspOpacityText">
+								{{layer._changes._opacity}}%
+							</div>
+							
+							<div class="ws_amspOpacitySlider">
+								<range-slider
+									floor="0"
+									ceiling="100"
+									step="10"
+									highlight="left"
+									value="layer._changes._opacity"
+									disable="false"
+									slider-id="amsp_sl_{{$index}}"
+									hidevalue="true" />
+							</div>
+							
+							<!-- Up/Down buttons -->
+							
+							<div class="btn-group-vertical ws_amspMove" ng-show="1 < mapLayers.length">
+								<button class="btn btn-default btn-small" style="border-top-style: none;" 
+										ng-disabled="$index === 0"
+										ng-click="setOrder($index, $index - 1)"
+										title="{{'FE_MOVE_UP' | i18n}}">
+									<img class="f_icon24" static-src="icons/up.png" />
+								</button>
+								<button class="btn btn-default btn-small" style="border-bottom-style: none;" 
+										ng-disabled="$index === mapLayers.length - 1"
+										ng-click="setOrder($index, $index + 1)" 
+										title="{{'FE_MOVE_DOWN' | i18n}}">
+									<img class="f_icon24" static-src="icons/down.png" />
+								</button>
+							</div>
+						</div>
+						
+						<!-- Additional drop target at the end -->
+						
+						<div id="amsp_dt_{{$index + 1}}"
+							 ng-show="$index === mapLayers.length - 1 && isDropTargetVisible($index + 1)"
+							 class="ws_amspTarget"
+							 ui-on-drop="onDrop($event, $data)"
+							 drop-channel="maplayer">&nbsp;</div>
+						
+						<div ng-show="$index === mapLayers.length - 1 && !isDropTargetVisible($index + 1)" class="ws_amspTargetEmpty">&nbsp;</div>
+					</div>
+				</div>
+            </collapsibleblock>
+        </div>
+		
+        <errorbox promisefail error="error"></errorbox>
+    </div>
+</div>

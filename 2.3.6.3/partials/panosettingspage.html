@@ -1,0 +1,244 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+    <div class="f_text f_centeredContainer projectsGlobalWrapper propPage" style="padding-top:5px; padding-bottom:10px;" onselectstart="return false;">
+		<a name="Top"></a>
+		<!--Body content-->
+		<div class="f_centeredContainer featuredProjectContainer" style="margin-bottom:15px;margin-top:15px;">
+			
+			<!-- Panorama Image -->
+			
+			<collapsibleblock caption="{{'FE_PANO_SET_IMAGE'|i18n}}" collapsed="false">
+				<div class="f_textM f_settingWrapper f_borderBox">
+					
+					<!-- Resolution -->
+					
+					<legend class ="f_textML" style="line-height:20px;margin-bottom:10px;">{{'FE_PANO_SET_PREF_RES'|i18n}}</legend>
+					<div class="radio" style="margin-bottom:15px;" ng-repeat="resolution in availResolutions" title="{{(resolution._width * resolution._height/1000000).toPrecision(2)}} {{'FE_MEGAPIXEL'|i18n}}">
+						<label ng-disabled="$index > maxResolution">
+							<img class="f_textInline f_icon20" static-src="icons/im/panoramaviewproperties/res_{{resolution._id}}.png"
+								 ng-disabled="$index > maxResolution" />
+							<input type="radio" class="large" ng-model="settings._changes._imageResolutionIndex" value="{{$index}}" ng-change="change()"
+								   ng-disabled="$index > maxResolution">
+							{{resolution.getName() | i18n }} ({{(resolution._width * resolution._height/1000000).toPrecision(2)}} {{'FE_MPIXEL'|i18n}}{{resolution._width == 8192 ? ', ' : ''}}{{(resolution._width == 8192 ? 'FE_HD' : '')|i18n}})
+						</label>
+					</div>
+					<alert type="warning" ng-if="!haveAllRes">
+						{{'FE_PANO_SET_NO_HIGHRES'|i18n}}.
+					</alert>
+					
+					<!-- Color Mode -->
+					
+					<legend class ="f_textML" style="line-height:20px;margin-bottom:10px;margin-top:20px;">{{'FE_PANO_SET_PREF_CMODE'|i18n}}</legend>
+					<div class="radio" style="margin-bottom:15px;" ng-repeat="colorMode in availColorModes">
+						<label>
+							<img class="f_textInline f_icon20" static-src="icons/{{colorMode._id}}.png" />
+							<input type="radio" class="large" ng-model="settings._changes._colorMode" value="{{colorMode._id}}" ng-change="change()">
+							{{colorMode.getName() | i18n}}
+						</label>
+
+						<table ng-if="colorMode._id==='blend'" border = 0 style="white-space:nowrap;margin-bottom:20px; margin-top:10px; width:100%">
+							<tr>
+								<td style="padding-right:10px; width:30px;">
+									<button class="btn btn-default f_btnH30 f_alignLeftNoMargin" style="padding:0px 10px 0px" ng-click="changeBlendFactor(0.1)" title="{{'FE_INC_COLOR'|i18n}}">
+										<img class="f_icon16" static-src="icons/im/panoramaviewproperties/plus.png">
+										{{'FE_COLOR'|i18n}}
+										<img class="f_icon16" static-src="icons/color.png">
+									</button>
+								</td>
+								<td>
+									<div class="progress" style="margin-bottom:0px;">
+										<div class="progress-bar progress-bar-warning" style="color: black;" role="progressbar" aria-valuenow="{{settings._changes._blendFactor}}" aria-valuemin="0" aria-valuemax="1" ng-style="{width: settings._changes._blendFactor*100 +'%'}">
+											{{settings._changes._blendFactor*100}}%
+										</div>
+										<div class="progress-bar" style="color: black; background-color: rgb(215, 215, 215)" role="progressbar" aria-valuenow="{{1-settings._changes._blendFactor}}" aria-valuemin="0" aria-valuemax="1" ng-style="{width: (100-(settings._changes._blendFactor*100)) +'%'}">
+											{{100-(settings._changes._blendFactor*100)}}%
+										</div>
+									</div>
+								</td>
+								<td style="padding-left:10px; width:30px;">
+
+									<button class="btn btn-default f_btnH30 f_alignRightNoMargin" style="padding:0px 10px 0px" ng-click="changeBlendFactor(-0.1)" title="{{'FE_INC_GRAY'|i18n}}">
+										<img class="f_icon16" static-src="icons/im/panoramaviewproperties/plus.png">
+										{{'FE_GRAY'|i18n}}
+										<img class="f_icon16" static-src="icons/gray.png">
+									</button>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</collapsibleblock>
+			
+			<!-- 3D View Detail Level -->
+			
+			<collapsibleblock caption="{{'FE_3D_DETAILS'|i18n}}" collapsed="false">
+				<div class="f_textM f_settingWrapper f_borderBox">
+					<alert type="warning" ng-show="!webGlAvailable || !settings._enableWebGl">
+						<div>{{'FE_NEED_WEBGL_FOR_3D'|i18n}}</div>
+					</alert>
+
+					{{'FE_3D_DETAILS_DESC'|i18n}}
+
+					<div class="checkbox" style="margin-bottom:20px;">
+						<label>
+							<input type="checkbox" class="large" ng-model="details3d.auto" ng-change="change()">
+							{{'FE_AUTOMATIC'|i18n}}
+						</label>
+					</div>
+
+					<div class="radio" style="margin-bottom:15px;" ng-repeat="d in details3dAvail">
+						<label ng-disabled="details3d.auto">
+							<input ng-disabled="details3d.auto" type="radio" class="large f_textInline" ng-model="details3d.value" value="{{d.value}}" ng-change="change()" />{{d.name | i18n}}
+							<span ng-if="!_2GO" style="color: gray;">({{d.descr | i18n}}{{d.examples}})</span>
+							<span ng-if="_2GO">({{(d.resolution * d.resolution / 2 /1000000).toPrecision(2)}} {{'FE_MPIXEL'|i18n}}{{d.resolution == 8192 ? ', ' : ''}}{{(d.resolution == 8192 ? 'FE_HD' : '')|i18n}})</span>
+						</label>
+					</div>
+				</div>
+			</collapsibleblock>
+			
+			<!-- Object Label Icons -->
+			
+			<collapsibleblock caption="{{'FE_LABELICONMODE'|i18n}}" collapsed="false">
+				<div class="f_textM f_settingWrapper f_borderBox">
+					<div class="radio" style="margin-bottom:15px;" ng-repeat="iconMode in availIconModes">
+						<label>
+							<img ng-show="iconMode===availIconModes.Lockstatus" class="f_textInline f_icon20" static-src="icons/lock.png" />
+							<img ng-show="iconMode===availIconModes.Category"class="f_textInline f_icon20" static-src="icons/category.png" />
+							<img ng-show="iconMode===availIconModes.None"class="f_textInline f_icon20" static-src="icons/im/taskbar/roles/none.png" />
+							<input type="radio" class="large f_textInline" ng-model="settings._changes._iconMode" value="{{iconMode}}" ng-change="change()">
+							{{iconModeNames[iconMode] | i18n}}
+						</label>
+					</div>
+				</div>
+			</collapsibleblock>
+			
+			<!-- Movement Speed -->
+			
+			<collapsibleblock caption="{{'FE_PANO_SET_MOVESPEED'|i18n}}" collapsed="false">
+				<div class="f_textM f_settingWrapper f_borderBox">
+					<table border = 0 style="white-space:nowrap;margin-bottom:10px; width:100%">
+						<tr>
+							<td style="padding-right:10px; width:30px;">
+								<button class="btn btn-default f_btnH30 f_btnW30 f_alignRightNoMargin" style="padding:0px 0px 0px" ng-click="changeMovementSpeed(-1)">
+									<img class="f_icon16" static-src="icons/im/panoramaviewproperties/minus.png">
+								</button>
+							</td>
+							<td>
+								<div class="progress" style="margin-bottom:0px;">
+									<div class="progress-bar" role="progressbar" aria-valuenow="{{settings._changes._movementSpeed}}" aria-valuemin="{{speedMin}}" aria-valuemax="{{speedMax}}" ng-style="{width: (100/speedMax)*settings._changes._movementSpeed +'%'}">
+										{{(100/speedMax)*settings._changes._movementSpeed}}%
+									</div>
+								</div>
+							</td>
+							<td style="padding-left:10px; width:30px;">
+								<button class="btn btn-default f_btnH30 f_btnW30 f_alignLeftNoMargin" style="padding:0px 0px 0px" ng-click="changeMovementSpeed(1)">
+									<img class="f_icon16" static-src="icons/im/panoramaviewproperties/plus.png">
+								</button>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</collapsibleblock>
+
+			<!-- Visibility -->
+			
+			<collapsibleblock caption="{{'FE_PANO_SETTOMGS_OBJ_VIS'|i18n}}" collapsed="false">
+				<div class="f_textM f_settingWrapper f_borderBox">
+					<div ng-repeat="layer in layers" style="margin-bottom: 20px;">
+						<legend class ="f_textML" style="line-height:20px; margin-bottom:10px">
+							{{layer.getName() | i18n}}
+						</legend>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="layer._changes._visible" ng-change="change()">
+								{{'FE_SHOW'|i18n}}
+							</label>
+						</div>
+						<div ng-if="layer._id!='Measurements'" class="container-fluid" style="padding-left:0 !important;">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="checkbox" style="margin-right:15px">
+										<label>
+											<input type="checkbox" class="large" ng-model="layer._changes._visibleDistanceThresEnabled" ng-disabled="!layer._changes._visible" ng-change="change()">
+											{{'FE_PANO_SET_LIMIT_VIS'|i18n}}
+										</label>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<unitedit class="f_textInline" unitclass="unitclass" unit="unit" model="layer._changes._visibleDistanceThres" change="change()"></unitedit>
+								</div>
+							</div>
+						</div>
+						<div ng-if="layer._id === 'Scans'" class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="settings._changes._showScanLabelsInPano" ng-disabled="!layer._changes._visible" ng-change="change()"> {{'FE_SCAN_NAME'|i18n}}
+							</label>
+						</div>
+						<div ng-if="layer._id === 'Orthophoto'" class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="settings._changes._showOrthoVolumes" ng-disabled="!layer._changes._visible" ng-change="change()"> {{'FE_SHOW_VOLUME'|i18n}}
+							</label>
+						</div>
+						<div ng-if="layer._id === 'Annotation'" class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="settings._changes._showPolylines" ng-disabled="!layer._changes._visible" ng-change="change()"> {{'FE_SHOW_AREA'|i18n}}
+							</label>
+						</div>
+					</div>
+				</div>
+			</collapsibleblock>
+
+			<!-- Compass -->
+			
+			<collapsibleblock caption="{{'FE_COMPASS'|i18n}}" collapsed="false">
+				<div class="f_textM f_settingWrapper f_borderBox">
+					<div>
+						<legend class ="f_textML" style="line-height:20px; margin-bottom:10px">
+							{{'FE_PANO_SETTOMGS_OBJ_VIS' | i18n}}
+						</legend>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="settings._changes._showCompass" ng-change="change()">
+								{{'FE_SHOW'|i18n}}
+							</label>
+						</div>
+					</div>
+				</div>
+			</collapsibleblock>
+
+			<!-- Rendering -->
+			
+			<collapsibleblock caption="{{'FE_PANO_SET_RENDERING'|i18n}}" collapsed="false">
+				<div class="f_textM f_settingWrapper f_borderBox">
+					<legend class ="f_textML" style="line-height:20px;margin-bottom:10px">
+						{{'FE_PANO_SET_WEBGL_ACCEL' | i18n}}
+					</legend>
+					<div class="checkbox" ng-show="webGlAvailable">
+						<label>
+							<input type="checkbox" class="large" ng-model="settings._changes._enableWebGl" ng-change="change()">
+							{{'FE_ENABLE'|i18n}}
+						</label>
+					</div>
+					<!-- No WebGL available: Show dummy checkbox without model, always disabled -->
+					<div class="checkbox" ng-show="!webGlAvailable" ng-disabled="true">
+						<input type="checkbox" class="large" ng-disabled="true">{{'FE_ENABLE'|i18n}}
+					</div>
+					<div style="margin-top:15px;">
+						<alert type="warning" ng-show="webGlAvailable && ie11">
+							<div>{{'FE_PANO_SET_WEBGL_IE11_1'|i18n}}.</div>
+							<div>{{'FE_PANO_SET_WEBGL_IE11_2'|i18n}}.</div>
+							<div>{{'FE_PANO_SET_KEEP_DRIVER_UP_TO_DATE'|i18n}}.</div>
+						</alert>
+						<alert type="warning" ng-show="!webGlAvailable">
+							<div>{{'FE_PANO_SET_WEBGL_NOT_AVAIL'|i18n}}.</div>
+							<div>
+								{{'FE_PANO_SET_BEST_EXPERIENCE'|i18n}}:
+								<a href="http://caniuse.com/webgl" target="_blank"><img class="f_icon16 f_textInline" static-src="icons/extlink.png"/> {{'FE_PANO_SET_LIST_WEBGL_BROWSERS'|i18n}}</a>.
+							</div>
+							<div>{{'FE_PANO_SET_KEEP_DRIVER_UP_TO_DATE'|i18n}}.</div>
+						</alert>
+					</div>
+				</div>
+			</collapsibleblock>
+		</div>
+    </div>
+</div>

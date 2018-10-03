@@ -1,0 +1,214 @@
+<div class="f_page">
+    <div promise="getObjects()" then="page.objects" fail="error" defaultvalue="[]" class="f_centeredContainer">
+        <div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_LOADING'|i18n}}</div>
+        <div promisethen ng-switch="page.objects.length > 0">
+            <div ng-switch-default class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_NO_OBJECTS'|i18n}}</div>
+            <div ng-switch-when="true" style="margin-top:20px;">
+                <div class="f_centeredContainer f_borderBox f_responsiveBox" style="max-width: 800px;">
+                    <div>
+                        <div class="header f_text">
+							<!-- Headline -->
+							<div class="hidden-xs" style="margin-top: 12px; margin-left: 20px; float:left;">
+								<p class="f_textBold f_textML f_textInline">
+									{{'FE_JOBS'|i18n}} :
+									<span ng-if="page.query === ''">{{'FE_ALL_STATES'|i18n}}</span>
+									<span ng-if="page.query === 'pending'">{{'FE_PENDING'|i18n}}</span>
+									<span ng-if="page.query === 'running'">{{'FE_RUNNING'|i18n}}</span>
+									<span ng-if="page.query === 'complete'">{{'FE_COMPLETE'|i18n}}</span>
+									<span ng-if="page.query === 'error'">{{'FE_ERROR'|i18n}}</span>
+									<span ng-if="page.query === 'aborted'">{{'FE_ABORTED'|i18n}}</span>
+									<span ng-if="page.query === 'running,pending'">{{'FE_RUNNING'|i18n}} & {{'FE_PENDING'|i18n}}</span>
+									({{filteredlength}})
+								</p>
+							</div>
+
+							<!-- State filter buttons -->
+							<div class="f_textSM" style="margin-top: 2px; margin-right: 4px; float: right;">
+								<button class="md-button md-fab small f_alignRight"
+										ng-click="toggleFilter('error')"
+										ng-class="{toggled: page.query === 'error', transparent: page.query && page.query !== 'error'}"
+										ng-style="{'background-color': (page.query && page.query === 'error') ? '#FAB502' : '#A8A8A8'}"
+										title="{{'FE_CLICK_TOGGLE_FILTER' | i18n}}: {{'FE_ERROR'|i18n}}">
+									<img static-src="icons/im/alerts/warning.png" class="f_icon24" style="margin: -2px;"/>
+								</button>
+								<button class="md-button md-fab small f_alignRight"
+										ng-click="toggleFilter('aborted')"
+										ng-class="{toggled: page.query === 'aborted', transparent: page.query && page.query !== 'aborted'}"
+										ng-style="{'background-color': (page.query && page.query === 'aborted') ? '#FAB502' : '#A8A8A8'}"
+										title="{{'FE_CLICK_TOGGLE_FILTER' | i18n}}: {{'FE_ABORTED'|i18n}}">
+									<img static-src="icons/remove.png" class="f_icon24" style="margin: -2px;"/>
+								</button>
+								<button class="md-button md-fab small f_alignRight"
+										ng-click="toggleFilter('complete')"
+										ng-class="{toggled: page.query === 'complete', transparent: page.query && page.query !== 'complete'}"
+										ng-style="{'background-color': (page.query && page.query === 'complete') ? '#47A447' : '#A8A8A8'}"
+										title="{{'FE_CLICK_TOGGLE_FILTER' | i18n}}: {{'FE_COMPLETE'|i18n}}">
+									<img static-src="icons/im/checked_true.png" class="f_icon24" style="margin: -2px;"/>
+								</button>
+								<button ng-if="jobsByState['running'] === 0" class="md-button md-fab small f_alignRight"
+										ng-click="toggleFilter('running,pending')"
+										ng-class="{toggled: page.query === 'running,pending', transparent: page.query && page.query !== 'running,pending'}"
+										ng-style="{'background-color': (page.query && page.query === 'running,pending') ? '#5BC0DE' : '#A8A8A8'}"
+										title="{{'FE_CLICK_TOGGLE_FILTER' | i18n}}: {{'FE_RUNNING'|i18n}} & {{'FE_PENDING'|i18n}}">
+									<img static-src="icons/queued.png" class="f_icon24" style="margin: -2px;"/>
+								</button>
+								<spinner ng-if="jobsByState['running'] > 0" class="f_spinLarge f_spinInteractive f_alignRight">
+									<button class="md-button md-fab small"
+											style="float:left;"
+											ng-click="toggleFilter('running,pending')"
+											ng-class="{toggled: page.query === 'running,pending', ws_grayFakeTransparent: page.query && page.query !== 'running,pending'}"
+											ng-style="{'background-color': (page.query && page.query === 'running,pending') ? '#5BC0DE' : '#A8A8A8'}"
+											title="{{'FE_CLICK_TOGGLE_FILTER' | i18n}}: {{'FE_RUNNING'|i18n}} & {{'FE_PENDING'|i18n}}">
+										<img static-src="icons/queued.png" class="f_icon24" style="margin: -2px;"/>
+									</button>
+								</spinner>
+							</div>
+                        </div>
+						
+						<!-- Project filter, refresh and sort button -->
+						<div class="btn-group" style="margin-top: 20px; margin-left: 20px; margin-right: 10px;">
+							<!-- Project filter button -->
+							<button ng-switch="page.projFilterCaption" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="{{'FE_PROJECT_FILTER'|i18n}}">
+								<div ng-switch-when="" class="f_text f_textInline">{{'FE_ALL_PROJECTS'|i18n}}</div>
+								<div ng-switch-when="n/a" class="f_text f_textInline">{{'FE_PROJECT'|i18n}}: {{'FE_NA'|i18n}} ({{page.projId}})</div>
+								<div ng-switch-default class="f_text f_textInline">{{'FE_PROJECT'|i18n}}: {{page.projFilterCaption}}</div>
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-left f_dropdownMenu" role="menu">
+								<li class="f_dropdownMenuItem" ng-click="setProjectFilter('')">
+									<a href="">{{ 'FE_ALL_PROJECTS' | i18n }}</a>
+									<hr style="margin-top:5px; margin-bottom:5px; margin-left:-10px; margin-right:-10px;">
+								</li>
+								<li ng-repeat="nameObj in page.projNameObjs" class="f_dropdownMenuItem" ng-click="setProjectFilter(nameObj.id)">
+									<a ng-if="nameObj.displayName === ''" href="">{{'FE_NA'|i18n}} ({{nameObj.id}})</a>
+									<a ng-if="nameObj.displayName !== ''" href="">{{nameObj.displayName}} ({{nameObj.id}})</a>
+								</li>
+							</ul>
+						</div>
+						<div class="btn-group" style="float: right; margin-top: 20px; margin-right: 20px;">
+							<!-- Refresh button -->
+							<button type="button" class="btn btn-default btn-small" style="height:35px;" ng-click="refresh()" title="{{'FE_REFRESH'|i18n}}">
+								<img style="display:inline;" class="f_icon24" static-src="icons/im/refresh.png"/>
+							</button>
+							<!-- Sort button -->
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+								<p ng-if="page.reverse" class="f_text f_textInline">{{ 'FE_NEW_FIRST' | i18n }}</p>
+								<p ng-if="!page.reverse" class="f_text f_textInline">{{ 'FE_OLD_FIRST' | i18n }}</p>
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-right" role="menu">
+								<li ng-click="setReverse(false)">
+									<a href="">{{ 'FE_OLD_FIRST' | i18n }}</a>
+								</li>
+								<li ng-click="setReverse(true)">
+									<a href="">{{ 'FE_NEW_FIRST' | i18n }}</a>
+								</li>
+							</ul>
+						</div>
+						
+						<!-- Pagination -->
+                        <hr ng-if="filteredlength > 0" style="margin-top:5px;">
+                        <div ng-repeat="object in page.objects | jobfilter:page.query:page.projId | orderBy:page.predicate:page.reverse | paginate:page.index:page.limit"
+                             class="f_textM"
+                             style="padding-left:30px; padding-right:30px; margin-top:20px; margin-bottom:30px;">
+                            <div class="row">
+                                <div class="col-md-2" style="padding:6px;padding-top: 20px;padding-left:36px;">
+                                    <div ng-if="object._state === 'error'" class="f_circle f_icon48 orange">
+                                        <img static-src="icons/im/alerts/warning.png" class="f_icon32" style="margin:8px;"/>
+                                    </div>
+                                    <div ng-if="object._state === 'complete'" class="f_circle f_icon48 green">
+                                        <img static-src="icons/im/checked_true.png" class="f_icon32" style="margin:8px;"/>
+                                    </div>
+                                    <spinner ng-if="object._state === 'running'" class="f_spinXlarge"></spinner>
+                                    <div ng-if="object._state === 'pending'" class="f_circle f_icon48 blue">
+                                        <img static-src="icons/queued.png" class="f_icon32" style="margin:8px;"/>
+                                    </div>
+                                    <div ng-if="object._state === 'aborted'" class="f_circle f_icon48 orange">
+                                        <img static-src="icons/remove.png" class="f_icon32" style="margin:8px;"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <p class="f_textM f_textBold f_noMargin">{{object._queue | jobtype | i18n }}</p>
+									<ul>
+										<!-- Project -->
+										<li class="f_textSM f_noMargin">
+											<span class="f_textBold">{{'FE_PROJECT'|i18n}}:</span> 
+											<a ng-if="page.projDisplayNames[object._project] !== ''" href="" ng-click="loadProject(object._project)">
+												<span class="f_textSM">{{page.projDisplayNames[object._project]}}</span>
+											</a>
+											<span ng-if="page.projDisplayNames[object._project] === ''">{{'FE_NA'|i18n}}</span> ({{object._project}})
+										</li>
+										<!-- Job Status -->
+										<li class="f_textSM f_noMargin">
+											<span class="f_textBold">{{'FE_JOB_STATUS'|i18n}}:</span>
+											<span ng-switch="object._state">
+												<span ng-switch-when="pending">{{'FE_JOB_PENDING'|i18n}}</span>
+												<span ng-switch-when="complete">{{'FE_JOB_COMPLETE'|i18n}}</span>
+												<span ng-switch-when="running">{{'FE_JOB_RUNNING'|i18n}}</span>
+												<span ng-switch-when="aborted">{{'FE_JOB_ABORTED'|i18n}}</span>
+												<span ng-switch-when="error">{{'FE_JOB_ERROR'|i18n}}</span>
+											</span>.
+										</li>
+										<!-- Job ID -->
+										<li class="f_textSM f_noMargin">
+											<span class="f_textBold">{{'FE_JOB_ID'|i18n}}:</span> {{object._jobID}}
+										</li>
+										<!-- Created -->
+										<li class="f_textSM f_noMargin">
+											<span class="f_textBold">{{'FE_CREATED'|i18n}}:</span> {{object._creationTime}}
+										</li>
+										<!-- Started -->
+										<li ng-if="object._state !== 'pending'" class="f_textSM f_noMargin">
+											<span class="f_textBold">{{'FE_STARTED'|i18n}}:</span> {{object._startTime}}
+										</li>
+										<li ng-if="object._state === 'pending'" class="f_textSM f_noMargin">
+											<span class="f_textBold">{{'FE_STARTED'|i18n}}:</span> {{'FE_NA'|i18n}}
+										</li>
+										<!-- Complete -->
+										<li ng-if="object._state !== 'complete'" class="f_textSM">
+											<span class="f_textBold">{{'FE_COMPLETE'|i18n}}:</span> {{'FE_NA'|i18n}}
+										</li>
+										<li ng-if="object._state === 'complete'" class="f_textSM">
+											<span class="f_textBold">{{'FE_COMPLETE'|i18n}}:</span> {{object._endTime}}
+										</li>
+									</ul>
+
+									<!-- Button -->
+									<p ng-if="object.hasJobResultUrl()" class="f_textSM">
+										<a class="btn btn-default" ng-href="{{object.getJobResultUrl()}}" style="padding-top:0px; padding-bottom:0px;">
+											<!-- for Orthophoto -->
+											<span ng-if="object._queue === 'orthophoto'">
+												<img class="f_icon32" static-src="icons/im/taskbar/object/showproperties.png">
+												{{'FE_SHOW_ORTHOPHOTO'|i18n}}
+											</span>
+											<!-- for Point cloud: TODO: no URL encoding yet. Workaround added below. -->
+											<!-- <span ng-if="object._queue === 'scanpointcloud' || object._queue === 'projectpointcloud'">
+												<img class="f_icon32" static-src="icons/3d-small.png" title="{{'FE_SHOW_IN_3D'|i18n}}">
+											</span> -->
+										</a>
+									</p>
+									<!-- TODO: use URL to panorama view instead! (better e.g. if pointcloud no longer exists) -->
+									<p ng-if="webGlEnabled && (object._queue === 'scanpointcloud' || object._queue === 'projectpointcloud')" class="f_textSM">
+										<!-- Note: "pointer-events: auto" will allow the click even if ng-disabled -->
+										<a ng-click="showPointCloud(object)" ng-disabled="object._state != 'complete'"
+										   class="btn btn-default" style="padding-top:0px; padding-bottom:0px; pointer-events: auto;">
+											<span>
+												<img class="f_icon32" static-src="icons/3d-small.png" title="{{'FE_SHOW_IN_3D' | i18n}}">
+											</span>
+										</a>
+									</p>
+                                </div>
+                            </div>
+                            <hr style="margin-top:15px; margin-left:-30px;margin-right:-30px;">
+                        </div>
+						<div ng-if="filteredlength == 0" class="f_textML f_textAlignC" style="margin: 15px;">{{'FE_NO_OBJECTS'|i18n}}</div>
+                        <div style="height:70px;" class="text-center">
+                            <pagination ng-show="filteredlength > 0" length="filteredlength" index="page.index" limit="page.limit"></pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <errorbox promisefail error="error"></errorbox>
+    </div>
+</div>

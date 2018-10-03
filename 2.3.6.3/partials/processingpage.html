@@ -1,0 +1,20 @@
+<div class="f_page object f_scrollPage" ng-show="visible">
+	<div promise="getProject()" then="project" fail="error" class="f_text f_centeredContainer projectsGlobalWrapper projectSelector">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top: 20px;">
+			{{"FE_LOADING" | i18n}}
+		</div>
+		<workbenchtitle promisethen project="project"></workbenchtitle>
+		<div ng-show="!error" class="f_centeredContainer f_fullWidth" style="margin-bottom:15px;margin-top:15px;">
+			<div ng-show="page.hasObjects === true">
+				<pclist        ng-show="blockvisible.pc"   id="propc"  caption="{{'FE_PTCLOUDS' | i18n}}"  collapsed="blockcollapsed.pc"></pclist>
+				<lpclist       ng-show="blockvisible.lpc"  id="prolpc" caption="{{'FE_PTCLOUDS' | i18n}}"  collapsed="blockcollapsed.lpc"></lpclist>
+				<cpelist       ng-show="blockvisible.cpe"  id="procpe" caption="{{'FE_CPE_FILES' | i18n}}" collapsed="blockcollapsed.cpe"></cpelist>
+				<scanadminlist ng-show="blockvisible.scan" id="prosc"  caption="{{'C_SCANS' | i18n}}"      collapsed="blockcollapsed.scan"></scanadminlist>
+			</div>
+			<alert type="info" ng-show="page.hasObjects === false" class="f_textAlignC">
+				<span class="f_textML">{{'FE_NO_OBJECTS' | i18n}}</span>
+			</alert>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

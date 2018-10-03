@@ -1,0 +1,143 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+    <div class="f_text f_centeredContainer projectsGlobalWrapper propPage"
+         style="padding-top:5px; padding-bottom:10px;"
+         onselectstart="return false;">
+		<!-- Body content -->
+		<div class="f_centeredContainer featuredProjectContainer" style="margin-bottom:15px;margin-top:15px;">
+			<!-- Scan colorizaion -->
+			<collapsibleblock caption="{{'FE_SCAN_COLORIZATION'|i18n}}" collapsed="false">
+                <div class="f_settingWrapper f_textM f_borderBox">
+					<div class="radio">
+						<label>
+							<input type="radio" class="large" ng-model="settings._changes._scanTilesColorizeBy" value="elevation"
+								   ng-disabled="settings._changes._scanOrBaseTiles != 'scanTiles'" ng-change="change()">
+							{{'FE_SCAN_HEIGHT'|i18n}}
+						</label>
+					</div>
+					<div ng-show="showElevation(settings._changes._scanTilesColorizeBy)" style="margin-left: 20px;">
+						<div style="margin-bottom:10px;">
+							<div class="radio">
+								<label>
+									<input type="radio" class="large" ng-model="settings._changes._aggregation" value="aggAvg" ng-change="change()">
+									{{'FE_AGGREGATE_AVG'|i18n}}
+								</label>
+							</div>
+						</div>
+						<div style="margin-bottom:10px;">
+							<div class="radio">
+								<label>
+									<input type="radio" class="large" ng-model="settings._changes._aggregation" value="aggMin" ng-change="change()">
+									{{'FE_AGGREGATE_MIN'|i18n}}
+								</label>
+							</div>
+						</div>
+						<div style="margin-bottom:10px;">
+							<div class="radio">
+								<label>
+									<input type="radio" class="large" ng-model="settings._changes._aggregation" value="aggMax" ng-change="change()">
+									{{'FE_AGGREGATE_MAX'|i18n}}
+                                </label>
+							</div>
+						</div>
+						<div style="margin-bottom:10px;">
+							<div class="radio">
+								<label>
+									<input type="radio" class="large" ng-model="settings._changes._aggregation" value="aggIndiv" ng-change="change()">
+									{{'FE_AGGREGATE_INDIVIDUAL'|i18n}}
+								</label>
+							</div>
+						</div>
+					</div>
+					<div style="padding-top:10px;">
+						<div class="radio">
+							<label>
+								<input type="radio" class="large" ng-model="settings._changes._scanTilesColorizeBy" value="age"	ng-disabled="settings._changes._scanOrBaseTiles != 'scanTiles'" ng-change="change()">
+								{{'FE_SCAN_AGE'|i18n}}
+							</label>
+						</div>
+						<div ng-show="!showElevation(settings._changes._scanTilesColorizeBy)" style="margin-left: 20px;">
+							<div style="margin-bottom:10px;">
+								<div class="radio">
+									<label>
+										<input type="radio" class="large" ng-model="settings._changes._aggregation" value="aggAvg" ng-change="change()">
+										{{'FE_AGGREGATE_AVG'|i18n}}
+									</label>
+								</div>
+							</div>
+							<div style="margin-bottom:10px;">
+								<div class="radio">
+									<label>
+										<input type="radio" class="large" ng-model="settings._changes._aggregation" value="aggMin" ng-change="change()">
+										{{'FE_AGGREGATE_MIN'|i18n}}
+									</label>
+								</div>
+							</div>
+							<div style="margin-bottom:10px;">
+								<div class="radio">
+									<label>
+										<input type="radio"  class="large" ng-model="settings._changes._aggregation" value="aggMax" ng-change="change()">
+										{{'FE_AGGREGATE_MAX'|i18n}}
+									</label>
+								</div>
+							</div>
+							<div style="margin-bottom:10px;">
+								<div class="radio">
+									<label>
+										<input type="radio" class="large" ng-model="settings._changes._aggregation" value="aggIndiv" ng-change="change()">
+										{{'FE_AGGREGATE_INDIVIDUAL'|i18n}}
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</collapsibleblock>
+			<!--Label Icons-->
+			<collapsibleblock caption="{{'FE_LABELICONMODE'|i18n}}" collapsed="false">
+				<div class="f_settingWrapper f_textM f_borderBox">
+					<div class="radio" style="margin-bottom:15px;" ng-repeat="iconMode in availIconModes">
+						<label>
+							<img ng-show="iconMode===availIconModes.Lockstatus" class="f_textInline f_icon20" static-src="icons/lock.png" />
+							<img ng-show="iconMode===availIconModes.Category"class="f_textInline f_icon20" static-src="icons/category.png" />
+							<img ng-show="iconMode===availIconModes.None"class="f_textInline f_icon20" static-src="icons/im/taskbar/roles/none.png" />
+							<input type="radio" class="large"  ng-model="settings._changes._iconMode" value="{{iconMode}}" ng-change="change()">
+							{{iconModeNames[iconMode] | i18n}}
+						</label>
+					</div>
+				</div>
+			</collapsibleblock>
+			<!--Layer Visibility-->
+			<collapsibleblock caption="{{'FE_PANO_SETTOMGS_OBJ_VIS'|i18n}}" collapsed="false">
+				<div class="f_settingWrapper f_textM f_borderBox">
+					<div ng-repeat="layer in layers " style="margin-bottom:20px">
+						<legend class ="f_textML"
+								style="line-height:20px;margin-bottom:10px;">{{layer.getName() | i18n}}
+						</legend>
+						<div class="checkbox" style="margin-bottom:20px;">
+							<label>
+								<input type="checkbox" class="large" ng-model="layer._changes._visible" ng-change="change()">
+								{{'FE_SHOW'|i18n}}
+							</label>
+						</div>
+						<div ng-if="layer._id === 'Scans'" class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="settings._changes._showScanLabelsInMap" ng-disabled="!layer._changes._visible" ng-change="change()"> {{'FE_SCAN_NAME'|i18n}}
+							</label>
+						</div>
+						<div ng-if="layer._id === 'Orthophoto'" class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="settings._changes._showOrthoVolumes" ng-disabled="!layer._changes._visible" ng-change="change()"> {{'FE_SHOW_VOLUME'|i18n}}
+							</label>
+						</div>
+						<div ng-if="layer._id === 'Annotation'" class="checkbox">
+							<label>
+								<input type="checkbox" class="large" ng-model="settings._changes._showPolylines" ng-disabled="!layer._changes._visible" ng-change="change()"> {{'FE_SHOW_AREA'|i18n}}
+							</label>
+						</div>
+					</div>
+				</div>
+			</collapsibleblock>
+		</div>
+	</div>
+</div>
+

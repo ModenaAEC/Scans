@@ -1,0 +1,15 @@
+<div class="ws_wb_title" style="margin-bottom: 20px;">
+	<a target="_blank" class="hidden-xs" href="{{ extLink }}">
+		<span class="ws_wb_whatsNew">What's new?</span>
+	</a>
+	<span class="hidden-sm hidden-xs">{{'FE_WORKBENCH_FOR' | i18n}}</span>
+	<span style="font-weight: bold;">{{project._displayName}}</span>
+	<div ng-if="project._type === 'wsc'" class="ws_projectState ws_wb_projectState" ng-class="{f_circularTagWarn: project._uploadState === 'Started', f_circularTagOK: project._uploadState === 'Completed'}">
+		<img class="f_icon32" static-src="icons/im/upload_{{project._uploadState.toLowerCase()}}.png" 
+			 title="{{project._uploadState === 'Completed' ? 'FE_UPLOADED' : 'FE_UPLOADING' | i18n}}"/>
+	</div>
+	<div ng-if="project._type === 'inc'" class="ws_projectState ws_wb_projectState" ng-class="{f_circularTagWarn: project._state === 'Draft', f_circularTagOK: project._state === 'Published'}">
+		<img ng-if="project._state === 'Draft'" class="f_icon32" static-src="icons/im/projectselector/under_construction.png" title="{{'FE_UC' |i18n}}"/>
+		<img ng-if="project._state === 'Published'" class="f_icon32" static-src="icons/im/upload_completed.png" title="{{'FE_PUBLISHED' |i18n}}"/>
+	</div>
+</div>

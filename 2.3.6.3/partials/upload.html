@@ -1,0 +1,89 @@
+<div ng-show="!page.hasDnD" class="f_textL f_textAlignC" style="margin: 20px;">
+	<img class="f_icon40" static-src="icons/im/alerts/warning.png" /> {{'EM_REQ_DND' | i18n}}
+</div>
+
+<div id="uploadZone" class="f_text">
+	<div class="ws_wb_dropCircle" ng-class="{ws_wb_dropActive: page.dragging}">
+		<p>
+			<img class="ws_wb_dropImg" static-src="icons/im/workbench/webshare_upload.svg" />
+		</p>
+		<p class="ws_wb_dropTitle">
+			{{'FE_DROP_ZONE' | i18n}}
+		</p>
+		<p class="ws_wb_dropNotes">
+			{{'FE_SUPPORTED_FILE_TYPES' | i18n}}:
+			<br />
+			CPE
+		</p>
+	</div>
+</div>
+
+<div ng-show="0 < getUploadObjects().length" class="table-responsive ws_up_tblDiv">
+	<table class="table table-hover table-striped ws_up_tbl">
+		<thead>
+			<th>
+				{{'FE_FILE_NAME' | i18n}}
+			</th>
+			<th class="hidden-md hidden-sm hidden-xs" style="text-align: right;">
+				{{'FE_SIZE' | i18n}}
+			</th>
+			<th class="hidden-sm hidden-xs">
+				{{'FE_TYPE' | i18n}}
+			</th>
+			<th style="width: 480px;">
+				{{'FE_PROGRESS' | i18n}}
+			</th>
+		</thead>
+		<tbody class="ws_up_tblBody">
+			<tr ng-repeat="uo in getUploadObjects()" class="ws_up_tblTr">
+				<td class="ws_up_tblTd" ng-class="{ws_up_success: uo._progress === 1, ws_up_cancelled: uo._cancelled, ws_up_error: uo._error}">
+					{{uo._entity._displayName}}
+				</td>
+				<td class="hidden-md hidden-sm hidden-xs ws_up_tblTd" ng-class="{ws_up_success: uo._progress === 1, ws_up_cancelled: uo._cancelled, ws_up_error: uo._error}" style="text-align: right;">
+					{{uo._file.size / 1048576 | number : 1}} {{'FE_MEGABYTES' | i18n}}
+				</td>
+				<td class="hidden-sm hidden-xs ws_up_tblTd" ng-class="{ws_up_success: uo._progress === 1, ws_up_cancelled: uo._cancelled, ws_up_error: uo._error}">
+					{{uo._data._extension | uppercase}}
+				</td>
+				<td class="ws_up_tblTd" style="width: 480px;">
+					<table>
+						<tbody>
+							<tr>
+								<td class="ws_up_tblTd">
+									<div class="progress ws_up_pbContainer">
+										<div ng-show="!uo._cancelled && !uo._error" class="progress-bar ws_up_pbDiv2" role="progressbar"
+											 ng-class="{ws_up_progressBg: uo._progress < 1, ws_up_successBg: uo._progress === 1}"
+											 ng-style="{width: (uo._progress * 100) + '%'}"
+											 aria-valuenow="{{uo._progress * 100}}" aria-valuemin="0" aria-valuemax="100" >
+										</div>
+										<div ng-show="uo._cancelled || uo._error" class="progress-bar ws_up_pbDiv2" role="progressbar"
+											 ng-class="{ws_up_cancelledBg: uo._cancelled, ws_up_errorBg: uo._error}"
+											 style="width: 100%;"
+											 aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" >
+										</div>
+									</div>
+								</td>
+								<td class="ws_up_tblTd ws_up_pbTdTxt">
+									<span ng-class="{ws_up_success: uo._progress === 1, ws_up_cancelled: uo._cancelled, ws_up_error: uo._error}">
+										{{uo._progress * 100 | number : 0}}%
+									</span>
+								</td>
+								<td class="ws_up_tblTd ws_up_pbTdCancelBtn">
+									<span ng-if="uo._progress < 1 && !uo._cancelled && !uo._error">
+										<button class="btn btn-default ws_up_pbCancelBtn" title="{{'FE_CANCEL'|i18n}}" ng-click="cancel(uo)">
+											<img class="f_icon32" static-src="icons/remove.png"/>{{"FE_CANCEL" | i18n}}&nbsp;&nbsp;
+										</button>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div ng-show="page.showProcessing" class="ws_wb_title ws_up_tblDiv">
+	{{'FE_PROC_FILES' | i18n}}...
+</div>

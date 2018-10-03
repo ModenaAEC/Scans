@@ -1,0 +1,291 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<div promise="getGroupPromise()"
+		 then="grouplist"
+		 fail="error"
+		 defaultvalue="[]"
+		 class="f_text f_centeredContainer projectsGlobalWrapper" style="padding-top:5px; padding-bottom:10px;">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_LOADING' | i18n}}</div>
+		<div promisethen>
+			<div promise="getProjectPromise()"
+				then="projectlist"
+				fail="error"
+				defaultvalue="[]"
+				class="f_centeredContainer featuredProjectContainer">
+				<!--BorderBox -->
+				<div promisethen id="detailsBox" class="f_textM f_borderBox">
+					<div class="header ws_ac_header">
+						{{'TC_MANAGE_RIGHTS' | i18n}}
+					</div>
+					<div class="f_settingWrapper">
+						
+						<!-- Projects/Groups toggle button -->
+						<div class="btn-group ws_ac_tgl">
+							<button class="btn btn-default f_btnFontDark f_btnDropdown" ng-class="{'btn-info': page.forProjects}" ng-click="showProjects()" title="{{'FE_BY_PROJ' | i18n}}">
+								<span class="f_text">{{'FE_BY_PROJ' | i18n}}&nbsp;<img class="f_icon32" static-src="icons/im/taskbar/projectmanagement/main.png" /></span>
+							</button>
+							<button class="btn btn-default f_btnFontDark f_btnDropdown" ng-class="{'btn-info': !page.forProjects}" ng-click="showGroups()" title="{{'FE_BY_GROUP' | i18n}}">
+								<span class="f_text">{{'FE_BY_GROUP' | i18n}}&nbsp;<img class="f_icon32" static-src="icons/im/taskbar/groups/main.png" /></span>
+							</button>
+						</div>
+						
+						<!-- Search fields -->
+						
+						<!-- Search fields for By Project -->
+						<div ng-if="page.forProjects" class="ws_ac_searchBlock">
+							<!-- 1. Find Project -->
+							<div class="input-group ws_ac_search ws_ac_search1st">
+								<div class="input-group-addon f_text" ng-class="{ws_filterActive: 0 < page.queryProject.length}">
+									{{'FE_FIND_PROJECT'| i18n}}
+								</div>
+								<input type="text" class="form-control search-query" ng-model="page.queryProject" ng-change="changeSearchProject()" placeholder="{{'FE_FIND'| i18n}}...">
+								<div class="input-group-btn">
+									<button class="btn btn-default" ng-class="{ws_filterActive: 0 < page.queryProject.length}" ng-click="filterSearchProject()" title="{{'FE_RESET_FILTER' | i18n}}">
+										<img class="f_icon16" static-src="icons/clear.png"/>
+									</button>
+								</div>
+							</div>
+							<!-- 2. Find Group -->
+							<div ng-if="page.project !== undefined" class="input-group ws_ac_search">
+								<div class="input-group-addon f_text" ng-class="{ws_filterActive: 0 < page.queryGroup.length}">
+									{{'FE_FIND_GROUP'| i18n}}
+								</div>
+								<input type="text" class="form-control search-query" ng-model="page.queryGroup" placeholder="{{'FE_FIND'| i18n}}...">
+								<div class="input-group-btn">
+									<button class="btn btn-default" ng-class="{ws_filterActive: 0 < page.queryGroup.length}" ng-click="page.queryGroup = '';" title="{{'FE_RESET_FILTER' | i18n}}">
+										<img class="f_icon16" static-src="icons/clear.png"/>
+									</button>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Search fields for By Group -->
+						<div ng-if="!page.forProjects" class="ws_ac_searchBlock">
+							<!-- 1. Find Group -->
+							<div class="input-group ws_ac_search ws_ac_search1st">
+								<div class="input-group-addon f_text" ng-class="{ws_filterActive: 0 < page.queryGroup.length}">
+									{{'FE_FIND_GROUP'| i18n}}
+								</div>
+								<input type="text" class="form-control search-query" ng-model="page.queryGroup" ng-change="changeSearchGroup()" placeholder="{{'FE_FIND'| i18n}}...">
+								<div class="input-group-btn">
+									<button class="btn btn-default" ng-class="{ws_filterActive: 0 < page.queryGroup.length}" ng-click="filterSearchGroup()" title="{{'FE_RESET_FILTER' | i18n}}">
+										<img class="f_icon16" static-src="icons/clear.png"/>
+									</button>
+								</div>
+							</div>
+							<!-- 2. Find Project -->
+							<div ng-if="page.group !== undefined" class="input-group ws_ac_search">
+								<div class="input-group-addon f_text" ng-class="{ws_filterActive: 0 < page.queryProject.length}">
+									{{'FE_FIND_PROJECT'| i18n}}
+								</div>
+								<input type="text" class="form-control search-query" ng-model="page.queryProject" placeholder="{{'FE_FIND'| i18n}}...">
+								<div class="input-group-btn">
+									<button class="btn btn-default" ng-class="{ws_filterActive: 0 < page.queryProject.length}" ng-click="page.queryProject = '';" title="{{'FE_RESET_FILTER' | i18n}}">
+										<img class="f_icon16" static-src="icons/clear.png"/>
+									</button>
+								</div>
+							</div>
+						</div>
+						
+						<table>
+							<tbody>
+								<tr>
+									<td class="ws_ac_tblCol1">
+<!-- Project selection table -->
+<div ng-if="page.forProjects" class="table-responsive">
+	<table class="table table-hover table-striped ws_ac_tblSel">
+		<!-- Table header -->
+		<thead>
+			<!-- HEADER: Preview -->
+			<th class="hidden-sm hidden-xs">
+				{{'FE_PREVIEW' | i18n}}
+			</th>
+			<!-- HEADER: Project -->
+			<th>
+				<a class="f_link link" href="" ng-click="page.predProject = '_displayName'; page.sortProject = !page.sortProject" title="{{'FE_SORTBY' | i18n}}: {{'FE_PROJECT' | i18n}}">{{'FE_PROJECT' | i18n}}</a>
+			</th>
+			<!-- HEADER: Upload Date -->
+			<!--
+			<th class="hidden-sm hidden-xs">
+				<a class="f_link link" href="" ng-click="page.predProject = '_uploadDate'; page.sortProject = !page.sortProject" title="{{'FE_SORTBY' | i18n}}: {{'FE_UPLOAD_DATE' | i18n}}">{{'FE_UPLOAD_DATE' | i18n}}</a>
+			</th>
+			-->
+			<!-- HEADER: Privacy -->
+			<th>
+				<a class="f_link link" href="" ng-click="page.predProject = '_public'; page.sortProject = !page.sortProject" title="{{'FE_SORTBY' | i18n}}: {{'FE_PRIVACY' | i18n}}">{{'FE_PRIVACY' | i18n}}</a>
+			</th>
+			<!-- HEADER: 3D View -->
+			<th>
+				<a class="f_link link" href="" ng-click="page.predProject = 'hasProjectPointCloud()'; page.sortProject = !page.sortProject" title="{{'FE_SORTBY' | i18n}}: {{'FE_3D_VIEW' | i18n}}">{{'FE_3D_VIEW' | i18n}}</a>
+			</th>
+		</thead>
+		<!-- Table body -->
+		<tbody>
+			<tr ng-repeat="project in projectlist | projectfilter : page.queryProject | orderBy : page.predProject : page.sortProject"
+				ng-click="page.project = project; page.idxProject = $index;"
+				title="{{'FE_CLICK_TO_SELECT' | i18n}}">
+				
+				<!-- BODY: Preview -->
+				<td class="hidden-sm hidden-xs" ng-class="{ws_ac_sel: project === page.project}">
+					<img class="scanThumbnailSmall" ng-src="{{project._imageUrl}}"/>
+				</td>
+				<!-- BODY: Project -->
+				<td class="f_textM" ng-class="{ws_ac_sel: project === page.project}" style="word-break: break-all;">
+					{{ project._displayName }}<br />
+					({{ project._name }})
+				</td>
+				<!-- BODY: Upload Date -->
+				<!--
+				<td class="hidden-sm hidden-xs" ng-class="{ws_ac_sel: project === page.project}">
+					{{ project._uploadDate | date: true }}
+				</td>
+				-->
+				<!-- BODY: Privacy -->
+				<td ng-class="{ws_ac_sel: project === page.project}" style="text-align: center;">
+					<div class="ws_ac_faintCircle" ng-class="{f_circularTagOK: isPublic(project)}">
+						<img class="f_icon32" static-src="icons/im/public_{{publicString(project)}}.png"/>
+					</div>
+				</td>
+				<!-- BODY: 3D View -->
+				<td ng-class="{ws_ac_sel: project === page.project}" style="text-align: center;">
+					<div class="ws_ac_faintCircle" ng-class="{f_circularTagOK: isEnable3D(project)}">
+						<img ng-if="project.hasProjectPointCloud()" class="f_icon32" static-src="icons/im/{{enable3DString(project)}}.png"/>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<!-- Group selection table -->
+<div ng-if="!page.forProjects" class="table-responsive">
+	<table class="table table-hover table-striped ws_ac_tblSel">
+		<!-- Table header -->
+		<thead>
+			<!-- HEADER: Group -->
+			<th>
+				<a class="f_link link" href="" ng-click="page.sortGroup = !page.sortGroup" title="{{'FE_SORTBY' | i18n}}: {{'FE_GROUP_NAME' | i18n}}">{{'FE_GROUP_NAME' | i18n}}</a>
+			</th>
+		</thead>
+		<!-- Table body -->
+		<tbody>
+			<tr ng-repeat="group in grouplist | adminfilter : page.queryGroup | orderBy : '_name' : page.sortGroup"
+				ng-click="page.group = group; page.idxGroup = $index;"
+				title="{{'FE_CLICK_TO_SELECT' | i18n}}">
+				
+				<!-- BODY: Group -->
+				<td class="f_textM" ng-class="{ws_ac_sel: group === page.group}" style="word-break: break-all;">
+					{{ group._name }}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+									</td>
+									<td  class="ws_ac_tblColN">
+<!-- Triangle -->
+<div ng-if="page.forProjects && page.project !== undefined" class="ws_ac_triangle" ng-style="{marginTop: getMtTriangle()}"></div>
+<div ng-if="!page.forProjects && page.group !== undefined" class="ws_ac_triangle" ng-style="{marginTop: getMtTriangle()}"></div>
+									</td>
+									<td class="ws_ac_tblColN">
+<!-- Group rights table -->
+<table ng-if="page.forProjects && page.project !== undefined" class="table table-hover table-striped ws_ac_tblRights" ng-style="{marginTop: getMtRights()}">
+	<thead>
+		<th>
+			{{'TD_ACCESS_RIGHTS' | i18n}}
+		</th>
+	</thead>
+	<tbody>
+		<!-- Public/Private -->
+		<tr ng-click="changePublicFlag(page.project)" title="{{'FE_CLICK_TO_TOGGLE' | i18n}}">
+			<td>
+				<div ng-if="isPublic(page.project)">
+					<span class="ws_ac_right f_circularTagOK">
+						<img class="f_icon32" static-src="icons/im/public_{{publicString(page.project)}}.png"/>
+					</span>
+					{{'FE_PUB_PROJ' | i18n}}
+				</div>
+				<div ng-if="!isPublic(page.project)">
+					<img class="f_icon32 ws_ac_isNoRight" static-src="icons/im/public_{{publicString(page.project)}}.png"/>{{'FE_PRI_PROJ' | i18n}}
+				</div>
+			</td>
+		</tr>
+		<!-- Enable/Disable 3D View -->
+		<tr ng-if="page.project.hasProjectPointCloud()" ng-click="changeEnable3DFlag(page.project)" title="{{'FE_CLICK_TO_TOGGLE' | i18n}}">
+			<td>
+				<div ng-if="isEnable3D(page.project)">
+					<span class="ws_ac_right f_circularTagOK">
+						<img class="f_icon32" static-src="icons/im/{{enable3DString(page.project)}}.png"/>
+					</span>
+					{{'FE_3D_ENABLED' | i18n}}
+				</div>
+				<div ng-if="!isEnable3D(page.project)">
+					<img class="f_icon32 ws_ac_isNoRight" static-src="icons/im/{{enable3DString(page.project)}}.png"/>{{'FE_3D_DISABLED' | i18n}}
+				</div>
+			</td>
+		</tr>
+		<!-- Group access -->
+		<tr ng-if="!isPublic(page.project)"
+			ng-repeat="group in grouplist | adminfilter : page.queryGroup | orderBy : '_name'"
+			ng-click="changeRelation(page.project, group)" 
+			style="word-break: break-all;"
+			title="{{'FE_CLICK_TO_TOGGLE' | i18n}}">
+			
+			<td>
+				<span class="ws_ac_right" ng-class="{f_circularTagOK: belongsGroupToProject(page.project, group).lastIndexOf('true') >= 0}">
+					<img class="f_icon32" static-src="icons/im/checked_{{belongsGroupToProject(page.project, group)}}.png"/>
+				</span>
+				{{group._name}}
+				<img class="f_icon36 ws_ac_groupBg" static-src="icons/im/taskbar/groups/main.png" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+<!-- Project rights table -->
+<table ng-if="!page.forProjects && page.group !== undefined" class="table table-hover table-striped ws_ac_tblRights" ng-style="{marginTop: getMtRights()}">
+	<thead>
+		<th>
+			{{'TD_ACCESS_RIGHTS' | i18n}}
+		</th>
+	</thead>
+	<tbody>
+		<!-- Project access -->
+		<tr ng-repeat="project in projectlist | projectfilter : page.queryProject | orderBy : '_displayName'" style="word-break: break-all;">
+			<td ng-if="!isPublic(project)" ng-click="changeRelation(project, page.group)" title="{{'FE_CLICK_TO_TOGGLE' | i18n}}">
+				<span class="ws_ac_right" ng-class="{f_circularTagOK: belongsGroupToProject(project, page.group).lastIndexOf('true') >= 0}">
+					<img class="f_icon32" static-src="icons/im/checked_{{belongsGroupToProject(project, page.group)}}.png"/>
+				</span>
+				{{project._displayName }} ({{ project._name }})
+				<img class="f_icon36 ws_ac_groupBg" static-src="icons/im/taskbar/projectmanagement/main.png" />
+			</td>
+			<td ng-if="isPublic(project)" style="opacity: 0.4; cursor: not-allowed;" title="{{'FE_PROJ_IS_PUB' | i18n}}">
+				<img class="f_icon32 f_circularTagOK ws_ac_isRight" static-src="icons/im/public_true.png"/>
+				{{project._displayName }} ({{ project._name }})
+				<img class="f_icon36 ws_ac_groupBg" static-src="icons/im/taskbar/projectmanagement/main.png" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						
+						<div>
+							<img class="f_icon32 f_circularTagOK ws_ac_isRight" static-src="icons/im/public_true.png"/>{{'FE_PUBLIC_PROJECT' | i18n}}
+							<br />
+							<img class="f_icon32 ws_ac_isNoRight" static-src="icons/im/public_false.png"/>{{'FE_PRIVATE_PROJECT' | i18n}}
+							<br />
+							<img class="f_icon32 f_circularTagOK ws_ac_isRight" static-src="icons/im/3d_true.png"/>{{'FE_ACCESS_3D_VIEW' | i18n}}
+							<br />
+							<img class="f_icon32 f_circularTagOK ws_ac_isRight" style="margin-top:5px;" static-src="icons/im/checked_true.png"/>{{'FE_ACCESS_TRUE' | i18n}}
+							<br />
+							<img class="f_icon32 ws_ac_isNoRight" static-src="icons/im/checked_false.png"/>{{'EM_ACCESS_DENIED' | i18n}}
+						</div>
+					</div>
+					
+				</div><!--BorderBox -->
+				<errorbox promisefail error="error"></errorbox>
+			</div>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+		</div>
+</div>

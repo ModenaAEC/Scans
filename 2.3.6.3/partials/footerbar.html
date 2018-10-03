@@ -1,0 +1,19 @@
+<div class="barNarrow footerBar" ng-class="{f_compact:compactPanel}">
+	<div class="container-fluid" ng-show="!compactPanel">
+		<div class="row">
+			<div class="col-xs-10" style="padding-right:0">
+				<p class="f_textInactive f_textSXS f_textInline">v{{frontendversion}} &nbsp; &copy;FARO 2014&ndash;2016 &nbsp;</p>
+				<div style="display:inline; cursor:pointer;" ng-click="showLegalPage()">
+					<p class="f_linkHighlight link f_textSXS f_textInline" >{{'FE_LEGAL_NOTICES'|i18n}}</p>
+				</div>
+			</div>
+			<div class="col-xs-2" style="padding-left:0">
+				<div class="pull-right">
+					<a href="https://twitter.com/WebShareCloud" target="_blank" title="Follow @WebShareCloud on Twitter">
+						<img class="f_icon16" static-src="icons/twitter-bird-16x16.png" />
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

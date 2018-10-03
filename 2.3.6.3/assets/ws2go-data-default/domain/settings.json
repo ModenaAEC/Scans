@@ -1,0 +1,20 @@
+{
+	"Class": "DomainSettings",
+	"Version": 2,
+	"CustomerLogoFileType": "",
+	"CustomerLogoOpacity": 50,
+	"CustomerLogoRevision": 1,
+	"Language": "en_US",
+	"LengthUnit": "m",
+	"AreaUnit": "m",
+	"AngleUnit": "deg",
+	"DistState": "segment",
+	"AreaState": "hide",
+	"PersistMeasurements": true,
+	"OverrideLengthUnit": false,
+	"OverrideAreaUnit": false,
+	"OverrideAngleUnit": false,
+	"OverrideDistState": false,
+	"OverrideAreaState": false,
+	"OverridePersistMeasurements": false
+}

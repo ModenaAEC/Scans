@@ -1,0 +1,481 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<div class="f_centeredContainer projectsGlobalWrapper f_textM">
+		<div promise="getStats()" then="stats" fail="error">
+			<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_LOADING'|i18n}}</div>
+			<div promisethen>
+				<div style="margin: 20px;overflow:visible;">
+					<div class="btn-group f_alignRight">
+						<button class="btn btn-default btn-small" ng-click="refresh()" title="{{'FE_REFRESH'|i18n}}">
+							<img style="display:inline;" class="f_icon24" static-src="icons/im/refresh.png"/>
+						</button>
+						<button class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown" title="{{'FE_BILL_PERIOD'|i18n}}">
+							<img class="f_icon24" static-src="icons/im/configure.png">  
+							 <p ng-if="dataPeriod==='this'" class="f_textInline" style="vertical-align:-1px;margin-right:5px;">{{'FE_THIS_MONTH'|i18n}}</p>
+							 <p ng-if="dataPeriod==='last'" class="f_textInline" style="vertical-align:-1px;margin-right:5px;">{{'FE_LAST_MONTH'|i18n}}</p>
+							<span class="caret"></span>
+						</button>
+						<ul style="min-width:220px; left:-55px;" class="dropdown-menu">
+							<li ng-click="setPeriod('this')">
+								<a class="f_cursorPointer">{{"FE_THIS_MONTH" | i18n}}
+									<img ng-if="dataPeriod==='this'" class="f_icon24" 
+										 style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+								</a>
+							</li>
+							<li ng-click="setPeriod('last')">
+								<a class="f_cursorPointer">{{"FE_LAST_MONTH" | i18n}}
+									<img ng-if="dataPeriod==='last'" class="f_icon24" 
+										 style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/></a>
+							</li>
+						</ul>
+					</div>
+					<br><br>
+					
+					<!-- Package Details -->
+					
+					<collapsibleblock caption="{{'FE_PLAN_DETAILS'|i18n}}" collapsed="true" style="margin-bottom:20px;margin-top: 20px;">
+						<div class="f_borderBox" style="padding:20px 20px 10px 20px;">
+							<table class="table table-condensed table-striped table-hover" style="margin-bottom: 10px;">
+								<tbody>
+									<tr>
+										<td style="width:50%;">{{'FE_DOMAIN_ID'|i18n}}</td>
+										<td>{{stats._package.domainName}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_PLAN_NAME'|i18n}}</td>
+										<td>{{stats._package.packageName || placeholdEmpty}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_MONTHLY_COST'|i18n}}</td>
+										<td>{{stats._package.packagePrice.toFixed(2)}} {{stats._package.currency}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_TRAFFIC_INC_DOWN'|i18n}}</td>
+										<td>{{stats._package.trafficOut}} {{'FE_GIGABYTES' |i18n}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_DOWNLOAD_TRAFFIC_EXS_COST'|i18n}}</td>
+										<td>{{(stats._package.costOutGb).toFixed(2)}} {{stats._package.currency}} / {{'FE_GIGABYTES' |i18n}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_TRAFFIC_INC_UP'|i18n}}</td>
+										<td>{{'FE_UNLIMITED'|i18n}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_STORAGE_INC'|i18n}}</td>
+										<td>{{stats._package.storage}} {{'FE_GIGABYTES' |i18n}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_STORAGE_EXS_COST'|i18n}}</td>
+										<td>{{(stats._package.costStorageGb).toFixed(2)}} {{stats._package.currency}} / {{'FE_GIGABYTES' |i18n}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_BUDGET_INC'|i18n}}</td>
+										<td>{{stats._package.credits}} {{'FE_SCANS' |i18n}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_BUDGET_EXS_COST'|i18n}}</td>
+										<td>{{(stats._package.costCredit).toFixed(2)}} {{stats._package.currency}} / {{'FE_SCAN' |i18n}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_STAT_START_DATE'|i18n}}</td>
+										<td>{{stats._package.startDate}}</td>
+									</tr>
+									<tr>
+										<td style="width:50%;">{{'FE_STAT_RESET_DATE'|i18n}}</td>
+										<td>{{stats._package.endDate}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</collapsibleblock>
+					
+					<!-- Usage: Overview -->
+					
+					<collapsibleblock caption="{{'FE_USAGE'|i18n}}: {{'FE_OVERVIEW'|i18n}}" collapsed="false" toggle="collapseToggle(collapsed)" style="margin-bottom:20px;">
+						
+						<!-- Boxes for traffic, storage and transactions -->
+						
+						<div class="container-fluid">
+							<div class="row" style="margin-bottom: 20px;">
+								<div class="col-md-4" style="padding: 5px;">
+									<div class="f_borderBox ws_bigUsageBox">
+										<p class="f_textML ws_bigUsageTitle">{{'FE_DOWNLOAD_TRAFFIC'|i18n}}</p>
+										<div class="ws_bigUsageNr">
+											{{1 <= stats._use.trafficOut ? stats._use.trafficOut.toFixed(1) : stats._use.trafficOut.toFixed(3)}}&nbsp;{{'FE_GIGABYTES'|i18n}}
+										</div>
+										<div class="f_textM" ng-show="stats._hasPackage" style="position: absolute; bottom: 14px; right: 16px; margin-left: 14px;">
+											{{(stats._use.trafficOut/stats._package.trafficOut*100).toFixed(2)}}&nbsp;% {{'FE_OF'|i18n}} {{stats._package.trafficOut}}&nbsp;{{'FE_GIGABYTES'|i18n}}
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4" style="padding: 5px;">
+									<div class="f_borderBox ws_bigUsageBox">
+										<p class="ws_bigUsageTitle"><span class="f_textML">{{'FE_STORAGE'|i18n}} </span><span class="f_textM f_avoidWrap">({{'FE_MAX_OF_MONTH'|i18n}})</span></p>
+										<div class="ws_bigUsageNr">
+											{{1 <= stats._use.storage ? stats._use.storage.toFixed(1) : stats._use.storage.toFixed(3)}}&nbsp;{{'FE_GIGABYTES'|i18n}}
+										</div>
+										<div class="f_textM" ng-show="stats._hasPackage" style="position: absolute; bottom: 14px; right: 16px; margin-left: 14px;">
+											{{(stats._use.storage/stats._package.storage*100).toFixed(2)}}&nbsp;% {{'FE_OF'|i18n}} {{stats._package.storage}}&nbsp;{{'FE_GIGABYTES'|i18n}}
+										</div>
+									</div>
+								</div>
+								
+								<div class="col-md-4" style="padding: 5px;">
+									<div class="f_borderBox ws_bigUsageBox">
+										<p class="ws_bigUsageTitle"><span class="f_textML">{{'FE_BUDGET_USED'|i18n}} </span><span ng-show="dataPeriod==='this'" class="hidden-md f_textM f_avoidWrap">({{'FE_INCLUDES_PENDING'|i18n}})</span></p>
+										<div class="ws_bigUsageNr" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+											{{stats._use.creditsCharged + stats._use.creditsPending}}&nbsp;{{'FE_SCANS'|i18n}}
+										</div>
+										<div class="f_textM" ng-show="stats._hasPackage" style="position: absolute; bottom: 14px; right: 16px; margin-left: 14px;">
+											{{((stats._use.creditsCharged + stats._use.creditsPending)/stats._package.credits*100).toFixed(2)}}&nbsp;% {{'FE_OF'|i18n}} {{stats._package.credits}}&nbsp;{{'FE_SCANS'|i18n}}
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Cost overview -->
+							
+							<div class="row f_borderBox" style="margin-left:-10px; margin-right:-10px; margin-bottom: 20px; padding:20px 20px 10px 20px;">
+								<table class="table table-condensed table-striped" style="margin-bottom: 10px;">
+									<tbody>
+										<tr>
+											<td style="width:40%;">{{'FE_MONTHLY_COST'|i18n}}</td>
+											<td style="width:20%; text-align: right;">{{stats._package.packagePrice.toFixed(2)}} {{stats._package.currency}}</td>
+											<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+										</tr>
+										<tr>
+											<td style="width:40%;">{{'FE_DOWNLOAD_TRAFFIC_EXS_COST'|i18n}}</td>
+											<td style="width:20%; text-align: right;">{{(stats._use.overTrafficOutCost).toFixed(2)}} {{stats._package.currency}}</td>
+											<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+										</tr>
+										<tr>
+											<td style="width:40%;">{{'FE_STORAGE_EXS_COST'|i18n}}</td>
+											<td style="width:20%; text-align: right;">{{(stats._use.overStorageCost).toFixed(2)}} {{stats._package.currency}}</td>
+											<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+										</tr>
+
+										<tr >
+											<td style="width:40%;">
+												{{'FE_BUDGET_EXS_COST'|i18n}}
+											</td>
+											<td ng-if="showPendingTransactions" style="width:20%; text-align: right;">
+												{{stats._use.overCreditsChargedPendingCost.toFixed(2)}} {{stats._package.currency}}
+											</td>
+											<td ng-if="!showPendingTransactions" style="width:20%; text-align: right;">
+												{{stats._use.overCreditsChargedCost.toFixed(2)}} {{stats._package.currency}}
+											</td>
+											<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+										</tr>
+
+										<tr style="font-weight: bold">
+											<td style="width:40%;">{{'FE_TOTAL_COST'|i18n}}</td>
+											<td style="width:20%; text-align: right;">{{stats._use.finalCost.toFixed(2)}} {{stats._package.currency}}</td>
+											<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							
+							<!-- Storage by project -->
+							
+							<div class="row f_borderBox" style="margin-left:-10px; margin-right:-10px">
+								<div class="col-md-4 f_chartDonutWrapper">
+									<div class="f_chartDonutWrapper">
+										<p>
+											<span class="f_textML">{{'FE_STORAGE'|i18n}}, {{'FE_BY_PROJECT'|i18n}} </span>
+											<span ng-show="dataPeriod==='this'" class="f_textM f_avoidWrap">({{'FE_CURRENT'|i18n}})</span>
+										</p>
+										<div class="f_chartDonutWrapperBottom">
+											<chart type="1d" draw="pie" data="chartData.storageByProjectPie" scalelabel="GiB" tooltip-templ="[= label]: [= value.toFixed(3)] {{'FE_GIGABYTES'|i18n}}" 
+												   style="width:100%; height:200px"></chart>
+											<div class="f_textM f_alignRight" ng-show="stats._hasPackage">
+												{{(stats._use.storageLatest/stats._package.storage*100).toFixed(2)}}&nbsp;%
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-8 f_chartDonutWrapper">
+									<div class="f_chartDonutWrapper">
+										<div style="overflow:auto; width:100%; height:100%">
+											<chartlegend data="chartData.storageByProjectPie"></chartlegend>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</collapsibleblock>
+
+					<!-- Usage: Traffic Details -->
+					
+					<collapsibleblock caption="{{'FE_USAGE'|i18n}}: {{'FE_TRAFFIC_DETAILS'|i18n}}" collapsed="true" toggle="collapseToggle(collapsed)" style="margin-bottom:20px;">
+						<div class="f_borderBox" style="padding:20px 20px 10px 20px;">
+							<table class="table table-condensed table-striped">
+								<tbody>
+									<tr>
+										<td style="width:40%;">{{'FE_TRAFFIC_INC_DOWN'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{stats._package.trafficOut}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr>
+										<td style="width:40%;">{{'FE_DOWNLOAD_TRAFFIC'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.trafficOut).toFixed(3)}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr>
+										<td style="width:40%;">{{'FE_DOWNLOAD_TRAFFIC_EXS'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.overTrafficOut).toFixed(3)}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr>
+										<td style="width:40%;">{{'FE_DOWNLOAD_TRAFFIC_EXS_COST'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.overTrafficOutCost).toFixed(2)}} {{stats._package.currency}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr>
+										<td style="width:40%;">{{'FE_UPLOAD_TRAFFIC'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.trafficIn).toFixed(3)}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+								</tbody>
+							</table>
+							<div>
+								<p class="f_textML">{{'FE_TRAFFIC_DAILY_DOWN'|i18n}} {{'FE_BREAKDOWN_CHART'|i18n}} ({{'FE_GIGABYTES' |i18n}})</p>
+								<chart type="2d" 
+									   draw="bar" 
+									   data="chartData.trafficDetailDown"
+									   scalelabel="GiB" 
+									   style="width:100%; height:300px;"></chart>
+							</div>
+							<div style='margin-top:20px;'>
+								<p class="f_textML">{{'FE_TRAFFIC_ACC'|i18n}} {{'FE_BREAKDOWN_CHART'|i18n}} ({{'FE_GIGABYTES' |i18n}})</p>
+								<chart type="2d" 
+									   draw="line" 
+									   data="chartData.trafficDetailAcc"
+									   scalelabel="GiB" 
+									   style="width:100%; height:300px;"></chart>
+								<div style="margin-left:70px;">
+									<p class="f_textM f_textBold f_textInline" style="color: #97bbcd">{{'FE_TRAFFIC_ACC' |i18n}}</p><br>
+									<p class="f_textM f_textBold f_textInline" style="color: gray">{{'FE_TRAFFIC_INC_DOWN' |i18n}}</p><br>
+								</div>
+							</div>
+							<div style='margin-top:20px;'>
+								<p class="f_textML">{{'FE_TRAFFIC_DAILY_UP'|i18n}} {{'FE_BREAKDOWN_CHART'|i18n}} ({{'FE_GIGABYTES' |i18n}})</p>
+								<chart type="2d" 
+									   draw="bar" 
+									   data="chartData.trafficDetailUp"
+									   scalelabel="GiB" 
+									   style="width:100%; height:300px;"></chart>
+							</div>
+						</div>
+					</collapsibleblock>
+
+					<!-- Usage: Storage Details -->
+					
+					<collapsibleblock caption="{{'FE_USAGE'|i18n}}: {{'FE_STORAGE_DETAILS'|i18n}}" collapsed="true" toggle="collapseToggle(collapsed)" style="margin-bottom:20px;">
+						<div class="f_borderBox" style="padding:20px 20px 10px 20px;">
+							<table class="table table-condensed table-striped">
+								<tbody>
+									<tr>
+										<td style="width:40%;">{{'FE_STORAGE_INC'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{stats._package.storage}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr ng-if="dataPeriod==='this'">
+										<td style="width:40%;">{{'FE_STORAGE'|i18n}} ({{'FE_CURRENT'|i18n}})</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.storageLatest).toFixed(3)}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr>
+										<td style="width:40%;">{{'FE_STORAGE'|i18n}} ({{'FE_MAX_OF_MONTH'|i18n}})</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.storage).toFixed(3)}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr>
+										<td style="width:40%;">{{'FE_STORAGE_EXS'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.overStorage).toFixed(3)}} {{'FE_GIGABYTES'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr>
+										<td style="width:40%;">{{'FE_STORAGE_EXS_COST'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{(stats._use.overStorageCost).toFixed(2)}} {{stats._package.currency}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<p class="f_textML">{{'FE_STORAGE'|i18n}} {{'FE_BREAKDOWN_CHART'|i18n}} ({{'FE_GIGABYTES' |i18n}})</p>
+							<chart type="2d" 
+								   draw="bar" 
+								   data="chartData.storageDetail"
+								   scalelabel="GiB" 
+								   style="width:100%; height:300px;"></chart>
+						</div>
+					</collapsibleblock>
+					
+					<!-- Usage: Processing Budget Details -->
+					
+					<collapsibleblock caption="{{'FE_USAGE'|i18n}}: {{'FE_BUDGET_DETAILS'|i18n}}" collapsed="true" toggle="collapseToggle(collapsed)">
+						<div class="f_borderBox" style="padding: 20px 20px 10px 20px;">
+							
+							<!-- Budget: Overview -->
+							
+							<table class="table table-condensed table-striped" style="margin-bottom: 30px;">
+								<tbody>
+									<!-- Included Processing Budget -->
+									<tr>
+										<td style="width:40%;">{{'FE_BUDGET_INC'|i18n}}</td>
+										<td style="width:20%; text-align: right;">{{stats._package.credits}} {{'FE_SCANS' |i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									
+									<!-- Used Processing Budget (Executed Actions) -->
+									<tr>
+										<td style="width:40%;">{{'FE_BUDGET_USED'|i18n}} <span class="f_textInactive">({{'FE_EXECUTED_ACTIONS'|i18n}})</span></td>
+										<td style="width:20%; text-align: right;">{{stats._use.creditsCharged}} {{'FE_SCANS'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									
+									<!-- Reserved Processing Budget (Pending Actions) -->
+									<tr ng-if="showPendingTransactions">
+										<td style="width:40%;">{{'FE_BUDGET_RESERVED'|i18n}} <span class="f_textInactive">({{'FE_PENDING_ACTIONS'|i18n}})</span></td>
+										<td style="width:20%; text-align: right;">{{stats._use.creditsPending}} {{'FE_SCANS'|i18n}}</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									
+									<!-- Exceeded Processing Budget (Executed Actions / Executed and Pending Actions) -->
+									<tr ng-if="showPendingTransactions">
+										<td style="width:40%;">
+											{{'FE_BUDGET_EXS'|i18n}} <span class="f_textInactive">({{'FE_EXE_PEN_ACTIONS'|i18n}})</span>
+										</td>
+										<td style="width:20%; text-align: right;">
+											{{stats._use.overCreditsChargedPending}} {{'FE_SCANS'|i18n}}
+										</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr ng-if="!showPendingTransactions">
+										<td style="width:40%;">
+											{{'FE_BUDGET_EXS'|i18n}} <span class="f_textInactive">({{'FE_EXECUTED_ACTIONS'|i18n}})</span>
+										</td>
+										<td style="width:20%; text-align: right;">
+											{{stats._use.overCreditsCharged}} {{'FE_SCANS'|i18n}}
+										</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									
+									<!-- Exceeded Processing Budget Costs (Executed Actions / Executed and Pending Actions)	 -->
+									<tr ng-if="showPendingTransactions">
+										<td style="width:40%;">
+											{{'FE_BUDGET_EXS_COST'|i18n}} <span class="f_textInactive">({{'FE_EXE_PEN_ACTIONS'|i18n}})</span>
+										</td>
+										<td style="width:20%; text-align: right;">
+											{{stats._use.overCreditsChargedPendingCost.toFixed(2)}} {{stats._package.currency}}
+										</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+									<tr ng-if="!showPendingTransactions">
+										<td  style="width:40%;">
+											{{'FE_BUDGET_EXS_COST'|i18n}} <span class="f_textInactive">({{'FE_EXECUTED_ACTIONS'|i18n}})</span>
+										</td>
+										<td style="width:20%; text-align: right;">
+											{{stats._use.overCreditsChargedCost.toFixed(2)}} {{stats._package.currency}}
+										</td>
+										<td class="hidden-md hidden-sm hidden-xs">&nbsp;</td>
+									</tr>
+								</tbody>
+							</table>
+							
+							<!-- Budget: Daily usage chart -->
+							
+							<p class="f_textML">{{'FE_BUDGET_DAILY'|i18n}} {{'FE_BREAKDOWN_CHART'|i18n}} <span class="f_textInactive">({{'FE_EXECUTED_ACTIONS'|i18n}})</span></p>
+							<chart type="2d" 
+								draw="bar" 
+								data="chartData.budgetDaily"
+								style="width: 100%; height: 300px; margin-bottom: 30px;"></chart>
+							
+							<!-- Budget: Accumulated usage chart -->
+							
+							<p class="f_textML">{{'FE_BUDGET_ACC'|i18n}} {{'FE_BREAKDOWN_CHART'|i18n}} <span class="f_textInactive">({{'FE_EXECUTED_ACTIONS'|i18n}})</span></p>
+							<chart type="2d" 
+								draw="line" 
+								data="chartData.budgetAcc"
+								style="width: 100%; height: 300px;"></chart>
+							<div style="margin-left: 70px; margin-bottom: 40px;">
+								<p class="f_textM f_textBold f_textInline" style="color: #97bbcd">{{'FE_BUDGET_ACC' |i18n}}<br /></p>
+								<p class="f_textM f_textBold f_textInline" style="color: gray">{{'FE_BUDGET_INC' |i18n}}</p>
+							</div>
+							
+							<!-- Budget: Pending actions -->
+							
+							<h4 ng-if="showPendingTransactions">{{'FE_PENDING_ACTIONS'|i18n}}</h4>
+							<div ng-if="showPendingTransactions" style="overflow: auto; margin-bottom: 20px; max-height: 465px;">
+								<table class="table table-condensed table-striped">
+									<thead>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicatePending = '_projectCaption'; sort.reversePending =! sort.reversePending">{{'FE_PROJECT'|i18n}}</a>
+										</th>
+										<th class="hidden-xs">
+											<a class="f_link link" href="" ng-click="sort.predicatePending = '_actionCaption'; sort.reversePending =! sort.reversePending">{{'FE_ACTION'|i18n}}</a>
+										</th>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicatePending = '_userName'; sort.reversePending =! sort.reversePending">{{'FE_USER'|i18n}}</a>
+										</th>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicatePending = '_creationTime'; sort.reversePending =! sort.reversePending">{{'FE_CREATED'|i18n}}</a>
+										</th>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicatePending = '_credits'; sort.reversePending =! sort.reversePending">{{'FE_BUDGET_CHANGE'|i18n}}</a>
+										</th>
+									</thead>
+									<tbody>
+										<tr ng-repeat="transaction in pendingTransactions | orderBy : sort.predicatePending : sort.reversePending">
+											<td style="word-break: break-all;">{{transaction._projectCaption}}</td>
+											<td class="hidden-xs">{{transaction._actionCaption}}</td>
+											<td title="{{transaction._userFirstLast}}" style="word-break: break-all;">{{transaction._userName}}</td>
+											<td>{{transaction._creationTime}}</td>
+											<td>{{transaction._credits}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							
+							<!-- Budget: Charged actions -->
+							
+							<h4 ng-if="showChargedTransactions">{{'FE_EXECUTED_ACTIONS'|i18n}}</h4>
+							<div ng-if="showChargedTransactions" style="overflow: auto; max-height: 465px;">
+								<table class="table table-condensed table-striped">
+									<thead>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicateCharged = '_projectCaption'; sort.reverseCharged =! sort.reverseCharged">{{'FE_PROJECT'|i18n}}</a>
+										</th>
+										<th class="hidden-xs">
+											<a class="f_link link" href="" ng-click="sort.predicateCharged = '_actionCaption'; sort.reverseCharged =! sort.reverseCharged">{{'FE_ACTION'|i18n}}</a>
+										</th>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicateCharged = '_userName'; sort.reverseCharged =! sort.reverseCharged">{{'FE_USER'|i18n}}</a>
+										</th>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicateCharged = '_chargeTime'; sort.reverseCharged =! sort.reverseCharged">{{'FE_EXECUTED'|i18n}}</a>
+										</th>
+										<th>
+											<a class="f_link link" href="" ng-click="sort.predicateCharged = '_credits'; sort.reverseCharged =! sort.reverseCharged">{{'FE_BUDGET_CHANGE'|i18n}}</a>
+										</th>
+									</thead>
+									<tbody>
+										<tr ng-repeat="transaction in chargedTransactions | orderBy : sort.predicateCharged : sort.reverseCharged">
+											<td style="word-break: break-all;">{{transaction._projectCaption}}</td>
+											<td class="hidden-xs">{{transaction._actionCaption}}</td>
+											<td title="{{transaction._userFirstLast}}" style="word-break: break-all;">{{transaction._userName}}</td>
+											<td>{{transaction._chargeTime}}</td>
+											<td>{{transaction._credits}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</collapsibleblock>
+				</div>
+			</div>
+			<errorbox promisefail error="error"></errorbox>
+		</div>
+	</div>
+</div>

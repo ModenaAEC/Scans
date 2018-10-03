@@ -1,0 +1,41 @@
+<div ng-if='currentobj!==undefined' class="ws_imageGallery">
+	<div class="ws_backgroundImage" back-img="{{currentobj.getBestFittingImage(2048, colormode)}}">
+		<div class="carousel-caption ws_featuredText">
+			<p class="f_textL">{{currentobj._displayName}}</p>
+			<div class="btn-toolbar" role="toolbar" style="float: right">
+				<div class="btn-group">
+					<button class="btn btn-default f_actionBarBtn" ng-click="showObjects([currentobj], 'panorama')" title="{{ 'C_PANORAMAVIEW' | i18n }}">
+						<img class="f_actionBarIconLarge" static-src="icons/im/taskbar/panoramaview/main.png">
+					</button>
+					<button ng-if="canShowIn3d[currentobj._UUID]" class="btn btn-default f_actionBarBtn" ng-click="showObjects([currentobj], '3d')" title="{{ 'FE_3D_VIEW' | i18n }}">
+						<img class="f_actionBarIconLarge" static-src="icons/3d-small.png">
+					</button>
+					<button class="btn btn-default f_actionBarBtn" ng-click="focusObject(currentobj, 'map')" title="{{ 'C_OVERVIEWMAP' | i18n }}">
+						<img class="f_actionBarIconLarge" static-src="icons/im/taskbar/overviewmap/main.png">
+					</button>
+					<button class="btn btn-default f_actionBarBtn" ng-click="showObjects([currentobj], 'properties')" title="{{ 'TC_SHOW_PROPERTIES' | i18n }}">
+						<img class="f_actionBarIconLarge" static-src="icons/im/taskbar/panoramaview/showproperties.png">
+					</button>
+				</div>
+				<div class="btn-group">
+					<button class="btn btn-default f_actionBarBtn" ng-click="toggleColorMode()" title="{{ 'FE_PANO_SET_PREF_CMODE' | i18n }}">
+						<img class="f_actionBarIconLarge" static-src="icons/im/taskbar/panoramaview/color.png">
+					</button>
+				</div>
+				<div class="btn-group">
+					<button class="btn btn-default f_actionBarBtn" ng-click="resetGallery();" title="{{ 'FE_CLOSE' | i18n }}">
+						<img class="f_actionBarIconLarge" static-src="icons/im/checked_false.png">
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="carousel-control ws_carouselCtrl ws_ctrlR" href="" ng-click="nextImage()" title="{{ 'BUTTON_NEXT' | i18n }}">
+			<div class="ws_center ws_carouselCircle"></div>
+			<img class="ws_center" static-src="icons/im/projectselector/appbar.chevron.right.png" />
+		</div>
+		<div class="carousel-control ws_carouselCtrl ws_ctrlL" href="" ng-click="prevImage()" title="{{ 'BUTTON_PREV' | i18n }}">
+			<div class="ws_center ws_carouselCircle"></div>
+			<img class="ws_center" static-src="icons/im/projectselector/appbar.chevron.left.png" />
+		</div>
+	</div>
+</div>

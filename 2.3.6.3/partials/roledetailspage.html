@@ -1,0 +1,45 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<!-- Show details of a role -->
+	<div promise="getPromise()" 
+		 then="role"
+		 fail="error"
+		 class="f_text f_centeredContainer projectsGlobalWrapper" style="-webkit-overflow-scrolling: touch;">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+		<div promisethen>
+			<div class="f_centeredContainer" promise="getUserPromise()" then="userlist" fail="errorusers">
+				<div class="f_box">
+					<div class="row-fluid">
+						<span class="span2" style="min-width:120px;">
+							<div class="smallImage"
+								 static-back-img="icons/im/taskbar/roles/{{role._name.toLowerCase().replace(' ', '')}}256x256.png"
+								 style="background-clip: border-box; background-size: cover;">
+							</div>
+						</span>
+						<span style="min-width:340px;">
+							<div class="regularProjectDescription">
+								<p style="margin-bottom:28px;" class="f_textML f_textBold">{{role._name}}</p>
+								<p class="f_textM f_textJustify">{{role._description | i18n}}</p>
+							</div>
+						</span>
+						<table promisethen ng-show="userlist.length > 0" class="f_textM table table-hover table-striped">
+							<thead>
+								<th><a class="f_link link" href="" ng-click="setPredicate('_firstname')">{{"FE_FIRSTNAME" | i18n}}</a></th>
+								<th><a class="f_link link" href="" ng-click="setPredicate('_lastname')">{{"FE_LASTNAME" | i18n}}</a></th>
+								<th><a class="f_link link" href="" ng-click="setPredicate('_username')">{{"FE_USERNAME" | i18n}}</a></th>
+							</thead>
+							<tbody>
+								<tr ng-repeat="user in userlist | orderBy:predicate:reverse">
+									<td style="f_textM">{{user._firstname || placeholdEmpty}}</td>
+									<td style="f_textM">{{user._lastname || placeholdEmpty}}</td>
+									<td style="f_textM">{{user._username}}</td>
+								</tr>
+							</tbody>
+						</table>
+						<errorbox promisefail error="errorusers"></errorbox>
+					</div><!-- fluid Row -->
+				</div><!-- BorderBox -->
+			</div>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

@@ -1,0 +1,71 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<div promise="getPromise()" fail="error" class="f_centeredContainer projectsGlobalWrapper propPage"
+		 style="padding-top:5px; padding-bottom:10px;" onselectstart="return false;">
+
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:30px;">
+			{{"FE_LOADING" | i18n}}
+		</div>
+
+		<!-- Body content -->
+		<div promisethen ng-show="project"
+			 class="f_textM" class="f_centeredContainer featuredProjectContainer"
+			 style="margin-bottom:15px; margin-top:15px;">
+
+			<div class="f_textM  f_centeredContainer f_borderBox f_responsiveBox">
+				<div class="header f_text">
+					<p style="padding-top: 14px; margin-left:40px;">{{'FE_PREVIEW_IMG'|i18n}}</p>
+				</div>
+				<div class="f_settingWrapper">
+					<div ng-if="browserCompatible">
+						<div>
+							<div class="radio" style="margin-top:10px;">
+								<table border="0" ng-init="setDomElements()">
+									<tr>
+										<td>
+											<input type="file" accept="image/gif,image/jpeg,image/png"
+											       id="projectPreviewInput" style="margin-top:10px;" />
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div style="color:gray; margin-top:2px; margin-bottom:10px;">
+												{{'FE_ALLOWED_FILE_TYPES'|i18n}}: PNG, JPG, GIF.
+												{{'FE_MAX_FILE_SIZE'|i18n}}: 10 {{'FE_MEGABYTES'|i18n}} / 33 {{'FE_MEGAPIXEL'|i18n}}.
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div ng-show="project._changes._newImage.loading" class="ws_loading" style="padding: 2px;">
+												{{'FE_LOADING'|i18n}}
+												<img class="f_icon16" static-src="icons/im/spinner.gif" />
+											</div>
+											<div ng-show="project._changes._newImage.error">
+												<alert type="warning" ng-show="project._changes._newImage.error">
+													{{project._changes._newImage.error|i18n}}
+												</alert>
+											</div>
+											<!-- Note: don't use ng-if for the image: will never finish loading! -->
+											<img ng-show="!project._changes._newImage.loading && !project._changes._newImage.error"
+												 style="border:1px solid black; width: 100%;"
+												 ng-src="{{project._changes._newImage.dataURL || project._imageUrl || defaultImageUrl}}"
+												 id="projectPreviewImg" />
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div ng-if="!browserCompatible">
+						<alert type="warning">
+							<div>{{'EM_BROWSER'|i18n}} Firefox: 3.6, Chrome: 7, Internet Explorer: 10, Opera: 12.02, Safari: 6.0.2</div>
+						</alert>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

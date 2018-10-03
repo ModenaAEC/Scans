@@ -1,0 +1,105 @@
+<div ng-click="toggleOpen()" class="ws_dataFilterTrigger" title="{{ tooltipToggleBtn() | i18n }}" ng-class="{ws_glowHint: filter._categories.length || filter._tags.length || filter._ignoreShared || filter._root}">
+    <div ng-if="!drawer && filter._categories.length" class="ws_filterHint ws_catFilterHint" title="{{'FE_CAT_FILTER'|i18n}}"></div>
+    <div ng-if="!drawer && filter._tags.length" class="ws_filterHint ws_tagFilterHint" title="{{'FE_TAG_FILTER'|i18n}}"></div>
+    <div ng-if="!drawer && filter._ignoreShared" class="ws_filterHint ws_ownFilterHint" title="{{'FE_IGNORE_SHARED'|i18n}}"></div>
+    <div ng-if="!drawer && filter._root" class="ws_filterHint ws_adminFilterHint" title="{{'FE_ADMIN_ACCESS'|i18n}}"></div>
+</div>
+<span ng-if="drawer" class="f_text f_textM ws_dataFilterWrapper">
+    <p class="f_textBright f_textM f_textInline f_textBold" style="margin-left:43px;margin-bottom:2px;opacity:0.5;">{{'FE_CAT_FILTER'|i18n}}</p>
+    <table style="width:100%;">
+		<tr>
+			<td class="f_icon40" valign="top">
+				<img class="f_icon40 f_textInline" static-src="icons/filtercatcur.png"/>
+			</td>
+			<td>
+				<p ng-if="!filter._changes._categories.length" class="f_textBright f_textMS" style="margin-top:8px;">{{'FE_NO_CAT_FILTER'|i18n}}.</p>
+				<div style="max-height:130px;overflow-y:auto;">
+					<category ng-repeat="cat in filter._changes._categories" class="f_catWrapper f_textM" text="cat" interactive="true" ng-click="remove(filter._changes._categories, cat)" title="{{'FE_REMOVE_CAT_FILTER'|i18n}}"/>	
+				</div>
+			</td>
+			<td style="width:60px;" valign="top">
+				<div class="btn-group f_alignRight">
+					<button class="btn btn-default btn-small dropdown-toggle" style="margin-top:5px;" data-toggle="dropdown" title="{{'FE_ADD_CAT_FILTER'|i18n}}"> 
+						<img class="f_icon24" static-src="icons/filter_cat.png">                       
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu ws_scrollPopup">
+						<li ng-repeat="cat in categories" ng-click="addOrRemove(filter._changes._categories, cat)">
+							<a class="f_cursorPointer">
+								<category class="f_catWrapper f_textM" text="cat" interactive="false"/>
+								<img ng-if="filter._changes._categories.indexOf(cat) >= 0" class="f_icon24" 
+								style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+								<img ng-if="filter._changes._categories.indexOf(cat) < 0" class="f_icon24" 
+								style="margin-left:-5px; display:inline;" static-src="icons/plus_white.png"/>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</td>
+		</tr>
+    </table>
+    <hr style="margin:5px;margin-bottom: 10px;opacity:0.6;box-shadow: 0px 0px 10px 0px #B19578;">
+    <p class="f_textBright f_textM f_textInline f_textBold" style="margin-left:43px;margin-bottom:2px;opacity:0.5;">{{'FE_TAG_FILTER'|i18n}}</p>
+    <table style="width:100%;">
+		<tr>
+			<td class="f_icon40" valign="top">
+				<img class="f_icon40 f_textInline" static-src="icons/filtertagcur.png"/>
+			</td>
+			<td>
+				<p ng-if="!filter._changes._tags.length" class="f_textBright f_textMS" style="margin-top:8px;">{{'FE_NO_TAG_FILTER'|i18n}}.</p>
+				<div style="max-height:125px;overflow-y:auto;">
+					<span ng-repeat="tag in filter._changes._tags" style="cursor:pointer;margin-bottom:5px;padding-top:6px;" ng-click="remove(filter._changes._tags, tag)" class="f_label ng-binding" title="{{'FE_REMOVE_TAG_FILTER'|i18n}}">
+						{{tag}}
+						<img style="margin-bottom:2px" class="f_icon16" static-src="icons/im/checked_false.png">
+					</span>
+				</div>
+			</td>
+			<td style="width:60px;" valign="top">
+				<div class="btn-group f_alignRight">
+					<button class="btn btn-default btn-small dropdown-toggle" style="margin-top:5px;" data-toggle="dropdown" title="{{'FE_ADD_TAG_FILTER'|i18n}}"> 
+						<img class="f_icon24" static-src="icons/filter_tag.png">                       
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu ws_scrollPopup">
+						<li ng-repeat="tag in tags" ng-click="addOrRemove(filter._changes._tags, tag)">
+							<a href="">{{tag.substr(0,20)}}
+								<img ng-if="filter._changes._tags.indexOf(tag) >= 0" class="f_icon24" 
+								style="margin-left:5px; display:inline;" static-src="icons/im/checked_true.png"/>
+								<img ng-if="filter._changes._tags.indexOf(tag) < 0" class="f_icon24" 
+								style="margin-left:-5px; display:inline;" static-src="icons/plus_white.png"/>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</td>
+		</tr>
+    </table>
+    <hr ng-show="userName" style="margin:5px; margin-bottom: 10px; opacity:0.6; box-shadow: 0px 0px 10px 0px #B19578;">
+	<div ng-show="userName">
+		<img class="f_icon32 f_textInline ws_fIcon" static-src="icons/ignoreshared.png"/>
+		<label class="f_text f_textNormal f_textM f_textBright f_cursorPointer">
+			<input type="checkbox" ng-model="filter._changes._ignoreShared" class="f_cursorPointer" style="width: 15px; height: 15px;"/>
+			{{'FE_IGNORE_SHARED'|i18n}}
+		</label>
+	</div>
+	<div ng-show="isAdmin">
+		<img class="f_icon32 f_textInline ws_fIcon" static-src="icons/projectmanager.png"/>
+		<label class="f_text f_textNormal f_textM f_textBright f_cursorPointer">
+			<input type="checkbox" ng-model="filter._changes._root" class="f_cursorPointer" style="width: 15px;height: 15px;"/>
+			{{'FE_ADMIN_ACCESS'|i18n}}
+		</label>
+	</div>
+	<div style="margin-top:10px;">
+		<div class="btn-group">
+			<button type="button" class="btn f_btnDark f_textM ws_cancelBtn" ng-click="cancel()" title="{{'FE_CANCEL'|i18n}}">
+				<img class="f_icon32" static-src="icons/im/abort.png"/>{{'FE_CANCEL'|i18n}}
+			</button>
+			<button type="button" class="btn f_btnDark f_textM ws_resetFilterBtn" ng-click="resetFilters()" title="Reset Filters">
+				<img class="f_icon32" static-src="icons/cancel_filter.png"/>
+			</button>
+			<button type="button" class="btn f_btnDark f_textM ws_updateBtn" ng-click="apply()" title="{{'BUTTON_PROCEED'|i18n}}">
+				{{'BUTTON_PROCEED'|i18n}}<img class="f_icon32" static-src="icons/sync.png"/>
+			</button>
+		</div>
+	</div>
+</span>

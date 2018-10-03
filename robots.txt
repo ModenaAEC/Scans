@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /2.3.6.3/        # Version number is injected
+Disallow: /*.jpg$
+Disallow: /*.png$
+Disallow: /*.gif$
+Disallow: /*.php$

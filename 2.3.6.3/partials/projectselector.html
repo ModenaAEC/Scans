@@ -1,0 +1,301 @@
+<div class="f_page">
+	<div promise="getProjects()" then="projects" fail="error" defaultvalue="[]" class="projectSelector f_text">
+		<!--Global Project Wrapper -->
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_LOADING'|i18n}}</div>
+		<div promisethen ng-show="projects.length === 0">
+			<img ng-if="projects.length === 0" class="ws_defaultProjectImage" static-src="default/defaultProjectImage.jpg">
+			<p class="f_textL f_textAlignC">{{"FE_NO_PROJECTS_AVAILABLE" |i18n}}</p>
+		</div>
+		<div promisethen class="f_centeredContainer projectsGlobalWrapper">
+			<div ng-if="projects.length > 0">
+				<!-- Search form and buttons -->
+				<div class="searchWrapper container-fluid">
+					<div class="row" style="margin-left: -30px !important; margin-right: -30px !important; margin-bottom: 10px;">
+						<!-- Input field for search -->
+						<div class="col-xs-7">
+							<div class="input-group" style="margin-top:1px;">
+								<input id="projectSearchField" 
+									   type="text" 
+									   placeholder="{{'FE_FIND_PROJECT'|i18n}}..." 
+									   ng-model="page.query"
+									   class="form-control search-query">
+								</input>
+								<div class="input-group-btn">
+									<button class="btn btn-default" ng-class="{ws_filterActive: page.query}" ng-click="page.query = ''; page.index = 0"
+											style="margin-right: 30px; margin-left: -1px; border-bottom-left-radius:0; border-top-left-radius:0;"
+											title="{{'FE_RESET_FILTER'|i18n}}">
+											<img class="f_icon16" static-src="icons/clear.png"/>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-5">
+							<div class="btn-group pull-right">
+								<button class="btn btn-default f_btnFontDark" ng-class="{'btn-info': pageconfig.showfeatured}"
+										ng-click="pageconfig.showfeatured = !pageconfig.showfeatured; storePageConfig()"
+										ng-disabled="page.query"
+										title="{{setToolTipFTBox(pageconfig.showfeatured) | i18n}}"
+										style="font-family:none;">
+									<span class="glyphicon glyphicon-picture" style="font-size: 16px;margin-top: 3px;"></span>
+								</button>
+								<button class="btn btn-default f_btnFontDark" ng-class="{'btn-info': pageconfig.showmap}"
+										ng-click="pageconfig.showmap = !pageconfig.showmap; storePageConfig()" 
+										ng-disabled="page.query"
+										title="{{setToolTipMap(pageconfig.showmap) | i18n}}"
+										style="font-family:none;">
+									<span class="glyphicon glyphicon-globe" style="font-size: 16px;margin-top: 3px;"></span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div ng-show="!page.query">
+					<!-- Carousel for featured projects -->
+					<div ng-if="pageconfig.showfeatured">
+						<!-- Feature box is enabled, and no error occurred, show feature box -->
+						<div ng-if="featuredProjects.length > 0" ng-init="initCarousel()">
+							<div id="featuredBox" class="f_borderBox" title="{{'FE_FEATURE_BOX'|i18n}}">
+								<div id="featureShowcase" class="featureShowcase carousel slide carousel-fade" data-ride="carousel">
+									<ol class="carousel-indicators ws_carouselIndicators">
+										<li ng-repeat="featured in featuredProjects" data-target="#featureShowcase" data-slide-to="{{$index}}" ng-class="{active:$index==0}"></li>
+									</ol>
+									<div class="carousel-inner">
+										<div ng-repeat="featured in featuredProjects" 
+											 class="item featuredImageWrapper" 
+											 ng-class="{active:$index==0}" 
+											 back-img="{{featured._imageUrl}}"
+											 style="background-repeat: no-repeat; background-position:center center; background-clip:content-box; background-size: cover">
+											<div class="carousel-caption ws_featuredText">
+												<p class="f_textL">{{featured._displayName}}</p>
+												<div class="btn-toolbar btn-group">
+													<button class="btn btn-default" 
+															ng-click="openProjectDetails(featured)" 
+															title="{{'FE_DETAILS'|i18n}}">
+														<img class="f_icon24" 
+															 static-src="icons/im/details.png" />
+													</button>
+													<button ng-show="pageconfig.showmap && !page.query"
+													   class="btn btn-default" 
+													   ng-click="showProjectOnMap(featured)" 
+													   title="{{'FE_SHOW_PROJ_ON_MAP'|i18n}}">
+														<img class="f_icon24" 
+															 static-src="icons/im/mapLocation.png" />
+													</button>
+													<button class="btn btn-default" 
+															ng-click="pickProject(featured)" 
+															title="{{'FE_LOAD_PROJECT'|i18n}}">
+														<img class="f_icon24" 
+															 static-src="icons/im/open.png" />
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									<a class="carousel-control ws_carouselCtrl ws_ctrlL" ng-click="toggleFeatSlide('prev')">
+										<div class="ws_center ws_carouselCircle"></div>
+										<img class="ws_center" static-src="icons/im/projectselector/appbar.chevron.left.png" title="{{'FE_PREV_FT_PROJECT'|i18n}}">
+									</a>
+									<a class="carousel-control ws_carouselCtrl ws_ctrlR" ng-click="toggleFeatSlide('next')">
+										<div class="ws_center ws_carouselCircle"></div>
+										<img class="ws_center" static-src="icons/im/projectselector/appbar.chevron.right.png" title="{{'FE_NEXT_FT_PROJECT'|i18n}}">
+									</a>
+								</div>
+							</div>	
+						</div>
+					</div>
+					<!--World Map -->
+					<div ng-if="pageconfig.showmap" id="worldmapcontainer" style="margin-bottom: 20px;">
+						<wsworldmap id="wm" class="mapWrapper f_centeredContainer featuredProjectContainer" title="{{'FE_WORLD_MAP'|i18n}}"></wsworldmap>
+					</div>
+				</div>
+				<!-- Regular Projects -->
+				<div style="width: 100%; margin-bottom: 10px; padding: 0px 5px;">
+					<!-- Drop down box for sorting -->
+					<div class="btn-group f_textM">
+						<button class="btn btn-default" data-toggle="dropdown" ng-disabled="projects.length<2">
+							{{'FE_SORTBY' | i18n}}: {{page.sortby | i18n}}
+						</button>
+						<ul class="dropdown-menu">
+							<li ng-click="setPredicate('_displayName','FE_PROJECT_NAME')"><a class="f_cursorPointer">{{'FE_PROJECT_NAME'|i18n}}</a></li>
+							<li ng-click="setPredicate('_workspaceModificationTime', 'FE_MOD_TIME')"><a class="f_cursorPointer">{{'FE_MOD_TIME'|i18n}}</a></li>
+							<li ng-click="setPredicate('_numberOfScans', 'FE_NO_OF_SCANS')"><a class="f_cursorPointer">{{'FE_NO_OF_SCANS'|i18n}}</a></li>
+							<li ng-click="setPredicate('_latitude', 'FE_LATITUDE')"><a class="f_cursorPointer">{{'FE_LATITUDE'|i18n}}</a></li>
+							<li ng-click="setPredicate('_longitude', 'FE_LONGITUDE')"><a class="f_cursorPointer">{{'FE_LONGITUDE'|i18n}}</a></li>
+						</ul>
+						<button class="btn btn-default" ng-click="page.reverse=!page.reverse" ng-disabled="projects.length<2" style="margin-left:-5px;" title="{{'FE_REVERSE_ORDER'|i18n}}">
+							<img class='f_icon16'
+								 static-src="icons/im/projectselector/sort_inverse_{{page.reverse}}.png" 
+								 style="cursor:pointer; display:inline;margin:0px;" />
+						</button>	
+					</div>
+					<div class="btn-group pull-right">
+						<button class="btn btn-default f_btnFontDark" ng-class="{'btn-info': pageconfig.mode=='thumblist'}"
+								ng-click="pageconfig.mode = 'thumblist'; storePageConfig()" 
+								title="{{'FE_PO_AS_LIST'|i18n}}"
+								style="font-family:none;">
+							<span class="glyphicon glyphicon-align-justify" style="font-size: 16px;margin-top: 3px;"></span>
+						</button>
+						<button class="btn btn-default f_btnFontDark" ng-class="{'btn-info': pageconfig.mode=='thumbnails'}"
+								ng-click="pageconfig.mode='thumbnails';storePageConfig()" 
+								title="{{'FE_PO_AS_THUMB'|i18n}}"
+								style="font-family:none;">
+							<span class="glyphicon glyphicon-th-large" style="font-size: 16px;margin-top: 3px;"></span>
+						</button>
+					</div>
+				</div>
+				<div ng-switch="pageconfig.mode">
+					<div ng-switch-when="thumbnails" class="container-fluid">
+						<!-- Fluid grid layout for thumbnail list -->
+						<div class="row">
+							<div class="ws_itemCount"  ng-repeat="project in projects | projectfilter:page.query | orderBy:page.predicate:page.reverse">
+								<div class="ws_projectThumb ws_thumbnail f_box projThumb">
+									<div class="projectImageWrapper2">
+										<div class="ws_projThumb" 
+											ng-click="pickProject(project)"
+											style="cursor: pointer; background: url('{{project._imageUrl}}') no-repeat center center; background-size: cover;">
+										</div>
+									</div>
+									<br>
+									<div ng-click="pickProject(project)" class="ws_projectThumbTitleWrapper">
+										<p class="f_textBright f_textML f_textAlignL">{{project._displayName}}</p>
+									</div>
+									
+									<div ng-if="project._state === 'Draft'" class="ws_psUCBar1">&nbsp;</div>
+									<img ng-if="project._state === 'Draft'" class="ws_psUCImg1" static-src="icons/im/projectselector/under_construction_white.png" />
+									
+									<section style="overflow:hidden;">
+										<span ng-if="project._type === 'wsc'" class="f_textM f_textBold ws_projectThumbnailDetailsWrapper"
+											  style="background: no-repeat top left;"
+											  static-back-img="icons/im/projectselector/scanner_tr.png"
+											  title="{{'FE_NO_OF_SCANS'|i18n}}">
+											<p style="margin-left:5px;">
+												{{project._numberOfScans}}
+											</p>
+										</span>
+										<span ng-if="project._type === 'wsc'" class="f_textM f_textBold ws_projectThumbnailDetailsWrapper"
+											  style="background: no-repeat top left;"
+											  static-back-img="icons/im/projectselector/calendar_tr.png"
+											  title="{{'FE_REC_PERIOND_PRPJ'|i18n}}">
+											<p style="margin-left:5px;">
+												{{[project._oldestScanRecordingTime, project._newestScanRecordingTime] | dateperiod : true}}
+											</p>
+										</span>
+										<span ng-if="project._type === 'inc'" class="f_textM f_textBold ws_projectThumbnailDetailsWrapper"
+											  style="background: no-repeat top left;"
+											  static-back-img="icons/im/projectselector/clock_tr.png"
+											  title="{{'FE_PROJECT_CREATION_TIME'|i18n}}">
+											<p style="margin-left:5px;">
+												{{project._creationDate | date}}
+											</p>
+										</span>
+										<img ng-if="project._enable3D && project.hasProjectPointCloud()" class="f_icon48" style="float: right; margin-right: 10px; opacity: 0.33;" static-src="icons/3d.png" title="{{'FE_3D_VIEW_AVAILABLE'|i18n}}" />
+										<div style="height:50px;"></div>
+									</section>
+									<div class="ws_buttonContainer">
+										<div class="btn-group">
+											<button class="btn btn-default" ng-click="openProjectDetails(project)" title="{{'FE_DETAILS'|i18n}}">
+												<img class="f_icon24" static-src="icons/im/details.png" />
+											</button>
+											<button ng-show="pageconfig.showmap && !page.query" class="btn btn-default" ng-click="showProjectOnMap(project)" title="{{'FE_SHOW_PROJ_ON_MAP'|i18n}}">
+												<img class="f_icon24" static-src="icons/im/mapLocation.png" />
+											</button>
+											<button ng-if="isPM && (project._type !== 'wsc' || project._uploadState === 'Completed')" class="btn btn-default" ng-click="openWorkbench(project)" title="{{'FE_WORKBENCH'|i18n}}">
+												<img class="f_icon28" style="margin-bottom: -2px; margin-top: -2px;" static-src="icons/im/taskbar/projectmanagement/workbench.png" />
+											</button>
+											<button class="btn btn-default" ng-click="pickProject(project)" title="{{'FE_LOAD_PROJECT'|i18n}}">
+												<img class="f_icon24" static-src="icons/im/open.png" />
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>	
+					</div>
+					<div ng-switch-when="thumblist">
+						<div ng-model="project" ng-repeat="project in projects | projectfilter:page.query | orderBy:page.predicate:page.reverse">
+							<div class="f_box projectBox">
+								<div class="row">
+									<div class="col-md-4">
+										<div class="projectImageWrapper f_cursorPointer" style="margin-bottom: 5px;" ng-click="pickProject(project)">
+											<div class="ws_projThumb" style="background: url('{{project._imageUrl}}') no-repeat center center; background-size: cover;"></div>
+										</div>
+									</div>
+									<div class="col-md-8">
+										<div class="ws_projDesc" style="margin-top:10px;">
+											<p class="f_textML f_textBold f_textInline f_cursorPointer" ng-click="pickProject(project)">{{project._displayName}}</p>
+											<p class="f_textM f_textJustify" style="margin-top:10px;">
+												<markdown source="project._description"></markdown>
+											</p>
+										</div>
+									</div>
+									<div>
+										<table style="width: 100%; margin-left: 25px;">
+											<tbody>
+												<tr>
+													<td>
+														<div ng-if="project._state === 'Draft'" class="ws_psUCBar2 ng-scope">&nbsp;</div>
+													</td>
+													<td style="width: 112px;">
+														<img ng-if="project._state === 'Draft'" class="ws_psUCImg2 ng-scope" static-src="icons/im/projectselector/under_construction.png" />
+													</td>
+												</tr>
+											</tbody>
+										</table>
+										
+										<img ng-if="project._enable3D && project.hasProjectPointCloud()" class="f_icon48" style="opacity: 0.33; margin-left: 27px;" static-src="icons/3d.png" title="{{'FE_3D_VIEW_AVAILABLE'|i18n}}" />
+										
+										<div class="btn-group f_alignRight" style="margin-bottom: 10px; margin-right: 35px;">
+											<button class="btn btn-default" ng-click="openProjectDetails(project)" title="{{'FE_DETAILS'|i18n}}">
+												<img class="f_icon24" static-src="icons/im/details.png" />
+											</button>
+											<button ng-show="pageconfig.showmap && !page.query" class="btn btn-default" ng-click="showProjectOnMap(project)" title="{{'FE_SHOW_PROJ_ON_MAP'|i18n}}">
+												<img class="f_icon24" static-src="icons/im/mapLocation.png" />
+											</button>
+											<button ng-if="isPM && (project._type !== 'wsc' || project._uploadState === 'Completed')" class="btn btn-default" ng-click="openWorkbench(project)" title="{{'FE_WORKBENCH'|i18n}}">
+												<img class="f_icon28" style="margin-bottom: -2px; margin-top: -2px;" static-src="icons/im/taskbar/projectmanagement/workbench.png" />
+											</button>
+											<button class="btn btn-default" ng-click="pickProject(project)" title="{{'FE_LOAD_PROJECT'|i18n}}">
+												<img class="f_icon24" static-src="icons/im/open.png" />
+											</button>
+										</div>
+									</div>
+								</div><!-- fluid Row -->
+								<!-- Bottom Bar -->
+								<div class="bottomBar f_textSM">
+									<span ng-if="project._type === 'wsc'" class='ws_psBarSpan' title="{{'FE_NO_OF_SCANS'|i18n}}">
+										<img class='f_icon24' static-src='icons/im/projectselector/scanner.png'/>
+										<p class="f_textInline">
+											{{project._numberOfScans}} {{'C_SCANS'|i18n}}
+										</p>
+									</span>
+									<span ng-if="project._type === 'wsc'" class='ws_psBarSpan' title="{{'FE_REC_PERIOND_PRPJ'|i18n}}">
+										<img class='f_icon24' static-src='icons/im/projectselector/calendar.png'/>
+										<p class="f_textInline">
+											{{[project._oldestScanRecordingTime, project._newestScanRecordingTime] | dateperiod : true}}
+										</p>
+									</span>
+									<span class='ws_psBarSpan' title="{{project._type === 'wsc' ? 'FE_MOD_TIME' : 'FE_PROJECT_CREATION_TIME' | i18n}}">
+										<img class='f_icon24' static-src='icons/im/clock.png'/>
+										<p class="f_textInline">
+											{{project._type === 'wsc' ? project._workspaceModificationTime : project._creationDate | date}}
+										</p>
+									</span>
+									<span class='ws_psBarSpan' title="{{'FE_LOCATION'|i18n}}">
+										<img class='f_icon24' static-src='icons/im/projectselector/location.png'/>
+										<p class="f_textInline">
+											<a title="{{'FE_OPEN_GMAPS'|i18n}}" target="_blank" 
+											   href="https://www.google.com/maps/place//{{project._latitude}},{{project._longitude}}/@{{project._latitude}},{{project._longitude}},12z">
+												{{project._latitude}}, {{project._longitude}}
+											</a>
+										</p>
+									</span>
+								</div>
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div><!--Global Project Details Wrapper -->
+		<errorbox promisefail error="error"></errorbox>
+	</div><!--Template -->
+</div>

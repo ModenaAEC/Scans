@@ -1,0 +1,68 @@
+<div>
+	<!--Taskbar -->
+	<div id="taskbar" class="f_taskbar" ng-class="{f_compact: compactPanel}">
+		<div class="f_fixTaskCategories" ng-if="!historyViewTask">
+			<!-- Accordeon -->
+			<div class="f_taskbarImpl f_taskbar-element" id="taskbar-collapse">
+				<!-- Task Categories -->
+				<div class="accordion-group f_taskGroup" 
+					ng-class="{active:category.id==context.activeCategory.id}" 
+					ng-repeat="category in context.categories" 
+					ng-switch="category.url">
+					<div ng-switch-when="undefined">
+						<a class="f_taskbarCategory" ng-click="launchTask(context.panel, category.id)">
+							<div class="f_accordion-heading f_taskCategory f_unselectable"
+								 ng-class="{active:category.id==context.activeCategory.id}">
+								<div style="display:inline-block; width:48px;vertical-align: top;">
+									<img ng-class="category.iconMargin ? 'f_icon48Margin' : 'f_icon48'" unselectable="on"
+										 static-src="{{category.iconPath ? category.iconPath : 'icons/im/taskbar/' + category.id + '/main.png'}}"/>
+								</div>
+								<div class="f_taskPanelCategoryCaption" style="display:inline-block; vertical-align:top; padding-top:12px; padding-bottom:1px;">
+									<div>
+										<p class="f_taskbarCategoryText" unselectable="on"
+										   ng-show="!compactPanel">{{category.name | i18n}}</p>
+									</div>
+								</div>
+							</div>
+						</a>
+						<!-- Task Launcher -->
+						<div ng-if="!compactPanel && context.activeCategory.id==category.id">
+							<div ng-repeat="task in category.tasks"
+								 ng-click="launchTask(context.panel, category.id, task.id)"
+								 class="f_accordion-inner f_taskLauncher f_unselectable">
+								<div class="f_taskPanelTaskCaption">
+									<img ng-class="task.iconMargin ? 'f_icon48Margin' : 'f_icon48'" 
+										unselectable="on"
+										 static-src="{{task.iconPath ? task.iconPath : 'icons/im/taskbar/' + category.id + '/' + task.icon}}"/>
+									<span>{{task.caption | i18n}}<sup class="ws_beta" ng-show="task.beta">PREVIEW</sup></span>
+								</div>
+							</div><!-- Tasks -->
+						</div>
+					</div>
+					<a ng-switch-default class="f_taskbarCategory" ng-href="{{category.url}}" target="_blank">
+						<div class="f_accordion-heading f_unselectable {{category.id}}"
+							 ng-class="{active:category.id==context.activeCategory.id}">
+							<div style="display:inline-block; width:48px;vertical-align: top;">
+								<img ng-class="category.iconMargin ? 'f_icon48Margin' : 'f_icon48'" unselectable="on"
+									 static-src="{{category.iconPath ? category.iconPath : 'icons/im/taskbar/' + category.id + '/main.png'}}"/>
+							</div>
+							<div class="f_taskPanelCategoryCaption" style="display:inline-block; vertical-align:top; padding-top:12px; padding-bottom:1px;">
+								<div>
+									<p class="f_taskbarCategoryText" unselectable="on"
+									   ng-show="!compactPanel">{{category.name | i18n}}</p>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- Task Content -->
+		<div class="f_fixTasks" ng-if="historyViewTask">
+			<div class="f_taskImpl f_taskbar-element" ng-switch on="context.activeTask">
+				<no-tag ng-switch-when="undefined"></no-tag>
+				<taskcontent ng-switch-default task="context.activeTask"></taskcontent>
+			</div>
+		</div>
+	</div>
+</div>

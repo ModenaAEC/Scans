@@ -1,0 +1,17 @@
+	<div class="f_collapsibleBlock" style="width:100%">
+		<table border = 0 style="white-space:nowrap; margin-bottom:10px; cursor:pointer;" ng-click="toggleCollapsed()">
+			<tr>
+				<td style="width:1%; min-width:24px; padding-left: 5px;">
+					<span ng-show="collapsed === 'false'" class="f_cssTriangleDown"></span>
+					<span ng-show="collapsed === 'true'" class="f_cssTriangleRight"></span>
+				</td>
+				<td style="width:1%;padding-right:5px;">
+					<p class="f_textML" style="margin:0 0 0;">{{caption}}</p>
+				</td>
+				<td style="width:98%;">
+					<div ng-show="line !== 'false'" class="f_collapsibleLine" style="height: 1px; margin-top: 2px;"></div>
+				</td>
+			</tr>
+		</table>
+		<div ng-show="collapsed !== 'true'" style ="margin-bottom:10px; margin-left:30px;"></div>
+	</div>

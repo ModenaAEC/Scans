@@ -1,0 +1,1 @@
+self.postMessage=self.webkitPostMessage||self.postMessage,importScripts("nodeloader.js"),self.onmessage=function(e){var s=function(e){self.postMessage(e)},a=(e.data.nodeName,e.data.url,e.data);NodeLoader.load(a,s)};

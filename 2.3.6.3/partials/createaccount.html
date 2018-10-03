@@ -1,0 +1,163 @@
+<div style="padding-top:10px">
+	<div class="f_centeredContainer f_borderBox f_responsiveBox">
+		<!-- Header with image -->
+		<div class="header">
+			<p style="padding-left:20px" class="f_textBold f_textML">
+				<img static-src="icons/im/taskbar/users/edit.png" class="f_icon48"/>
+				{{'FE_CREATE_USERACCOUNT'|i18n}}
+			</p>
+		</div>
+		<p class="f_textM" style="padding-left:30px">{{'FE_CREATE_ACCOUNT_FILLOUT'|i18n}}:</p>
+		<!-- main content of the formular -->
+		<form novalidate name="createaccountform" id="createaccountform" style="margin-top:20px; padding-left:30px; padding-right:30px;" class="f_textM form-horizontal">
+			<div class="input-group f_inputGroup">
+				<div class="input-group-addon f_validate required" ng-class="{'ng-valid':formData.firstname}" style="min-width: 200px;">
+					{{'FE_FIRSTNAME'|i18n}}
+				</div>
+				<input type="text"
+					   name="firstname"
+					   autocomplete="off"
+					   class="form-control f_validate"
+					   ng-model="formData.firstname"
+					   placeholder="{{'FE_FIRSTNAME'|i18n}}"
+					   ng-minlength="1"
+					   ng-maxlength="127"
+					   required>
+			</div>
+			<div class="input-group f_inputGroup">
+				<div class="input-group-addon" style="min-width: 200px;">
+					{{'FE_MIDDLENAME'|i18n}}
+				</div>
+				<input type="text"
+					   name="middlename"
+					   autocomplete="off"
+					   class="form-control f_validate"
+					   ng-model="formData.middlename"
+					   placeholder="{{'FE_MIDDLENAME'|i18n}}"
+					   ng-maxlength="127"/>
+			</div>
+			<div class="input-group f_inputGroup">
+				<div class="input-group-addon f_validate required" ng-class="{'ng-valid':formData.lastname}" style="min-width: 200px;">
+					{{'FE_LASTNAME'|i18n}}
+				</div>
+				<input type="text"
+					   name="lastname"
+					   autocomplete="off"
+					   class="form-control f_validate"
+					   ng-model="formData.lastname"
+					   placeholder="{{'FE_LASTNAME'|i18n}}"
+					   ng-minlength="1"
+					   ng-maxlength="127"
+					   required/>
+			</div>
+			<div class="input-group f_inputGroup">
+				<div class="input-group-addon f_validate required" ng-class="{'ng-valid':formData.username}" style="min-width: 200px;">
+					{{'FE_USERNAME'|i18n}} ({{'FE_EMAIL'|i18n}})
+				</div>
+				<input type="email"
+					   autocomplete="off"
+					   class="form-control f_validate"
+					   ng-model="formData.username"
+					   placeholder="{{'FE_USERNAME'|i18n}} ({{'FE_EMAIL'|i18n}})"
+					   required
+					   emailvalid/>
+			</div>
+			<alert type="info" class="container-fluid f_alertCompact" style="margin-top: 25px;">
+				<div class="row">
+					<div class="col-xs-1" style="display:inline; height:32px;">
+						<img class="f_icon48" static-src="icons/im/alerts/info.png"/>
+					</div>
+					<div class="col-xs-11">
+						<p style="margin-top:5px;" class="f_textML f_textDark">{{'FE_PW_TOO_SHORT'|i18n}} {{'FE_PW_VALID'|i18n}}</p>
+					</div>
+				</div>
+			</alert>
+			<div class="input-group f_inputGroup">
+				<div class="input-group-addon f_validate required" ng-class="{'ng-valid':formData.password}" style="min-width: 200px;">
+					{{'FE_PASSWORD'|i18n}}
+				</div>
+				<input type="password"
+					   autocomplete="off"
+					   class="form-control f_validate"
+					   ng-model="formData.password"
+					   placeholder="********"
+					   validatepassword
+					   required/>
+			</div>
+			<div class="input-group f_inputGroup">
+				<div class="input-group-addon f_validate required" ng-class="{'ng-valid':formData.confirmPassword}" style="min-width: 200px;">
+					{{'FE_CONFRIM_PASSWORD'|i18n}}
+				</div>
+				<input type="password"
+					   name="confirmpassword"
+					   autocomplete="off"
+					   class="form-control f_validate"
+					   ng-model="formData.confirmPassword"
+					   placeholder="********"
+					   passwordsequal
+					   required/>
+			</div>
+			<div>
+				<input type="checkbox"
+					   class="f_invisibleCheckbox"
+					   id="accept_tos"
+					   name="accept_tos"
+					   required ng-click="formData.termsAccepted = !formData.termsAccepted">
+				<label class="f_focusLabel" for="accept_tos">
+					<div class="f_validateCheckbox required f_unselectable" ng-class="{checked:formData.termsAccepted}"></div>
+					{{'FE_I_ACCEPT_TOS'|i18n}} (<a static-href="assets/tos-20140123-1.pdf" target='_blank'> {{'FE_VIEW_TOS'|i18n}} </a>)
+				</label>
+			</div>
+			<br/>
+			<div promise="getPromise()" fail="error">
+				<div promisethen>
+					<alert  type="success" class="container-fluid f_alertCompact" style="margin-top: 25px;">
+						<div class="row">
+							<div class="col-xs-1" style="display:inline; height:32px;">
+								<img class="f_icon32" static-src="icons/im/checked_true.png"/>
+							</div>
+							<div class="col-xs-11">
+								<p style="margin-top:5px;" class="f_textML f_textDark">{{'FE_THANKS_REGISTER'|i18n}}.<br/>{{'FE_EMAIL_SHORTLY'|i18n}}...</p>
+							</div>
+						</div>
+					</alert>
+				</div>
+				<div promiseprogress>
+					<alert  type="info" class="container-fluid f_alertCompact" style="margin-top: 25px;">
+						<div class="row">
+							<div class="col-xs-1" style="display:inline; height:32px;">
+								<img class="f_icon32" static-src="icons/im/spinner.gif"/>
+							</div>
+							<div class="col-xs-11">
+								<p style="margin-top:5px;" class="f_textML f_textDark">{{'FE_CREATE_ACCOUNT'|i18n}}...</p>
+							</div>
+						</div>
+					</alert>
+				</div>
+				<div promisefail>
+					<alert  type="error" class="container-fluid f_alertCompact" style="margin-top: 25px;">
+						<div class="row">
+							<div class="col-xs-1" style="display:inline; height:32px;">
+								<img class="f_icon32" static-src="icons/im/alerts/warning.png"/>
+							</div>
+							<div class="col-xs-11">
+								<p style="margin-top:5px;" class="f_textML f_textDark">{{error.message | i18n}}</p>
+							</div>
+						</div>
+					</alert>
+				</div>
+			</div>
+			<!-- create and cancel button -->
+			<div style="height:50px;">
+				<!-- "submit" type button will be triggered with Enter key. Only works when button is within the form. -->
+				<button type="submit"
+						class="btn f_btnFontDark f_alignRight"
+						ng-disabled="!canSubmit()"
+						ng-class="{disabled: !canSubmit(), 'btn-warning':!canSubmit(), 'btn-success':canSubmit()}"
+						ng-click="submit(createaccountform)">
+					<img class="f_icon24" static-src="icons/im/taskbar/users/adduser.png" />
+					{{'FE_CREATE_ACCOUNT'|i18n}}</button>
+			</div>
+		</form>
+	</div>
+</div>

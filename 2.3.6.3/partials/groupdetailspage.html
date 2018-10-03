@@ -1,0 +1,39 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+	<div promise="getPromise()"
+		 then="group"
+		 fail="error"
+		 class="f_text f_centeredContainer projectsGlobalWrapper" style="-webkit-overflow-scrolling: touch;">
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+		<div promisethen class="f_centeredContainer">
+			<div class="f_box">
+				<div class="row-fluid" promise="getUsersPromise()" then="userlist" fail="errorusers">
+					<span class="span2" style="min-width:120px;">
+						<div class="smallImage" style="background: url({{group._img}}); background-size: cover;"></div>	
+					</span>
+					<span style="min-width:340px;">
+						<div class="regularProjectDescription">
+							<p style="margin-bottom:28px;" class="f_textML f_textBold">{{group._name}}</p>
+							<p class="f_textM f_textJustify">{{group._description}}</p>
+						</div>
+					</span>			
+					<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+					<table promisethen ng-show="userlist.length > 0" class="f_textM table table-hover table-striped">
+						<thead>		
+							<th><a class="f_link link" href="" ng-click="setPredicate('_firstname')">{{"FE_FIRSTNAME" | i18n}}</a></th>	
+							<th><a class="f_link link" href="" ng-click="setPredicate('_lastname')">{{"FE_LASTNAME" | i18n}}</a></th>	
+							<th><a class="f_link link" href="" ng-click="setPredicate('_username')">{{"FE_USERNAME" | i18n}}</a></th>
+						</thead>	
+						<tbody>
+							<tr ng-repeat="user in userlist | orderBy:predicate:reverse"> 
+								<td>{{user._firstname || placeholdEmpty}}</td>
+								<td>{{user._lastname || placeholdEmpty}}</td>
+								<td>{{user._username}}</td>
+							</tr>
+						</tbody>
+					</table>	
+				</div>
+			</div>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

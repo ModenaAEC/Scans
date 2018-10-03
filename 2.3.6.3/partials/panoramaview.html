@@ -1,0 +1,220 @@
+<div promise="getPromise()" then="root" fail="error">
+	<!-- test navigation in IE/Edge after changing the ng-show condition! -->
+	<div id="pvdiv" ng-show="!error && (root || loadStarted)"
+	     style="position: absolute; right: 0px; top: 0px; width: 100%; height: 100%; background-color: #eef2f3; overflow: hidden;">
+		<canvas ondragstart="return false;" ondrop="return false;" onselectstart="return false;" unselectable='on' style="cursor:crosshair; position: absolute; right: 0px; top: 0px; width: 100%; height: 100%; z-index: 0;"></canvas>
+		<canvas ondragstart="return false;" ondrop="return false;" onselectstart="return false;" unselectable='on' style="cursor:crosshair; position: absolute; right: 0px; top: 0px; width: 100%; height: 100%; z-index: 1;"></canvas>
+		<canvas ondragstart="return false;" ondrop="return false;" onselectstart="return false;" unselectable='on' style="cursor:crosshair; position: absolute; right: 0px; top: 0px; width: 100%; height: 100%; z-index: 2;"></canvas>
+		<!-- TODO IE 9+10 FIX:	Transparent canvas, only for mouse events. Makes sure that events are not blocked by company logo.
+								In modern browsers supporting "pointer-events: none", the logo can be above all canvases. -->
+		<canvas tabindex="0" ondrop="return false;" oncontextmenu="return false;" onselectstart="return false;" unselectable='on' style="cursor:crosshair; position: absolute; right: 0px; top: 0px; width: 100%; height: 100%; z-index: 4; outline: none;"></canvas>
+
+		<radialmenu id="radialmenu" impl="panomenu" x="menu.x" y="menu.y" visible="menu.visible" object="menu.object" style="position: absolute; z-index: 5;" auto="pv1">
+			<radialmenubackground object="menu.object" colormode="{{settings._colorMode}}"></radialmenubackground>
+			<div ng-class="{f_rmWrapper:menu.object._class === 'Scan'}">
+				<radialmenuitem icon="icons/im/taskbar/panoramaview/main.png" type="panorama" title="{{'FE_SHOW_IN_PANO'|i18n}}"></radialmenuitem>
+				<radialmenuitem icon="icons/3d-small.png" type="view3d" title="{{'FE_SHOW_IN_3D'|i18n}}"></radialmenuitem>
+				<radialmenuitem icon="icons/im/taskbar/overviewmap/main.png" type="map" title="{{'FE_SHOW_IN_MAP'|i18n}}"></radialmenuitem>
+				<radialmenuitem icon="icons/im/taskbar/panoramaview/showproperties.png" type="showproperties" title="{{'T_SHOW_PROPERTIES'|i18n}}"></radialmenuitem>
+				<radialmenuitem icon="icons/im/taskbar/panoramaview/edit.png" type="edit" title="{{'T_EDIT'|i18n}}"></radialmenuitem>
+				<radialmenuitem icon="icons/im/taskbar/panoramaview/share.png" type="share" title="{{'T_SHARE'|i18n}}"></radialmenuitem>
+				<radialmenuitem icon="icons/im/taskbar/panoramaview/remove.png" type="remove" title="{{'T_DELETE'|i18n}}"></radialmenuitem>
+				<radialmenuitem icon="icons/im/radialmenu/switchsegments.png" type="switchsegments" title="{{'FE_SWITCH_SEGMENTS'|i18n}}"></radialmenuitem>
+			</div>
+		</radialmenu>
+	</div>
+	
+	<div ng-if="getPromise() === undefined && !loadStarted" 
+		 static-back-img="assets/empty_pano.jpg"
+		 style="background:#f3f3f3 no-repeat center; background-size:100% 100%; position:absolute; top:0; left:0; right:0; bottom:0;">
+		<div style="bottom:0; height:20%; left:0; margin:auto; position:absolute; top:0; right:0; width:40%;">
+			<alert type="info" >
+				<div>	
+					<div>
+						<p style="margin-top:5px;" class="f_textML f_textDark f_textAlignC">{{'EM_NO_SCAN'|i18n}}</p>
+						<p style="margin-top:5px;" class="f_textML f_textDark f_textAlignC">{{'FE_ADVICE_LOAD_SCAN'|i18n}}</p>
+					</div>
+				</div>
+			</alert>
+		</div>
+	</div>
+
+	<viewmodectrl ng-show="root" small="miniView" change-view-mode="changeViewMode(newMode)"></viewmodectrl>
+ 
+	<div promisethen>
+		<actionbar ng-show="!miniView">
+			<!-- Action bar: Visibility sub menu -->
+			<visibilityactionbar viewtype="PANO_VIEW" ng-if="page.visibilityCtrlActive === true"></visibilityactionbar>
+
+			<!-- Action bar: Visibility button -->
+			<div class="btn-group-vertical f_actionBarVertical">
+				<button class="btn btn-default f_actionBarBtn" ng-class="{'ws_abPressed': page.visibilityCtrlActive === true}" ng-click="page.visibilityCtrlActive = !page.visibilityCtrlActive" title="{{ 'FE_VISIBILITY' | i18n }}">
+					<img class="f_actionBarIcon f_icon48 ws_visIcon" static-src="icons/visible_true.png" />
+				</button>
+			</div>
+
+			<!-- Action bar: Compass button -->
+			<div class="btn-group-vertical f_actionBarVertical">
+				<button class="btn btn-default f_actionBarBtn" ng-class="{'btn-info':settings._showCompass}" ng-click="toggleCompassOnOff()" title="{{ 'FE_TOGGLE_COMPASSMODE' | i18n }}">
+					<img class="f_actionBarIcon" static-src="icons/compass.png">
+				</button>
+			</div>
+
+			<!-- Action bar: Show in map, Properties buttons -->
+			<div class="btn-group-vertical f_actionBarVertical">
+				<button ng-if="hasMap" ng-disabled="viewModeTransition" class="btn btn-default f_actionBarBtn" style="pointer-events: auto;" ng-click="showMap()" title="{{ 'FE_SHOW_IN_MAP' | i18n }}">
+					<img class="f_actionBarIconLarge" static-src="icons/im/taskbar/overviewmap/main.png">
+				</button>
+				<button ng-disabled="viewModeTransition" class="btn btn-default f_actionBarBtn" style="pointer-events: auto;" ng-click="showProperties()" title="{{ 'TC_SHOW_PROPERTIES' | i18n }}">
+					<img class="f_actionBarIconLarge" static-src="icons/im/taskbar/panoramaview/showproperties.png">
+				</button>
+			</div>
+
+			<!-- Action bar: Color mode button -->
+			<div class="btn-group-vertical f_actionBarVertical">
+				<button ng-disabled="viewModeTransition || isRootPointCloud()" class="btn btn-default f_actionBarBtn" style="pointer-events: auto;" ng-click="toggleColorMode()" title="{{ 'FE_TOGGLE_CMODE' | i18n }}">
+					<img class="f_actionBarIcon" static-src="icons/{{settings._colorMode}}.png">
+				</button>
+			</div>
+			<!-- Action bar: Color mode sub menu -->
+			<actionbarextension ng-if="settings._colorMode === 'blend' && !viewModeTransition && !isRootPointCloud()" class="f_actionBarBlendCtrlWrapper ws_abSubMenu" style="margin-bottom: 12px;">
+				<div class="btn-toolbar" role="toolbar">
+					<div class="btn-group" ng-show="settings._colorMode === 'blend'">
+						<div class="btn-group">
+							<button class="btn btn-default ws_abSubBtn" ng-click="changeBlendFactor(+0.1)" title="{{ 'FE_INC_COLOR' | i18n }}">
+								<img class="ws_abSubIcon32" static-src="icons/color.png" />
+							</button>
+						</div>
+						<div class="btn-group" style="height: 46px; background-color: rgba(255,255,255,0.3);">
+							<div class="progress" style="width: 93px; height: 16px; margin-top: 14px; margin-bottom: 0px; margin-left: 1px; margin-right: 1px;">
+								<div class="progress-bar progress-bar-warning" style="color: black;" role="progressbar" aria-valuenow="{{settings._blendFactor}}" aria-valuemin="0" aria-valuemax="1" ng-style="{width: settings._blendFactor*100 +'%'}"></div>
+								<div class="progress-bar" style="color: black; background-color: rgb(215, 215, 215)" role="progressbar" aria-valuenow="{{1-settings._blendFactor}}" aria-valuemin="0" aria-valuemax="1" ng-style="{width: (100-(settings._blendFactor*100)) +'%'}"></div>
+							</div>
+						</div>
+						<div class="btn-group">
+							<button class="btn btn-default ws_abSubBtn" ng-click="changeBlendFactor(-0.1)" title="{{ 'FE_INC_GRAY' | i18n }}">
+								<img class="ws_abSubIcon32" static-src="icons/gray.png" />
+							</button>
+						</div>
+					</div>
+				</div>
+			</actionbarextension>
+		</actionbar>
+		<!-- debug stats display -->
+		<div class="ws_3dstats" ng-if="dbgStats.show">
+			<div>{{dbgStats.fps}} fps</div>
+			<div>&nbsp;</div>
+			<div>{{dbgStats.points}} M pts / {{dbgStats.nodes}} n loaded</div>
+			<div>{{dbgStats.pointsVis}} M pts / {{dbgStats.nodesVis}} n visible</div>
+			<div>{{dbgStats.pointsRdr}} M pts / {{dbgStats.nodesRdr}} n visible &amp; ld</div>
+			<div>{{dbgStats.pointsLoad}} M pts / {{dbgStats.nodesLoad}} n loading</div>
+			<div>&nbsp;</div>
+			<div>{{dbgStats.maxPoints}} M max pts</div>
+			<div>{{dbgStats.pointBudgetMove}} M budget move</div>
+			<div>{{dbgStats.pointBudgetStill}} M budget still</div>
+		</div>
+
+		<!-- Joystick -->
+		<div ng-if="joystick.wasVisible" ng-show="joystick.visible">
+			<img static-src="icons/joystick-top.png"    style="position: absolute; width: 11px; height:  6px;" ng-style="{marginLeft: joystick.xTop + 'px',    marginTop: joystick.yTop + 'px'}" />
+			<img static-src="icons/joystick-upper.png"  style="position: absolute; width: 11px;"               ng-style="{marginLeft: joystick.xUpper + 'px',  marginTop: joystick.yUpper + 'px',  height: joystick.hUpper + 'px'}" />
+			<img static-src="icons/joystick-middle.png" style="position: absolute; width: 11px; height: 21px;" ng-style="{marginLeft: joystick.xMiddle + 'px', marginTop: joystick.yMiddle + 'px'}" />
+			<img static-src="icons/joystick-lower.png"  style="position: absolute; width: 11px;"               ng-style="{marginLeft: joystick.xLower + 'px',  marginTop: joystick.yLower + 'px',  height: joystick.hLower + 'px'}" />
+			<img static-src="icons/joystick-bottom.png" style="position: absolute; width: 11px; height:  6px;" ng-style="{marginLeft: joystick.xBottom + 'px', marginTop: joystick.yBottom + 'px'}" />
+			<img static-src="icons/joystick-button.png" style="position: absolute; width: 69px; height: 69px;" ng-style="{marginLeft: joystick.xButton + 'px', marginTop: joystick.yButton + 'px'}" />
+		</div>
+	</div>
+
+	<img ng-if="logoUrl && !miniView" class="ws_customerLogo" ng-src="{{logoUrl}}" ng-style="{opacity: logoOpacity / 100}" ondragstart="return false;" ondrop="return false;" onselectstart="return false;" unselectable="on" style="z-index:3" />
+
+	<!-- Status Bar -->
+	<div promisethen ng-show="!miniView" class="f_textS f_statusBar" unselectable='off' style="z-index:50;">
+		
+		<!-- PROJECT -->
+		
+		<div ng-if="isRootProjectPointCloud()">
+			<!-- Project name -->
+			<span class="hidden-sm hidden-xs" style='margin-left:2px; float:left;' title="{{'FE_PTCLOUD'|i18n}}">
+				<img class='f_icon24' static-src='icons/im/taskbar/projectselector/main.png'/>
+				<p class='f_textInline' style="cursor:text; margin:0px;">{{rootName}}</p>
+			</span>
+			<!-- WSC project: Project recording period -->
+			<span ng-if="project._type === 'wsc'" class="hidden-xs" style='margin-left:5px; float:left;' title="{{'FE_REC_PERIOND_PRPJ'|i18n}}">
+				<img class='f_icon24' static-src='icons/im/projectselector/calendar.png'/>
+				<p class='f_textInline' style="cursor:text; margin:0px;">{{[project._oldestScanRecordingTime, project._newestScanRecordingTime] | dateperiod : true}}</p>
+			</span>
+			<!-- Incremental project: Pointcloud creation time -->
+			<span ng-if="project._type === 'inc'" class="hidden-xs" style='margin-left:5px; float:left;' title="{{'FE_3D_CREATION_TIME'|i18n}}">
+				<img class='f_icon24' static-src='icons/im/projectselector/clock_ws.png'/>
+				<p class='f_textInline' style="cursor:text; margin:0px;">{{root._creationTime | date}}</p>
+			</span>
+		</div>
+		
+		<!-- SCAN -->
+		
+		<div ng-if="root && !isRootProjectPointCloud()">
+			<!-- Scan name -->
+			<span class="hidden-sm hidden-xs" style='margin-left:2px; float:left;' title="{{'FE_SCAN_NAME'|i18n}}">
+				<img class='f_icon24' static-src='icons/im/projectselector/scanner.png'/>
+				<p class='f_textInline' style="cursor:text; margin:0px;">{{rootName}}</p>
+			</span>
+			<!-- Scan position -->
+			<span class="hidden-md hidden-sm hidden-xs"style='margin-left:5px; float:left;' title="{{'FE_SCANPOSITION'|i18n}} ({{'FE_GLOBAL'|i18n}})">
+				<img class='f_icon24' static-src='icons/im/map_marker_bk24.png'/>
+				<p class='f_textInline' style="cursor:text; margin:0px;">{{'FE_XYZ'|i18n}} {{getPosInCS(root.getTranslationGlobal()) | pos}}</p>
+			</span>
+			<!-- Scan recording time -->
+			<span class="hidden-xs" style='margin-left:5px; float:left;' title="{{'FE_SCAN_RECORDING_TIME'|i18n}}">
+				<img class='f_icon24' static-src='icons/im/projectselector/calendar.png'/>
+				<p class='f_textInline' style="cursor:text; margin:0px;">{{scanRecordingTime | date}}</p>
+			</span>
+			<!-- Scan resolution -->
+			<span class="hidden-md hidden-sm hidden-xs" style='margin-left:5px; float:left;' ng-switch='panoImageResolution' title="{{'FE_PANO_SET_PREF_RES'|i18n}}">
+				<span ng-switch-when=''></span>
+				<span ng-switch-default>
+					<img class='f_icon24' static-src="icons/im/panoramaviewproperties/res_{{panoImageResolution.getId()}}.png"/>
+					<p class='f_textInline' style="cursor:text; margin:0px;">{{panoImageResolution.getName() | i18n}}</p>
+				</span>
+			</span>
+		</div>
+
+		<!-- Coordinate picker -->
+		<span ng-class="{ws_flashPick: flashPicker}"
+			  style='margin-left:5px; float:left; height:24px;' title="{{'FE_COORDINATE_PICKER'|i18n}}" ng-switch="pickedPoint._pointState">
+			<img class='f_icon24' static-src="icons/im/panoramaviewproperties/picker.pin.png"/>
+			<span title="{{'FE_PICKED_POS'|i18n}}">
+				<p ng-switch-when="0" class='f_textInline' style="cursor:text; margin:0px;">
+					{{'FE_XYZ' | i18n}} {{getPosInCS(pickedPoint._positionGlobal) | pos}}
+					<copybtnsmall copy="{{getPosInCS(pickedPoint._positionGlobal) | pos_short}}"></copybtnsmall>
+				</p>
+				<p ng-switch-when="1" class='f_textInline' style="cursor:text; margin:0px;">
+					{{'FE_INVALID_POINT' | i18n}}
+				</p>
+				<p ng-switch-when="2" class='f_textInline' style="cursor:text; margin:0px;">
+					{{'FE_LOADING' | i18n}}</p>
+				<p ng-switch-when="3" class='f_textInline' style="cursor:text; margin:0px;">
+					{{'FE_XYZ' | i18n}} {{getPosInCS(pickedPoint._positionGlobal) | pos}}
+					<copybtnsmall copy="{{getPosInCS(pickedPoint._positionGlobal) | pos_short}}"></copybtnsmall>
+				</p>
+				<p ng-switch-when="4" class='f_textInline' style="cursor:text; margin:0px;">
+					{{'FE_XYZ' | i18n}} {{getPosInCS(pickedPoint._positionGlobal) | pos}}
+					<copybtnsmall copy="{{getPosInCS(pickedPoint._positionGlobal) | pos_short}}"></copybtnsmall>
+				</p>
+				<p ng-switch-default  class='f_textInline' style="cursor:text; margin:0px;">
+					&ndash;
+				</p>
+			</span>
+			<span style='margin-left: 4px;' title="{{'FE_PICKED_DISTACNE'|i18n}}">
+				<p ng-switch-when="0" class='f_textInline' style="cursor:text; margin:0px;">| {{'FE_DISTANCE' | i18n}} {{pickedDistance | unit}}</p>
+				<p ng-switch-when="3" class='f_textInline' style="cursor:text; margin:0px;">| {{'FE_DISTANCE' | i18n}} {{pickedDistance | unit}}</p>
+				&nbsp;
+			</span>
+		</span>
+		
+		<!-- Loading -->
+		<span ng-if="page.loading" class="f_textM ws_loadingNodes">{{'FE_LOADING' | i18n}}</span>
+	</div>
+	<div promisefail class="f_text f_centeredContainer projectsGlobalWrapper" style="-webkit-overflow-scrolling: touch;">
+		<errorbox error="error"></errorbox>
+	</div>
+</div>

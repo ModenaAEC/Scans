@@ -1,0 +1,641 @@
+<div promise="getPromise()" then="obj" fail="error">
+    <div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_LOADING'|i18n}}</div>
+    <div promisethen class="f_text f_centeredContainer projectsGlobalWrapper propPage">
+        <a name="Top"></a>
+        <div style="width: 100%; text-align: center;" ng-switch="obj._class">&nbsp;
+			<img style="vertical-align: -16px;" ng-switch-when="Annotation" class="f_icon48" static-src="icons/im/taskbar/overviewmap/annotatepad.png" />
+			<img style="vertical-align: -16px;" ng-switch-when="Measurement" class="f_icon48" static-src="icons/im/taskbar/objectproperties/measurement.png" />
+			<img style="vertical-align: -16px;" ng-switch-when="Scan" class="f_icon48" static-src="icons/im/taskbar/objectproperties/scan.png" />
+			<img style="vertical-align: -16px;" ng-switch-when="Orthophoto" class="f_icon48" static-src="icons/orthophoto.png" />
+			<img style="vertical-align: -16px;" ng-switch-default class="f_icon48" ng-src="" />
+			<span style="margin-top: 10px;">{{obj._displayName}}&nbsp;</span>
+			<img style="vertical-align: -8px;" ng-show="obj._writeLock" align="middle" class="f_icon32" static-src="icons/im/public_false.png"/>
+        </div>
+
+        <div class="f_centeredContainer" style="margin-top:20px; height: 40px;">
+			
+			<!-- Switch between global and local coordinates -->
+			<div class="btn-group f_textInline">
+				<button class="btn btn-default f_btnFontDark btn-small f_btnDropdown" ng-class="{'btn-info': isGlobal()}"
+						ng-click="setGlobal()">
+					<span class="f_text">{{'FE_GLOBAL' | i18n}}&nbsp;<img class="f_icon32" static-src="icons/im/objectproperties/coordinatesystem.png" /></span>
+				</button>
+				<button ng-if="hasCustom" class="btn btn-default f_btnFontDark btn-small f_btnDropdown" ng-class="{'btn-info': isCustom()}"
+						ng-click="setCustom()">
+					<span class="f_text">{{customCaption}}&nbsp;<img class="f_icon32" static-src="icons/im/objectproperties/coordinatesystem.png" /></span>
+				</button>
+				<!-- avoid expensive showLocalCoords() when page is not visible -->
+				<button ng-disabled="!visible || !obj.showLocalCoords()" class="btn btn-default f_btnFontDark btn-small f_btnDropdown" ng-class="{'btn-info': isLocal()}"
+						ng-click="setLocal()">
+					<span class="f_text">{{'FE_LOCAL' | i18n}}&nbsp;<img class="f_icon32" static-src="icons/im/objectproperties/coordinatesystem.png" /></span>
+				</button>
+			</div>
+			
+			<!-- Show in view button -->
+			<div class="btn-group f_alignRight f_textInline">
+				<button ng-if="canShowInPano && (obj._class === 'Annotation' || obj._class === 'Measurement' || obj._class === 'Orthophoto')" class="btn btn-default btn-small f_btnDropdown" ng-click="focusObject(obj, 'panorama')" title="{{ 'C_PANORAMAVIEW' | i18n }}">
+					<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+				</button>
+
+				<button ng-if="canShowInPano && obj._class === 'Scan'" class="btn btn-default btn-small f_btnDropdown" ng-click="showObjects([obj], 'panorama')" title="{{ 'C_PANORAMAVIEW' | i18n }}">
+					<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+				</button>
+				
+				<button ng-if="!canShowInPano && canShowIn3d" class="btn btn-default btn-small f_btnDropdown" ng-click="focusObject(obj, '3d')" title="{{ 'FE_3D_VIEW' | i18n }}">
+					<img style="min-width: 32px" class="f_icon32" static-src="icons/3d-small.png">
+				</button>
+				
+				<button ng-if="!canShowInPano && !canShowIn3d && canShowInMap" class="btn btn-default btn-small f_btnDropdown" ng-click="focusObject(obj, 'map')" title="{{ 'C_OVERVIEWMAP' | i18n }}">
+					<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/overviewmap/main.png">
+				</button>
+
+				<button ng-show="canShowInAny" class="btn btn-default btn-small f_btnDropdown dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span>
+				</button>
+
+				<ul class="dropdown-menu dropdown-menu-right">
+					<li ng-show="(obj._class === 'Annotation' || obj._class === 'Measurement' || obj._class === 'Orthophoto') && canShowInPano" ng-click="focusObject(obj, 'panorama')">
+						<a class="f_cursorPointer">
+							<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+							{{ 'C_PANORAMAVIEW' | i18n }}
+						</a>
+					</li>
+					<li ng-show="obj._class === 'Scan'" ng-click="showObjects([obj], 'panorama')">
+						<a class="f_cursorPointer">
+							<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/panoramaview/main.png">
+							{{ 'C_PANORAMAVIEW' | i18n }}
+						</a>
+					</li>
+					<li ng-if="(obj._class === 'Annotation' || obj._class === 'Measurement' || obj._class === 'Orthophoto') && canShowIn3d" ng-click="focusObject(obj, '3d')">
+						<a href="" class="f_cursorPointer">
+							<img style="min-width: 32px" class="f_icon32" static-src="icons/3d-small.png">
+							{{ 'FE_3D_VIEW' | i18n }}
+						</a>
+					</li>
+					<li ng-if="obj._class === 'Scan' && canShowIn3d" ng-click="showObjects([obj], '3d')">
+						<a href="" class="f_cursorPointer">
+							<img style="min-width: 32px" class="f_icon32" static-src="icons/3d-small.png">
+							{{ 'FE_3D_VIEW' | i18n }}
+						</a>
+					</li>
+					
+					<li ng-show="canShowInMap" ng-click="focusObject(obj, 'map')">
+						<a class="f_cursorPointer">
+							<img style="min-width: 32px" class="f_icon32" static-src="icons/im/taskbar/overviewmap/main.png">
+							{{ 'C_OVERVIEWMAP' | i18n }}
+						</a>
+					</li>
+				</ul>
+			</div>
+        </div>
+		
+		<!-- Orthophoto resolution picker -->
+		<div ng-if="obj._class === 'Orthophoto'" style="text-align: center; width: 100%;">
+			<resolutionpicker settings="picker" refresh="refresh()"></resolutionpicker>
+		</div>
+
+        <div ng-switch="obj._class" class="f_centeredContainer" style="margin-top:15px;">
+            <!-- ########## -->
+            <!-- ANNOTATION -->
+            <!-- ########## -->
+            <div ng-switch-when="Annotation">
+                <table class="inlineTable table table-striped f_textM" border="0" align="center">
+                    <!-- Display name -->
+                    <tr>
+                        <td class="attr">{{'AN_DISPLAY_NAME' | i18n}}:</td>
+                        <td>{{obj._displayName}}</td>
+                    </tr>
+                    <!-- Category -->
+                    <tr>
+                        <td class="attr">{{'FE_CATEGORY' | i18n}}:</td>
+                        <td><category text="obj._category"></category></td>
+                    </tr>
+                    <!-- Tags -->
+                    <tr>
+                        <td class="attr">{{'FE_TAG' | i18n}}:</td>
+                        <td>
+							<span ng-repeat="tag in obj._tags" style="margin-right:5px;" class="f_label">{{tag}}</span>
+						</td>
+                    </tr>
+                    <!-- Created by -->
+                    <!-- <tr> -->
+                    <!-- 	<td class="attr"> -->
+                    <!-- 		{{'AN_CREATED_BY' | i18n}}: -->
+                    <!-- 	</td> -->
+                    <!-- 	<td ng&#45;switch="obj._createdBy != ''"> -->
+                    <!-- 		<span ng&#45;switch&#45;when="true"> -->
+                    <!-- 			{{obj._createdBy}} -->
+                    <!-- 		</span> -->
+                    <!-- 		<span ng&#45;switch&#45;default> -->
+                    <!-- 			SCENE -->
+                    <!-- 		</span> -->
+                    <!-- 	</td> -->
+                    <!-- </tr> -->
+                    <!-- Position -->
+                    <tr ng-if="obj.isPolyline()">
+						<td class="attr">{{'AN_POSITIONS' | i18n}}:</td>
+						<td >
+							<ol class="mmList">
+                                <li ng-repeat="pt in obj.getGlobalOrLocalPoints(cs)">
+                                    <span class="mmListIndex">[{{$index + 1}}]</span>&nbsp;&nbsp;&nbsp;{{getPosInCSSpecial(pt) | pos}}
+                                </li>
+								<li style="margin-top: 8px;">
+									<copybtnlarge caption="{{'FE_COPY_COORDS' | i18n}}" copy="{{getPositionsInCS(obj) | pos_short_multi}}"></copybtnlarge>
+								</li>
+                            </ol>
+						</td>
+					</tr>
+					<tr ng-if="!obj.isPolyline()">
+                        <td class="attr">{{'AN_POSITION' | i18n}}:</td>
+						<td>
+							{{getPos(obj) | pos}}
+							<copybtnsmall copy="{{getPos(obj) | pos_short}}"></copybtnsmall>
+						</td>
+                    </tr>
+                    <!-- Links -->
+                    <tr>
+                        <td class="attr">{{'AN_HYPERLINKS' | i18n}}:</td>
+                        <td>
+                            <ul>
+								<li ng-repeat="link in obj._hyperlinks track by $index">
+                                    <img class="f_icon24" static-src="icons/{{link._provider}}.png"/>
+                                    <a href="{{link._url | linkify}}" target="_blank" title="{{'FE_OPEN_LINK'|i18n}}: {{link._url | linkify}}">{{link._description}}</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <!-- Description -->
+                    <tr>
+                        <td class="attr">{{'AN_DESCRIPTION' | i18n}}:</td>
+                        <td><markdown source="obj._description"></markdown></td>
+                    </tr>
+                    <!-- Color -->
+                    <tr ng-if="obj.isPolyline()">
+                        <td class="attr">{{'FE_COLOR' | i18n}}:</td>
+                        <td>
+							<div>[{{obj._displayColor[0]}}, {{obj._displayColor[1]}}, {{obj._displayColor[2]}}]</div>
+						</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- ########### -->
+            <!-- MEASUREMENT -->
+            <!-- ########### -->
+
+            <div ng-switch-when="Measurement">
+                <table class="inlineTable table table-striped f_textM" border="0" align="center">
+                    <!-- Display name -->
+                    <tr>
+                        <td class="attr">{{'AN_DISPLAY_NAME' | i18n}}:</td>
+                        <td>{{obj._displayName}}</td>
+                    </tr>
+                    <!-- Category -->
+                    <tr>
+                        <td class="attr">{{'FE_CATEGORY' | i18n}}:</td>
+                        <td><category text="obj._category"></category></td>
+                    </tr>
+                    <!-- Tags -->
+                    <tr>
+                        <td class="attr">{{'FE_TAG' | i18n}}:</td>
+                        <td>
+                            <span ng-repeat="tag in obj._tags" style="margin-right:5px;" class="f_label">{{tag}}</span>
+                        </td>
+                    </tr>
+                    <!-- Created by -->
+                    <!-- <tr> -->
+                    <!-- 	<td class="attr"> -->
+                    <!-- 		{{'AN_CREATED_BY' | i18n}}: -->
+                    <!-- 	</td> -->
+                    <!-- 	<td ng&#45;switch="obj._createdBy != ''"> -->
+                    <!-- 		<span ng&#45;switch&#45;when="true"> -->
+                    <!-- 			{{obj._createdBy}} -->
+                    <!-- 		</span> -->
+                    <!-- 		<span ng&#45;switch&#45;default> -->
+                    <!-- 			SCENE -->
+                    <!-- 		</span> -->
+                    <!-- 	</td> -->
+                    <!-- </tr> -->
+                    <!-- Area -->
+                    <tr ng-if="obj._displayType === 'Area'">
+                        <td class="attr">{{'AN_AREA' | i18n}}:</td>
+                        <td>
+                            <span ng-switch="obj.isAreaValid()">
+                                <span ng-switch-when="true">
+                                    {{obj._area | areaunit}}
+                                </span>
+                                <span ng-switch-default>
+                                    {{'FE_NA' | i18n}}
+                                </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr ng-if="obj._displayType === 'Area'">
+                        <td class="attr">{{'AN_CENTROID' | i18n}}:</td>
+						<td>
+                            <span ng-if="obj.isAreaValid()">
+								{{getCentroid(obj) | pos}}
+								<copybtnsmall copy="{{getCentroid(obj) | pos_short}}"></copybtnsmall>
+                            </span>
+                            <span ng-if="!obj.isAreaValid()">
+                                {{'FE_NA' | i18n}}
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- Distance -->
+                    <tr>
+                        <td class="attr">
+                            <span ng-switch="obj._displayType">
+                                <span ng-switch-when="Area">
+                                    {{'AN_CIRCUMFERENCE' | i18n}}:
+                                </span>
+                                <span ng-switch-default>
+                                    {{'AN_DISTANCE' | i18n}}:
+                                </span>
+                            </span>
+                        </td>
+                        <td ng-switch="obj.areSegmentsValid()">
+                            <span ng-switch-when="true">
+                                {{obj._distance | unit}}
+                            </span>
+                            <span ng-switch-default class="invalid">
+                                {{'FE_INVALID' | i18n}}
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- Distance Start End -->
+                    <tr ng-if="obj._displayType !== 'Area'">
+                        <td class="attr">{{'AN_DISTANCE_START_END' | i18n}}:</td>
+                        <td ng-switch="obj.isStartEndValid()">
+                            <span ng-switch-when="true">
+                                {{obj._distanceStartEnd | unit}}
+                            </span>
+                            <span ng-switch-default class="invalid">
+                                {{'FE_INVALID' | i18n}}
+                            </span>
+                        </td>
+                    </tr>
+                   <!-- Distance Horizontal -->
+                    <tr ng-if="obj._displayType !== 'Area'">
+                        <td class="attr">{{'AN_DISTANCE_HORIZONTAL_GLOBAL' | i18n}}:</td>
+                        <td ng-switch="obj.isStartEndValid()">
+                            <span ng-switch-when="true">
+                                <span ng-if="isGlobal()">
+                                    {{obj._distanceHorizontalGlobal | unit}}
+                                </span>
+                                <span ng-if="isCustom()">
+                                    {{obj._distHCustom | unit}}
+                                </span>
+                                <span ng-if="isLocal()">
+                                    <span ng-switch="obj._type !== 'ObjectMeasurement'">
+                                        <span ng-switch-when="true">
+                                            {{obj._distanceHorizontalLocal | unit}}
+                                        </span>
+                                        <span ng-switch-default>
+                                            {{'FE_NA' | i18n}}
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                            <span ng-switch-default class="invalid">
+                                {{'FE_INVALID' | i18n}}
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- Distance Vertical -->
+                    <tr ng-if="obj._type !== 'MapMeasurement'">
+                        <td class="attr">{{'AN_DISTANCE_VERTICAL_GLOBAL' | i18n}}:</td>
+                        <td ng-switch="obj.isStartEndValid()">
+                            <span ng-switch-when="true">
+                                <span ng-if="isGlobal()">
+                                    {{obj._distanceVerticalGlobal | unit}}
+                                </span>
+                                <span ng-if="isCustom()">
+                                    {{obj._distZCustom | unit}}
+                                </span>
+                                <span ng-if="isLocal()">
+                                    <span ng-switch="obj._type !== 'ObjectMeasurement'">
+                                        <span ng-switch-when="true">
+                                            {{obj._distanceVerticalLocal | unit}}
+                                        </span>
+                                        <span ng-switch-default>
+                                            {{'FE_NA' | i18n}}
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                            <span ng-switch-default class="invalid">
+                                {{'FE_INVALID' | i18n}}
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- Distance X -->
+                    <tr ng-if="obj._displayType !== 'Area'">
+                        <td class="attr">{{'AN_DISTANCE_X_GLOBAL' | i18n}}:</td>
+                        <td ng-switch="obj.isStartEndValid()">
+                            <span ng-switch-when="true">
+                                <span ng-if="isGlobal()">
+                                    {{obj._distanceXGlobal | unit}}
+                                </span>
+                                <span ng-if="isCustom()">
+                                    {{obj._distXCustom | unit}}
+                                </span>
+                                <span ng-if="isLocal()">
+                                    <span ng-switch="obj._type !== 'ObjectMeasurement'">
+                                        <span ng-switch-when="true">
+                                            {{obj._distanceXLocal | unit}}
+                                        </span>
+                                        <span ng-switch-default>
+                                            {{'FE_NA' | i18n}}
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                            <span ng-switch-default class="invalid">
+                                {{'FE_INVALID' | i18n}}
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- Distance Y -->
+                    <tr ng-if="obj._displayType !== 'Area'">
+                        <td class="attr">{{'AN_DISTANCE_Y_GLOBAL' | i18n}}:</td>
+                        <td ng-switch="obj.isStartEndValid()">
+                            <span ng-switch-when="true">
+                                <span ng-if="isGlobal()">
+                                    {{obj._distanceYGlobal | unit}}
+                                </span>
+                                <span ng-if="isCustom()">
+                                    {{obj._distYCustom | unit}}
+                                </span>
+                                <span ng-if="isLocal()">
+                                    <span ng-switch="obj._type !== 'ObjectMeasurement'">
+                                        <span ng-switch-when="true">
+                                            {{obj._distanceYLocal | unit}}
+                                        </span>
+                                        <span ng-switch-default>
+                                            {{'FE_NA' | i18n}}
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                            <span ng-switch-default class="invalid">
+                                {{'FE_INVALID' | i18n}}
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- Distances -->
+                    <tr>
+                        <td class="attr">{{'AN_DISTANCES' | i18n}}:</td>
+                        <td>
+                            <ol class="mmList">
+								<li ng-repeat="dist in obj._distances track by $index" ng-switch="obj.isSegmentValid($index)">
+                                    <span ng-switch-when="true">
+                                        <span class="mmListIndex">[{{$index + 1}}]</span>&nbsp;&nbsp;&nbsp;{{dist | unit}}
+                                    </span>
+                                    <span ng-switch-default class="invalid">
+                                        <span class="mmListIndex">[{{$index + 1}}]</span>&nbsp;&nbsp;&nbsp;{{'FE_INVALID' | i18n}}
+                                    </span>
+                                </li>
+                            </ol>
+                        </td>
+                    </tr>
+                    <!-- Points -->
+					<tr>
+                        <td class="attr">{{'AN_POINTS_GLOBAL' | i18n}}:</td>
+                        <td>
+							<ol ng-if="isLocal() && obj._type === 'ObjectMeasurement'" class="mmList">
+								<li ng-repeat="pt in obj._pointsLocal">
+									{{'FE_NA' | i18n}}
+								</li>
+							</ol>
+							<ol ng-if="!isLocal() || obj._type !== 'ObjectMeasurement'" class="mmList">
+								<li ng-repeat="pt in obj.getGlobalOrLocalPoints(cs)">
+									<span ng-if="obj.isPointValid($index)">
+										<span class="mmListIndex">[{{$index + 1}}]</span>&nbsp;&nbsp;&nbsp;{{getPosInCSSpecial(pt) | pos}}
+									</span>
+									<span ng-if="!obj.isPointValid($index)">
+										<span class="mmListIndex invalid">[{{$index + 1}}]</span>&nbsp;&nbsp;&nbsp;{{'FE_INVALID' | i18n}}
+									</span>
+								</li>
+								<li style="margin-top: 8px;">
+									<copybtnlarge caption="{{'FE_COPY_COORDS' | i18n}}" copy="{{getPositionsInCS(obj) | pos_short_multi}}"></copybtnlarge>
+								</li>
+							</ol>
+                        </td>
+                    </tr>
+                    <tr ng-show="obj._type === 'ObjectMeasurement'">
+                        <td class="attr">{{'AN_OBJECT_PATHS' | i18n}}:</td>
+                        <td>
+                            <ul class="mmList">
+								<li ng-repeat="path in obj._objectPaths track by $index">
+                                    <span class="mmListIndex">[{{$index + 1}}]</span>&nbsp;&nbsp;&nbsp;{{path}}
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- #### -->
+            <!-- SCAN -->
+            <!-- #### -->
+
+            <div ng-switch-when="Scan">
+                <table class="inlineTable table table-striped f_textM" border="0" align="center">
+                    <!-- Display name -->
+                    <tr>
+                        <td class="attr">{{'AN_DISPLAY_NAME' | i18n}}:</td>
+                        <td>{{obj._displayName}}</td>
+                    </tr>
+                    <!-- Category -->
+                    <tr>
+                        <td class="attr">{{'FE_CATEGORY' | i18n}}:</td>
+                        <td><category text="obj._category"></category></td>
+                    </tr>
+                    <!-- Tags -->
+                    <tr>
+                        <td class="attr">{{'FE_TAG' | i18n}}:</td>
+                        <td><span ng-repeat="tag in obj._tags" style="margin-right:5px;" class="f_label">{{tag}}</span></td>
+                    </tr>
+                    <!-- Created by -->
+                    <!-- <tr> -->
+                    <!-- 	<td class="attr"> -->
+                    <!-- 		{{'AN_CREATED_BY' | i18n}}: -->
+                    <!-- 	</td> -->
+                    <!-- 	<td ng&#45;switch="obj._createdBy != ''"> -->
+                    <!-- 		<span ng&#45;switch&#45;when="true"> -->
+                    <!-- 			{{obj._createdBy}} -->
+                    <!-- 		</span> -->
+                    <!-- 		<span ng&#45;switch&#45;default> -->
+                    <!-- 			SCENE -->
+                    <!-- 		</span> -->
+                    <!-- 	</td> -->
+                    <!-- </tr> -->
+                    <!-- Thumbnail -->
+                    <tr>
+                        <td class="attr">{{'FE_PANO_SET_IMAGE' | i18n}}:</td>
+                        <td>
+                            <img style="width:100%; margin-top: 10px; margin-bottom: 10px;" ng-src="{{obj.getImagePath(obj.getSimilarAvailablePanoImage(1024, 'color'))}}" class="f_borderBox" />
+                        </td>
+                    </tr>
+                    <!-- Position -->
+                    <tr>
+                        <td class="attr">{{'AN_POSITION' | i18n}}:</td>
+						<td>
+							{{getPos(obj) | pos}}
+							<copybtnsmall copy="{{getPos(obj) | pos_short}}"></copybtnsmall>
+						</td>
+                    </tr>
+                    <!-- Type -->
+                    <tr>
+                        <td class="attr">{{'FE_TYPE' | i18n}}:</td>
+                        <td ng-if="obj._type === 'Virtual'">
+                            {{'FE_VIRTUAL_SCAN' | i18n}}
+                        </td>
+                        <td ng-if="obj._type === 'Photo'">
+                            {{'FE_PHOTO_SCAN' | i18n}}
+                        </td>
+                        <td ng-if="obj._type === ''">
+                            {{'FE_LASER_SCAN' | i18n}}
+                        </td>
+                    </tr>
+                    <!-- Recording time -->
+                    <tr>
+                        <td class="attr">{{'AN_RECORDING_TIME' | i18n}}:</td>
+                        <td>{{obj._recordingTime | date}}</td>
+                    </tr>
+                    <!-- Modification time -->
+                    <tr>
+                        <td class="attr">{{'AN_MODIFICATION_TIME' | i18n}}:</td>
+                        <td>{{obj._modificationTime | date}}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- ########## -->
+            <!-- ORTHOPHOTO -->
+            <!-- ########## -->
+			<div ng-switch-when="Orthophoto">
+				
+				<div ng-if="picker.index !== undefined" style="text-align: center; margin-top: 10px; margin-bottom: 30px;">
+					<a href="{{picker.paths[0]}}" target="_blank">
+						<img ng-src="{{picker.paths[picker.index]}}" fallback-src="default/painting_progress_320x240.gif" class="f_borderBox" style="max-width: 100%; max-height: 1024px;" />
+					</a>
+				</div>
+				
+				<table class="inlineTable table table-striped f_textM" border="0" align="center">
+                    <!-- Display name -->
+                    <tr>
+                        <td class="attr">{{'AN_DISPLAY_NAME' | i18n}}:</td>
+                        <td>{{obj._displayName}}</td>
+                    </tr>
+                    <!-- Category -->
+                    <tr>
+                        <td class="attr">{{'FE_CATEGORY' | i18n}}:</td>
+                        <td><category text="obj._category"></category></td>
+                    </tr>
+                    <!-- Tags -->
+                    <tr>
+                        <td class="attr">{{'FE_TAG' | i18n}}:</td>
+                        <td><span ng-repeat="tag in obj._tags" style="margin-right:5px;" class="f_label">{{tag}}</span></td>
+                    </tr>
+					<!-- Width -->
+                    <tr>
+                        <td class="attr">{{'FE_MAX' | i18n}}&nbsp;{{'FE_WIDTH' | i18n}}:</td>
+                        <td>{{obj._width}} px<br />{{obj.getWidthInMeter() | unit}}</td>
+                    </tr>
+					<!-- Height -->
+                    <tr>
+                        <td class="attr">{{'FE_MAX' | i18n}}&nbsp;{{'FE_HEIGHT' | i18n}}:</td>
+                        <td>{{obj._height}} px<br />{{obj.getHeightInMeter() | unit}}</td>
+                    </tr>
+					<!-- Resolution -->
+                    <tr>
+                        <td class="attr">{{'FE_MAX' | i18n}}&nbsp;{{'FE_PANO_DETAILS' | i18n}}:</td>
+                        <td>{{(obj._width / obj.getWidthInMeter()) | resolution}}</td>
+                    </tr>
+                    <!-- Position -->
+                    <tr>
+                        <td class="attr">{{'AN_POSITION' | i18n}}:</td>
+						<td>
+							{{getPos(obj) | pos}}
+							<copybtnsmall copy="{{getPos(obj) | pos_short}}"></copybtnsmall>
+                        </td>
+                    </tr>
+                    <!-- Links -->
+                    <tr>
+                        <td class="attr">{{'AN_HYPERLINKS' | i18n}}:</td>
+                        <td>
+                            <ul>
+                                <li ng-repeat="link in obj._hyperlinks">
+                                    <img class="f_icon24" static-src="icons/{{link._provider}}.png"/>
+                                    <a href="{{link._url | linkify}}" target="_blank" title="{{'FE_OPEN_LINK'|i18n}}: {{link._url | linkify}}">{{link._description}}</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+					<!-- Description -->
+                    <tr>
+                        <td class="attr">{{'AN_DESCRIPTION' | i18n}}:</td>
+                        <td><markdown source="obj._description"></markdown></td>
+                    </tr>
+				</table>
+			</div>
+
+            <div ng-switch-default>{{'FE_INVALID' | i18n}}</div>
+        </div>
+
+        <!-- Read access -->
+        <collapsibleblock caption="{{ 'FE_READONLY' | i18n }}" collapsed="true" ng-switch="obj._temporary" ng-if="isUser">
+            <p class="f_textM" ng-switch-when="true">{{ 'FE_TEMPORARY_CONDITION' | i18n }}</p>
+            <p class="f_textM" ng-switch-default>{{ 'FE_VIS_CONDITIONS' | i18n }}</p>
+            <table class="inlineTable table table-striped f_textM" border="0" align="center" ng-switch-default>
+                <!-- Created by me -->
+                <tr>
+                    <td width="50%">{{ 'FE_CREATED_BY_YOU' | i18n }}:</td>
+                    <td><img class="f_icon24" static-src="icons/im/checked_{{obj._temporary || obj._createdBy === username}}.png"/></td>
+                </tr>
+                <!-- TODO: insert groups here -->
+                <tr>
+                    <td width="50%">{{ 'FE_ACCESSIBLE_BY' | i18n }}:<br/>{{ 'FE_PROJECT_PUBLIC' | i18n }}</td>
+                    <td><img class="f_icon24" static-src="icons/im/checked_{{obj._readPublic}}.png"/></td>
+                </tr>
+                <tr ng-show="isProjectManager">
+                    <td width="50%">{{ 'FE_ADMIN_ACCESS' | i18n }}:</td>
+                    <td><img class="f_icon24" static-src="icons/im/checked_{{obj._service._dataFilter.hasRoot()}}.png"/></td>
+                </tr>
+            </table>
+        </collapsibleblock>
+		
+        <!-- Write access -->
+        <collapsibleblock caption="{{ 'FE_READWRITE' | i18n }}" collapsed="true" ng-switch="obj._temporary" ng-if="isUser">
+            <p class="f_textM" ng-switch-when="true">{{ 'FE_TEMPORARY_CONDITION' | i18n }}</p>
+            <p class="f_textM" ng-switch-default>{{ 'FE_USER_CONDITION' | i18n }}</p>
+            <table class="inlineTable table table-striped f_textM" border="0" align="center" ng-switch-default ng-switch="isLoggedIn">
+                <!-- User role -->
+                <tr ng-switch-when="true">
+                    <td width="50%">{{ 'FE_USER_IN_DOMAIN' | i18n }}:</td>
+                    <td><img class="f_icon24" static-src="icons/im/checked_{{isUser ? 'true' : 'false'}}.png"/></td>
+                </tr>
+            </table>
+            <p class="f_textM" ng-switch-default>{{ 'FE_WRITE_CONDITIONS' | i18n }}</p>
+            <table class="inlineTable table table-striped f_textM" border="0" align="center" ng-switch-default>
+                <!-- Created by me -->
+                <tr>
+                    <td width="50%">{{ 'FE_CREATED_BY_YOU' | i18n }}:</td>
+                    <td><img class="f_icon24" static-src="icons/im/checked_{{obj._temporary || obj._createdBy === username}}.png"/></td>
+                </tr>
+                <!-- TODO: insert groups here -->
+                <tr>
+                    <td width="50%">{{ 'FE_MODIFIABLE_BY' | i18n }}:<br/>{{ 'FE_PROJECT_PUBLIC' | i18n }}</td>
+                    <td><img class="f_icon24" static-src="icons/im/checked_{{obj._writePublic}}.png"/></td>
+                </tr>
+                <tr ng-show="isProjectManager">
+                    <td width="50%">{{ 'FE_ADMIN_ACCESS' | i18n }}:</td>
+                    <td><img class="f_icon24" static-src="icons/im/checked_{{obj._service._dataFilter.hasRoot()}}.png"/></td>
+                </tr>
+            </table>
+        </collapsibleblock>
+    </div>
+    <errorbox promisefail error="error"></errorbox>
+</div>

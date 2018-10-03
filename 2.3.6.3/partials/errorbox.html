@@ -1,0 +1,17 @@
+<div ng-show="error" ng-switch="error._type" 
+	style="padding:20px;" class="f_centeredContainer projectsGlobalWrapper f_textL">
+	<div ng-switch-default ng-switch="error._code">
+		<div ng-switch-when="403" class="f_error f_error403" ng-click="toggleInfo()"></div>
+		<div ng-switch-when="404" class="f_error f_error404" ng-click="toggleInfo()"></div>
+		<div ng-switch-default class="f_error" ng-click="toggleInfo()"></div>
+	</div>
+	<div ng-switch-default style="height: 30%; width:100%">
+		<p align="center">{{error.message | i18n}}</p>
+		<!-- Must not be readonly, otherwise cannot copy+paste properly on iPad -->
+		<textarea ng-show="showErrorInfo"
+				  ng-model="errorinfo"
+				  class="f_textSM"
+				  style="overflow-y: scroll; height: 100%; width:100%"></textarea>
+	</div>
+	<login ng-switch-when="AuthenticationException"></login>
+</div>

@@ -1,0 +1,138 @@
+<div class="f_page f_scrollPage" ng-if="visible">
+    <div promise="getProjects()"
+         then="page.projects"
+         fail="error"
+		 defaultvalue="[]"
+         class="f_text f_centeredContainer projectsGlobalWrapper f_borderBox"
+         style="-webkit-overflow-scrolling: touch;">
+        <div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+        <div promisethen class="f_textM">
+            <div class="header">
+                <div class="row">
+                    <!-- search field -->
+                    <form class="form-search f_alignRight col-md-4">
+                        <input type="text" class="form-control search-query" ng-model="page.query" placeholder="{{'FE_FIND_PROJECT' | i18n}}...">
+                    </form>
+                </div>
+            </div>
+            <br/>
+            <div class="f_settingWrapper">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <th ng-if="task" style="min-width:150px;">
+                                <div class="btn-group" >
+                                    <button ng-disabled="!selection" class="btn btn-default btn-small">{{"FE_SELECT" | i18n}}</button>
+                                    <button ng-disabled="!selection" class="btn btn-default btn-small dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li ng-click="changeSelectionAllProjects(true)"><a class="f_cursorPointer">{{"FE_ALL" | i18n}}</a></li>
+                                        <li ng-click="changeSelectionAllProjects(false)"><a class="f_cursorPointer">{{"FE_NONE" | i18n}}</a></li>
+                                    </ul>
+                                </div>
+                            </th>
+                            <th>
+								{{"FE_PREVIEW" | i18n}}
+							</th>
+                            <th>
+                                <a class="f_link link" href="" ng-click="page.predicate='_displayName'; reverse=!reverse">{{"FE_PROJECT_NAME" | i18n}}</a>
+                            </th>
+                            <th>
+                                <a class="f_link link" href="" ng-click="page.predicate=stateComparator; reverse=!reverse">{{"FE_STATE" | i18n}}</a>
+                            </th>
+							<th ng-show="!task">
+                                {{"FE_WORKBENCH" | i18n}}
+                            </th>
+							<th class="hidden-md hidden-sm hidden-xs">
+                                <a class="f_link link" href="" ng-click="page.predicate='_description'; reverse=!reverse" >{{"FE_DESCRIPTION" | i18n}}</a>
+                            </th>
+                            <th>
+                                <a class="f_link link" href="" ng-click="page.predicate='_featured'; reverse=!reverse">{{"FE_FEATURED" | i18n}}</a>
+                            </th>
+                            <th>
+                                <a class="f_link link" href="" ng-click="page.predicate='getPointCloudState()'; reverse=!reverse">{{"FE_3D_DATA" | i18n}}</a>
+                            </th>
+                            <th class="hidden-sm hidden-xs">
+                                <a class="f_link link" href="" ng-click="page.predicate='[_latitude, _longitude ]'; reverse=!reverse">{{"FE_LOCATION" | i18n}}</a>
+                            </th>
+                            <th class="hidden-xs">
+                                <a class="f_link link" href="" ng-click="page.predicate='_storageSize'; reverse=!reverse">{{"FE_SIZE" | i18n}}</a>
+                            </th>
+                        </thead>
+                        <tr ng-repeat="project in page.projects | projectfilter : page.query : page.minVersion : page.withMap | orderBy : page.predicate : reverse">
+                            <td ng-if="task" ng-click="changeSelection(project)">
+                                <img ng-show="selection" static-src="icons/im/selected_{{project._selected}}.png"/>
+                                <img ng-show="!selection" static-src="icons/im/selected_grey_{{project._selected}}.png"/>
+                            </td>
+							<!-- Preview -->
+                            <td ng-click="changeSelection(project)" style="min-width: 80px">
+                                <img class="scanThumbnailSmall" ng-src="{{project._imageUrl}}"/>
+                            </td>
+							<!-- Project Name -->
+                            <td ng-click="changeSelection(project)" style="min-width: 150px">
+                                {{project._displayName}}
+                                <p class="f_textM" style="margin-bottom:0px;">({{project._name}})</p>
+                            </td>
+							<!-- Upload Status -->
+                            <td ng-if="project._type === 'wsc'" ng-click="changeSelection(project)" >
+                                <div style="width: 32px; border-radius: 50%;" ng-class="{f_circularTagWarn: project._uploadState === 'Started', f_circularTagOK: project._uploadState === 'Completed'}">
+                                    <img class="f_icon32" static-src="icons/im/upload_{{project._uploadState.toLowerCase()}}.png" 
+										 title="{{project._uploadState === 'Completed' ? 'FE_UPLOADED' : 'FE_UPLOADING' | i18n}}"/>
+                                </div>
+                            </td>
+							<!-- Status -->
+                            <td ng-if="project._type === 'inc'" ng-click="changeSelection(project)" >
+                                <div style="width: 32px; border-radius: 50%;" ng-class="{f_circularTagWarn: project._state === 'Draft', f_circularTagOK: project._state === 'Published'}">
+									<img ng-if="project._state === 'Draft'" class="f_icon32" static-src="icons/im/projectselector/under_construction.png" title="{{'FE_UC' |i18n}}"/>
+									<img ng-if="project._state === 'Published'" class="f_icon32" static-src="icons/im/upload_completed.png" title="{{'FE_PUBLISHED' |i18n}}"/>
+                                </div>
+                            </td>
+							<!-- Workbench -->
+							<td ng-if="!task">
+								<button ng-if="project._type !== 'wsc' || project._uploadState === 'Completed'" class="btn btn-default" style="padding: 2px 6px;" ng-click="openWorkbench(project)" title="{{'FE_WORKBENCH' |i18n}}">
+									<img class="f_icon32" static-src="icons/im/taskbar/projectmanagement/workbench.png">
+								</button>
+							</td>
+							<!-- Description -->
+                            <td class="hidden-md hidden-sm hidden-xs" style="max-width: 240px;" ng-click="changeSelection(project)" >
+								{{project.getTrimmedDescription(100)}}
+							</td>
+							<!-- Feature Project -->
+                            <td ng-click="changeSelection(project)" >
+                                <div ng-if="project._featured" style="width:32px;">
+                                    <img class="f_icon32" static-src="icons/im/checked_true.png"/>
+                                </div>
+                            </td>
+							<!-- Point Cloud -->
+							<td ng-switch="project.getPointCloudState()" ng-click="changeSelection(project)">
+								<span ng-switch-when="0">
+									<spinner class="f_spinSmall" style="margin-left: 4px;"></spinner>
+								</span>
+								<span ng-switch-when="1">
+									<img class="f_icon32" static-src="icons/im/checked_true.png"/>
+								</span>
+								<span ng-switch-when="2">
+									<img class="f_icon32" static-src="icons/im/checked_true.png"/>
+								</span>
+                            </td>
+							<!-- Location -->
+                            <td class="hidden-sm hidden-xs" ng-click="changeSelection(project)">
+                                <a title="{{'FE_OPEN_GMAPS'|i18n}}"
+                                   target="_blank"
+                                   href="https://www.google.com/maps/place//{{project._latitude}},{{project._longitude}}/@{{project._latitude}},{{project._longitude}},12z">{{project._latitude | number}}, {{project._longitude | number}}
+                                </a>
+                            </td>
+							<!-- Size -->
+                            <td class="hidden-xs" ng-click="changeSelection(project)">
+                                <span ng-show="project._storageSize">{{(project._storageSize*byteToGB).toFixed(3)}} {{'FE_GIGABYTES'|i18n}}</span>
+                                <span ng-show="!project._storageSize">?</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <errorbox promisefail error="error"></errorbox>
+    </div>
+</div>

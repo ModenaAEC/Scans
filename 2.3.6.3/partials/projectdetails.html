@@ -1,0 +1,104 @@
+<div class="f_page" scroll-change="scrolled">
+	<div promise="getProject()" then="project" fail="error" class="f_text projectDetails f_centeredContainer projectsGlobalWrapper">
+		<workbenchtitle promisethen project="project" ng-show="panel === 'workbench'"></workbenchtitle>
+		<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{'FE_LOADING'|i18n}}</div>
+		<div promisethen ng-show="project" class="f_textM" class="f_centeredContainer featuredProjectContainer">
+			<div class="f_textM  f_centeredContainer f_borderBox f_responsiveBox" style="width: 100%; max-width: 100%;">
+				<div class="header f_text">
+					<div style="display: inline-block; padding-top: 14px; margin-left:40px;">{{ project._displayName }}</div>
+					<div class="btn-group pull-right" style="margin-top: 6px; margin-right: 40px;">
+						<button ng-if="isPM && (project._type !== 'wsc' || project._uploadState === 'Completed') && panel !== 'workbench'" class="btn btn-default" ng-click="openWorkbench(project)" title="{{'FE_WORKBENCH'|i18n}}">
+							<img class="f_icon28" style="margin-bottom: -2px; margin-top: -2px;" static-src="icons/im/taskbar/projectmanagement/workbench.png" />
+						</button>
+						<button class="btn btn-default" ng-click="openMap(project)" ng-if="project.hasOverviewMap()" title="{{ 'C_OVERVIEWMAP' | i18n }}">
+							<img class="f_icon28" style="margin-bottom: -2px; margin-top: -2px;" static-src="icons/im/taskbar/overviewmap/main.png">
+						</button>
+						<button class="btn btn-default" ng-click="openScanView(project)" ng-if="project.hasProjectPointCloud() || project.hasScan()" title="{{ 'C_SCANVIEW' | i18n }}">
+							<img class="f_icon28" style="margin-bottom: -2px; margin-top: -2px;" static-src="icons/im/taskbar/panoramaview/main.png">
+						</button>
+					</div>
+				</div>
+				<div class="f_settingWrapper">
+					<img class="ws_detailsImage" ng-class="{ 'overview': overview || scrolled }" ng-src="{{project._imageUrl}}"/>
+					<table class="table table-striped f_textM ws_detailsTable" ng-class="{ 'linear': !overview && !scrolled }" align="center" border="0" ng-switch="project._type">
+						<!-- use wrapping tag to only have one watch on condition -->
+						<tr ng-switch-when="inc">
+							<td class="tdIcon">
+								<img class="f_icon32" static-src="icons/im/clock.png" />
+							</td>
+							<td class="ws_column f_textBold">
+								{{'FE_PROJECT_CREATION_TIME'|i18n}}
+							</td>
+							<td class="ws_column">
+								{{project._creationDate | date}}
+							</td>
+						</tr>
+						<tr ng-switch-when="inc">
+							<td class="tdIcon">
+								<img class="f_icon32" static-src="icons/im/taskbar/projectmanagement/main.png" />
+							</td>
+							<td class="ws_column f_textBold">
+								{{'FE_STATE'|i18n}}
+							</td>
+							<td class="ws_column">
+								{{project._state === 'Draft' ? 'FE_UC' : 'FE_PUBLISHED' | i18n}}
+							</td>
+						</tr>
+						<tr ng-switch-when="wsc">
+							<td class="tdIcon">
+								<img class="f_icon32" static-src="icons/im/projectselector/scanner.png" />
+							</td>
+							<td class="ws_column f_textM f_textBold">
+								{{'FE_NO_OF_SCANS'|i18n}}
+							</td>
+							<td class="ws_column">
+								{{project._numberOfScans}}
+							</td>
+						</tr>
+						<tr ng-switch-when="wsc">
+							<td class="tdIcon">
+								<img class="f_icon32" static-src="icons/im/projectselector/calendar.png" />
+							</td>
+							<td class="ws_column f_textBold">
+								{{'FE_REC_PERIOND_PRPJ'|i18n}}
+							</td>
+							<td class="ws_column">
+								<span class="visible-lg">{{[project._oldestScanRecordingTime, project._newestScanRecordingTime] | dateperiod : false}}</span>
+								<span class="visible-xs visible-sm visible-md">{{[project._oldestScanRecordingTime, project._newestScanRecordingTime] | dateperiod : true}}</span>
+							</td>
+						</tr>
+						<tr ng-switch-when="wsc">
+							<td class="tdIcon">
+								<img class="f_icon32" static-src="icons/im/clock.png" />
+							</td>
+							<td class="ws_column f_textBold">
+								{{'FE_MOD_TIME'|i18n}}
+							</td>
+							<td class="ws_column">
+								{{project._workspaceModificationTime | date}}
+							</td>
+						</tr>
+						<tr>
+							<td class="tdIcon">
+								<img class="f_icon32" static-src="icons/im/projectselector/location.png" />
+							</td>
+							<td class="ws_column f_textBold">{{'FE_LOCATION'|i18n}}</td>
+							<td class="ws_column">
+								<a target="_blank" ng-show="project._latitude != 0 || project._longitude != 0"
+								   href="https://www.google.com/maps/place//{{project._latitude}},{{project._longitude}}/@{{project._latitude}},{{project._longitude}},15z"
+								   title="Open project location in Google Maps.">{{project._latitude}}, {{project._longitude}}
+								</a>
+								<span ng-show="project._latitude == 0 && project._longitude == 0">{{ 'FE_UNKNOWN' | i18n }}</span>
+							</td>
+						</tr>
+					</table>
+					<wsworldmapdetail ng-show="project._latitude != 0 || project._longitude != 0" style="margin-top: 20px;" get-project="getProject()"></wsworldmapdetail>
+					<div class="projectDescription f_textML">
+						<markdown source="project._description"></markdown>
+					</div>
+				</div>
+			</div>
+		</div>
+		<errorbox promisefail error="error"></errorbox>
+	</div>
+</div>

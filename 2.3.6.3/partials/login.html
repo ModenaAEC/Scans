@@ -1,0 +1,126 @@
+<div style="padding-top:20px" promise="getPromise()" then="sessionUsername">
+	<div promiseprogress class="f_textML f_textAlignC" style="margin-top:20px">{{"FE_LOADING" | i18n}}</div>
+	<div promisethen class="f_centeredContainer f_borderBox f_responsiveBox">
+		<div ng-if="!sessionUsername">
+			<div class="header f_text">
+				<button ng-show="userDirectory === 'stormpath'" class="btn btn-default f_alignRight" ng-click="createAccount()"
+						title="{{'FE_CREATE_ACCOUNT_LONG'|i18n}}" style="margin-top:6px; margin-right:14px;" tabindex="106">
+					<img class="f_icon24" static-src="icons/im/taskbar/users/adduser.png" /><p class="hidden-xs f_textInline">{{'FE_CREATE_ACCOUNT'|i18n}}</p>
+				</button>
+				<p class="f_textBold f_textML f_textInline hidden-xs"><img class="f_icon48" static-src="icons/im/login.png"/>{{'FE_LOGIN'|i18n}}</p>
+				<p ng-show="userDirectory === 'stormpath'" class="f_textInline f_textDark f_textM f_alignRight hidden-sm hidden-xs f_textInline" style="line-height:48px; margin-right:10px;">{{'FE_NEW_USER'|i18n}}?</p>
+			</div>
+			<!-- header -->
+			<form novalidate promise="getLoginPromise()" name="loginform" id="loginform" fail="error" class="f_textM" type="submit" style="padding:10px; margin-top:10px;" autocomplete="off">
+				<p class="f_textM hidden-xs" style="padding-left:3px;">{{'FE_ENTER_USERNAME_PW'|i18n}}:</p>
+				<div class="container-fluid">
+					<div class="row input-group f_inputGroup" style="margin-bottom:10px; position:relative; z-index:9999;">
+						<div class="input-group-addon required hidden-xs f_validate" ng-class="{'ng-valid':credentials.username}" style="min-width: 150px;">{{"FE_USERNAME" | i18n}}</div>
+						<input class="form-control f_validate f_ignoreDirty"
+							   required
+							   emailvalid
+							   type="email"
+							   ng-model="credentials.username"
+							   placeholder="{{'FE_USERNAME'|i18n}} ({{'FE_EMAIL'|i18n}})"
+							   autofocus
+							   tabindex="100">
+						<div class="input-group-btn" style="z-index:9999;">
+							<button ng-disabled="usernameList.length<=1"
+									type="button"
+									class="btn btn-default dropdown-toggle"
+									data-toggle="dropdown"
+									tabindex="104">
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-right">
+								<li ng-repeat="username in usernameList" ng-click="credentials.username=username">
+									<a class="f_dropdownMenuItem" href="">{{username}}</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="row input-group f_inputGroup" style="position:relative; z-index:1; margin-right: -12px">
+						<div class="input-group-addon required hidden-xs f_validate" ng-class="{'ng-valid':credentials.password}" style="min-width: 150px; z-index:1;">
+							{{"FE_PASSWORD" | i18n}}
+						</div>
+						<input id="passwordinputform" class="form-control f_validate" required type="password" ng-model="credentials.password" placeholder="{{'FE_PASSWORD'|i18n}}" tabindex="101">
+					</div>
+				</div>
+				<div promisefail>
+					<alert type="error" class="container-fluid f_alertCompact" style="margin-top: 15px;">
+						<div class="row">
+							<div class="col-xs-1" style="display:inline; height:32px;">
+								<img static-src="icons/im/alerts/shieldalert.png" class="f_icon32"/>
+							</div>
+							<div class="col-xs-11">
+								<p style="margin-top:5px;" class="f_textML f_textDark">{{error.message|i18n}}</p>
+							</div>
+						</div>
+					</alert>
+				</div>
+				<div promiseprogress>
+					<alert type="info" class="container-fluid f_alertCompact" style="margin-top: 25px;">
+						<div class="row">
+							<div class="col-xs-1" style="display:inline; height:32px;">
+								<img class="f_icon32" static-src="icons/im/spinner.gif"/>
+							</div>
+							<div class="col-xs-11">
+								<p style="margin-top:5px;" class="f_textML f_textDark">{{'FE_CHECK_CREDENTIALS'|i18n}}</p>
+							</div>
+						</div>
+					</alert>
+				</div>
+				<div style="margin-top:10px;">
+				<!-- login + cancel button. Must be within the form, then we don't need ng-enter. -->
+
+						<!-- "submit" type button will be triggered with Enter key. Only works when button is within the form. -->
+						<!-- Type "button" prevents triggering with Enter key. -->
+						<button type="submit"
+								class="btn f_alignRight f_btnFontDark"
+								ng-click="login(credentials.username, credentials.password, loginform)"
+								ng-disabled="!credentials.username || !credentials.password"
+								ng-class="{'btn-warning':!credentials.username || !credentials.password, 'btn-success':credentials.username && credentials.password}"
+								title="{{'FE_LOGIN'|i18n}}" tabindex="102">
+							<img class="f_icon24" static-src="icons/im/login.png" /><p class="f_textInline hidden-xs">{{'FE_LOGIN'|i18n}}</p>
+						</button>
+						<!-- "i have lost my password" -->
+						<a ng-show="userDirectory === 'stormpath' || userDirectory === 'ats'" class="f_textInline f_textM" style="line-height:48px; padding-left:3px; cursor:pointer;" ng-click="loadLostPassword()" tabindex="105">{{'FE_LOST_PASSWD'|i18n}}</a>
+						<a ng-show="userDirectory !== 'stormpath'" style="line-height:48px; padding-left:3px;"></a>
+				</div>
+			</form>
+		</div>
+		<div ng-if="sessionUsername">
+			<p class="f_textM" style="padding-left:30px; padding-top:15px">{{'FE_LOGGED_IN_AS'|i18n}}: {{sessionUsername}}</p>
+			<div promise="getLogoutPromise()" fail="error" style="padding-left:30px; padding-right:30px;">
+				<div promisefail>
+					<alert type="error" class="container-fluid" style="margin-top: 25px;">
+						<div class="row">
+							<div class="col-xs-1" style="display:inline; height:32px;">
+								<img static-src="icons/im/alerts/shieldalert.png" class="f_icon32"/>
+							</div>
+							<div class="col-xs-11">
+								<p style="margin-top:5px;" class="f_textML f_textDark">{{error.message|i18n}}</p>
+							</div>
+						</div>
+					</alert>
+				</div>
+				<div promiseprogress>
+					<alert type="info" class="container-fluid" style="margin-top: 25px;">
+						<div class="row">
+							<div class="col-xs-1" style="display:inline; height:32px;">
+								<img class="f_icon32" static-src="icons/im/spinner.gif"/>
+							</div>
+							<div class="col-xs-11">
+								<p style="margin-top:5px;" class="f_textML f_textDark">{{'FE_LOGOUT'|i18n}}...</p>
+							</div>
+						</div>
+					</alert>
+				</div>
+			</div>
+			<button type="submit" class="btn f_btnFontDark f_text btn-warning" ng-click="logout()"
+					title="{{'FE_LOGOUT'|i18n}}" style="min-width: 100px; margin-left: 30px; margin-bottom: 15px">
+				<img class="f_icon24" static-src="icons/im/headerbar/logout.png" />{{'FE_LOGOUT'|i18n}}
+			</button>
+		</div>
+	</div>
+</div>
